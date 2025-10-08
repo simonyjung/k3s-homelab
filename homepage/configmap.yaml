@@ -24,8 +24,9 @@ data:
   services.yaml: |
     - Infrastructure:
         - ArgoCD:
-            href: http://10.0.10.20:30430/
+            href: http://10.0.10.20:31362/
             description: GitOps CD
+            icon: sh-Argo-CD.svg
 
   widgets.yaml: |
     - kubernetes:
