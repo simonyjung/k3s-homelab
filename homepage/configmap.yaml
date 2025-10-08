@@ -27,7 +27,11 @@ data:
             href: http://10.0.10.20:31362/
             description: GitOps CD
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg
-
+    - Applications:
+        - Homepage:
+            herf: http://10.0.10.20:30430/
+            description: Cluster Homepage/Service Catalog
+            icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homepage.png
   widgets.yaml: |
     - kubernetes:
         cluster:
