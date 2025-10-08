@@ -17,15 +17,15 @@ data:
   custom.js: ""
   bookmarks.yaml: |
     - Developer:
-        - Github:
+        - Homelab Repository:
             - abbr: GH
-              href: https://github.com/
-              
+              href: https://github.com/simonyjung/k3s-homelab
+
   services.yaml: |
-    - My First Group:
-        - My First Service:
-            href: http://localhost/
-            description: Homepage is awesome
+    - Infrastructure:
+        - ArgoCD:
+            href: http://10.0.10.20:30430/
+            description: GitOps CD
 
   widgets.yaml: |
     - kubernetes:
