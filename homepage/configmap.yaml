@@ -26,7 +26,7 @@ data:
         - ArgoCD:
             href: http://10.0.10.20:31362/
             description: GitOps CD
-            icon: sh-Argo-CD.svg
+            icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg
 
   widgets.yaml: |
     - kubernetes:
