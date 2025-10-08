@@ -1,0 +1,23 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: homepage
+  name: homepage
+  namespace: homepage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homepage
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: homepage
+    spec:
+      containers:
+      - image: ghcr.io/gethomepage/homepage:latest
+        name: homepage
