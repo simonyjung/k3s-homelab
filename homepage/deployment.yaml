@@ -18,6 +18,7 @@ spec:
       labels:
         app: homepage
     spec:
+      serviceAccountName: homepage
       containers:
       - image: ghcr.io/gethomepage/homepage:latest
         name: homepage
