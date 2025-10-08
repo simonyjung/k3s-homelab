@@ -21,3 +21,7 @@ spec:
       containers:
       - image: ghcr.io/gethomepage/homepage:latest
         name: homepage
+        ports:
+          - name: http
+            containerPort: 3000
+            protocol: TCP
