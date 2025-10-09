@@ -1,11 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: redis-development
+  name: redis
   namespace: argocd
 spec:
   destination:
-    namespace: redis-development
     server: https://kubernetes.default.svc
   project: default
   sources:
