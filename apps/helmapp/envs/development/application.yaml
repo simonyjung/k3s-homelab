@@ -11,6 +11,7 @@ spec:
   sources:
     - chart: hello-world
       repoURL: https://helm.github.com.io/examples
+      targetRevision: 0.1.0
       helm:
         valueFiles:
         - $values/apps/helmapp/envs/development/values.yaml
