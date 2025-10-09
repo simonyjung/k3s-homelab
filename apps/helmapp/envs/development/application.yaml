@@ -9,14 +9,14 @@ spec:
     name: kind
   project: default
   sources:
-  - chart: hello-world
-    repoURL: https://helm.github.com.io/examples
-    helm:
-      valueFiles:
-      - $values/apps/helmapp/envs/development/values.yaml
-  - repoURL: git@github.com:simonyjung/k3s-homelab.git
-    targetRevision: HEAD
-    ref: values
+    - chart: hello-world
+      repoURL: https://helm.github.com.io/examples
+      helm:
+        valueFiles:
+        - $values/apps/helmapp/envs/development/values.yaml
+    - repoURL: git@github.com:simonyjung/k3s-homelab.git
+      targetRevision: HEAD
+      ref: values
   syncPolicy:
     automated:
       prune: true
