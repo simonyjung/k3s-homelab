@@ -23,10 +23,10 @@ spec:
       source:
         repoURL: git@github.com:simonyjung/k3s-homelab.git
         targetRevision: HEAD
-        path: '{{.path.path}}'
+        path: '{{.path.path}}/../../'
         helm:
           valueFiles:
-            - values.yaml
+            - ./envs/development/values.yaml
       
       # Destination cluster and namespace to deploy the application
       destination:
