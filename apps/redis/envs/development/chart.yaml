@@ -1,0 +1,10 @@
+apiVersion: v2
+name: redis
+description: An Umbrella helm chart for Redis
+type: application
+version: 0.1.0
+appVersion: "1.0"
+dependencies:
+  - name: redis
+    version: 23.1.1
+    repository: https://charts.bitnami.com/bitnami

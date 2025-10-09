@@ -24,6 +24,11 @@ spec:
         repoURL: git@github.com:simonyjung/k3s-homelab.git
         targetRevision: HEAD
         path: '{{.path.path}}'
+        {{- if (fileExists (print .path.path "/chart.yaml")) }}
+        helm:
+          valueFiles:
+            - values.yaml
+        {{- end }}
       
       # Destination cluster and namespace to deploy the application
       destination:
