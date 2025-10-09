@@ -36,7 +36,7 @@ data:
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/traefik.svg
     - Applications:
         - Homepage:
-            herf: http://10.0.10.20:30430/
+            herf: https://home.cluster.simonjung.io/
             description: Cluster Homepage/Service Catalog
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homepage.png
         - Linkding:
