@@ -17,7 +17,7 @@ spec:
       # applications will be in default project for argocd
       project: default
       source:
-        repoURL: 'https://github.com/simonyjung/k3s-homelab.git'
+        repoURL: 'git@github.com:simonyjung/k3s-homelab.git'
         targetRevision: HEAD
         path: apps/linkding/deployment/
       destination:
