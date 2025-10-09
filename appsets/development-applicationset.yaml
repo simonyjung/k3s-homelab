@@ -8,10 +8,10 @@ spec:
   goTemplateOptions: ["missingkey=error"]
   generators:
   - git:
-    repoURL: git@github.com:simonyjung/k3s-homelab.git
-    revision: HEAD
-    directories:
-    - path: apps/*/envs/development   
+      repoURL: git@github.com:simonyjung/k3s-homelab.git
+      revision: HEAD
+      directories:
+      - path: apps/*/envs/development   
   template:    
     metadata:
       name: '{{index .path.segments 1}}-{{index .path.segments 3}}'   
