@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: longhorn-web-ui
+  namespace: longhorn-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`longhorn.simonjung.io`)
+      kind: Rule
+      services:
+        - name: longhorn-frontend
+          port: 80
+  tls:
+    secretName: longhorn-web-ui-tls
