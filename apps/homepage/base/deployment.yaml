@@ -28,7 +28,7 @@ spec:
             protocol: TCP
         env:
           - name: HOMEPAGE_ALLOWED_HOSTS
-            value: 10.0.10.20:30430
+            value: home.cluster.simonjung.io
         volumeMounts:
           - mountPath: /app/config/custom.js
             name: homepage-config
