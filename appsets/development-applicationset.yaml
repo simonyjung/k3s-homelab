@@ -24,7 +24,7 @@ spec:
         repoURL: git@github.com:simonyjung/k3s-homelab.git
         targetRevision: HEAD
         path: '{{.path.path}}'
-        {{- if (fileExists (print .path.path "/chart.yaml")) }}
+        {{- if (fileExists (print .path.path "/Chart.yaml")) }}
         helm:
           valueFiles:
             - values.yaml
