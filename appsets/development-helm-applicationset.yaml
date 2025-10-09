@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: development-applicationset
+  name: development-helm-applicationset
   namespace: argocd
 spec:
   goTemplate: true
@@ -11,7 +11,7 @@ spec:
       repoURL: git@github.com:simonyjung/k3s-homelab.git
       revision: HEAD
       directories:
-      - path: apps/*/envs/development   
+      - path: apps-helm/*/envs/development   
   template:    
     metadata:
       name: '{{index .path.segments 1}}-{{index .path.segments 3}}'   
@@ -24,6 +24,9 @@ spec:
         repoURL: git@github.com:simonyjung/k3s-homelab.git
         targetRevision: HEAD
         path: '{{.path.path}}'
+        helm:
+          valueFiles:
+            - values.yaml
       
       # Destination cluster and namespace to deploy the application
       destination:
