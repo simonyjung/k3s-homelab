@@ -31,6 +31,10 @@ data:
             href: http://10.0.10.20:30904/
             description: Longhorn UI
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-longhorn.svg
+        - Traefik:
+            href: https://traefik.cluster.simonjung.io
+            description: Traefik Dashboard
+            icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/traefik.svg
     - Applications:
         - Homepage:
             herf: http://10.0.10.20:30430/

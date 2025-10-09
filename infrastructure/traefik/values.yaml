@@ -1,0 +1,16 @@
+entryPoints:
+  web:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: :443
+    tls: {}
+ingressRoute:
+  dashboard:
+    enabled: true
+    entryPoints: [web, websecure]
+    matchRule: Host(`traefik.cluster.simonjung.io`)
