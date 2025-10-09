@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-world-production
+  namespace: argocd
+spec:
+  destination:
+    namespace: hello-world-production
+    name: kind
+  project: default
+  sources:
+  - chart: hello-world
+    repoURL: https://helm.github.com.io/examples
+    helm:
+      valueFiles:
+      - $values/apps/helmapp/envs/production/values.yaml
+  - repoURL: git@github.com:simonyjung/k3s-homelab.git
+    targetRevision: HEAD
+    ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
