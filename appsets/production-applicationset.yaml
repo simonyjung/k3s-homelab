@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: production-applicationset
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - git:
+    repoURL: git@github.com:simonyjung/k3s-homelab.git
+    revision: HEAD
+    directories:
+    - path: apps/*/envs/production   
+  template:    
+  metadata:
+    name: '{{index .path.segments 1}}-{{index .path.segments 3}}'   
+  spec:
+    # The project the application belongs to.
+    project: default
+
+    # Source of the application manifests
+    source:
+      repoURL: git@github.com:simonyjung/k3s-homelab.git
+      targetRevision: HEAD
+      path: '{{.path.path}}'
+    
+    # Destination cluster and namespace to deploy the application
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: '{{index .path.segments 1}}-{{index .path.segments 3}}'
