@@ -4,10 +4,9 @@ metadata:
   name: linkding
   namespace: linkding
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 3000
-      nodePort: 32169
       targetPort: 9090
       protocol: TCP
   selector:

@@ -37,7 +37,7 @@ data:
             description: Cluster Homepage/Service Catalog
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homepage.png
         - Linkding:
-            href: http://10.0.10.20:32169/
+            href: https://linkding.cluster.simonjung.io
             description: Bookmark Manager
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/linkding.svg
   widgets.yaml: |
