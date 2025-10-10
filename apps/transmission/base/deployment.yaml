@@ -13,15 +13,35 @@ spec:
       labels:
         app: transmission
     spec:
-      volumes:
-        - name: transmission-volume
-          emptyDir: {}
       containers:
         - name: transmission
           image: lscr.io/linuxserver/transmission:latest
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Etc/UTC"
           ports:
-            - containerPort: 9090
+            - containerPort: 9091
             - containerPort: 51413
+            - containerPort: 51413
+              protocol: UDP
           volumeMounts:
-            - name: transmission-volume
+            - name: config
               mountPath: /config
+            - name: downloads
+              mountPath: /downloads
+            - name: watch
+              mountPath: /watch
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: transmission-config
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: transmission-downloads
+        - name: watch
+          persistentVolumeClaim:
+            claimName: transmission-watch
