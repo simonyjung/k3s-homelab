@@ -1,2 +1,3 @@
-redis: 
+---
+redis:
   replicaCount: 1

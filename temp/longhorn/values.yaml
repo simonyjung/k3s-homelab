@@ -1,3 +1,4 @@
+---
 longhornUI:
   replicas: 1
 # defaultSettings:

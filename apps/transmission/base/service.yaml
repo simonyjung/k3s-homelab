@@ -4,20 +4,18 @@ kind: Service
 metadata:
   name: transmission
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 3000
       targetPort: 9091
       protocol: TCP
     - name: bittorrent-tcp
       protocol: TCP
-      port: 51413 # The default port for BitTorrent traffic (TCP)
+      port: 51413  # The default port for BitTorrent traffic (TCP)
       targetPort: 51413
-      nodePort: 51413
     - name: bittorrent-udp
       protocol: UDP
-      port: 51413 # The default port for BitTorrent traffic (UDP)
+      port: 51413   # The default port for BitTorrent traffic (UDP)
       targetPort: 51413
-      nodePort: 51413
   selector:
     app: transmission
