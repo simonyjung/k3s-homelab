@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ../../base
   - ingress.yaml
+  - certificate.yaml
 
 patchesStrategicMerge:
   - clusterrolebinding.yaml
