@@ -17,3 +17,7 @@ spec:
                 name: linkding
                 port:
                   number: 3000
+  tls:
+    - hosts:
+        - linkding.cluster.simonjung.io
+      secretName: linkding-ingress-secret
