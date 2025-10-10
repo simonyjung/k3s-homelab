@@ -6,6 +6,6 @@ type: application
 version: 0.1.0
 appVersion: "1.0"
 dependencies:
-  - name: longhorn
+  - name: longhorn/longhorn
     version: 1.19.0
-    repository: https://charts.longhorn.io
+    repository: https://charts.longhorn.io/
