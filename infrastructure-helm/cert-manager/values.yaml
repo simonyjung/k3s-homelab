@@ -1,7 +1,8 @@
 ---
-namespace: "cert-manager"
-crds:
-  enabled: true
-extraArgs:
-  - --dns01-recursive-nameservers-only
-  - --dns01-recursive-nameservers=1.1.1.1:53,1.0.0.1:53
+cert-manager:
+  namespace: "cert-manager"
+  crds:
+    enabled: true
+  extraArgs:
+    - --dns01-recursive-nameservers-only
+    - --dns01-recursive-nameservers=1.1.1.1:53,1.0.0.1:53
