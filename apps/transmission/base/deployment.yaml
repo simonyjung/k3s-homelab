@@ -37,7 +37,8 @@ spec:
               mountPath: /watch
       volumes:
         - name: config
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: transmission-pvc
         - name: downloads
           emptyDir: {}
         - name: watch
