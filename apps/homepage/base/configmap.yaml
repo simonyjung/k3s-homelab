@@ -28,7 +28,7 @@ data:
             description: GitOps CD
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg
         - Longhorn:
-            href: http://10.0.10.20:30904/
+            href: https://longhorn.cluster.simonjung.io
             description: Longhorn UI
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-longhorn.svg
         - Traefik:
