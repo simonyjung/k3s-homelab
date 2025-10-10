@@ -43,6 +43,10 @@ data:
             href: https://linkding.cluster.simonjung.io
             description: Bookmark Manager
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/linkding.svg
+        - Transmission:
+            href: https://transmission.cluster.simonjung.io
+            description: Torrent Client
+            icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/transmission.svg
   widgets.yaml: |
     - kubernetes:
         cluster:
