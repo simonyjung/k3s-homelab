@@ -1,0 +1,6 @@
+---
+longhorn:
+  longhornUI:
+    replicas: 1
+  # defaultSettings:
+  #   backupTarget: "nfs://x.x.x.x:/mnt/user/backups"
