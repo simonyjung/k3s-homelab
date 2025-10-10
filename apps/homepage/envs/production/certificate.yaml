@@ -9,4 +9,4 @@ spec:
         name: cloudflare-clusterissuer
         kind: ClusterIssuer
     dnsNames:
-    - homepage.cluster.simonjung.io
+        - homepage.cluster.simonjung.io

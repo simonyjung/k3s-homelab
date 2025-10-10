@@ -9,4 +9,4 @@ spec:
         name: cloudflare-clusterissuer
         kind: ClusterIssuer
     dnsNames:
-    - linkding.cluster.simonjung.io
+        - linkding.cluster.simonjung.io

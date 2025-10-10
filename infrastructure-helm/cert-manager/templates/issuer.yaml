@@ -8,10 +8,10 @@ spec:
     email: admin@simonjung.io
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-        name: cloudflare-clusterissuer-account-key
+      name: cloudflare-clusterissuer-account-key
     solvers:
-    - dns01:
-        cloudflare:
-          apiTokenSecretRef:
-            name: cloudflare-api-token-secret
-            key: api-token
+      - dns01:
+          cloudflare:
+            apiTokenSecretRef:
+              name: cloudflare-api-token-secret
+              key: api-token
