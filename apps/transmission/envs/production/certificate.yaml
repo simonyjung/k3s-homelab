@@ -1,0 +1,12 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+    name: transmission-ingress-certificate
+spec:
+    secretName: transmission-ingress-secret
+    issuerRef:
+        name: cloudflare-clusterissuer
+        kind: ClusterIssuer
+    dnsNames:
+        - transmission.cluster.simonjung.io

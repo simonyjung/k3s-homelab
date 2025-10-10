@@ -17,3 +17,7 @@ spec:
                 name: transmission
                 port:
                   number: 3000
+  tls:
+    - hosts:
+        - transmission.cluster.simonjung.io
+      secretName: transmission-ingress-secret
