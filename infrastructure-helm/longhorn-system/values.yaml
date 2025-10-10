@@ -1,5 +1,8 @@
 ---
 longhorn:
+  # Needed when installind with argoCD
+  preUpgradeChecker:
+    jobEnabled: false
   longhornUI:
     replicas: 1
   # defaultSettings:
