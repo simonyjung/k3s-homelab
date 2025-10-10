@@ -5,5 +5,5 @@ longhorn:
     jobEnabled: false
   longhornUI:
     replicas: 1
-  # defaultSettings:
-  #   backupTarget: "nfs://x.x.x.x:/mnt/user/backups"
+    # defaultSettings:
+    #   backupTarget: "nfs://x.x.x.x:/mnt/user/backups"
