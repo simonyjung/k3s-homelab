@@ -16,7 +16,7 @@ spec:
               service:
                 name: transmission
                 port:
-                  number: 3000
+                  number: 9091
   tls:
     - hosts:
         - transmission.cluster.simonjung.io
