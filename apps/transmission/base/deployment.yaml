@@ -40,6 +40,8 @@ spec:
           persistentVolumeClaim:
             claimName: transmission-pvc
         - name: downloads
-          emptyDir: {}
+          hostPath:
+            path: /mnt/Downloads
         - name: watch
-          emptyDir: {}
+          hostPath:
+            path: /mnt/Watch
