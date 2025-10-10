@@ -9,14 +9,14 @@ spec:
     - protocol: TCP
       name: web-interface
       port: 9091
-      nodePort: 9091
+      nodePort: 32100
     - protocol: TCP
       name: torrent-tcp
       port: 51413
-      nodePort: 51413
+      nodePort: 32110
     - protocol: UDP
       name: torrents-udp
       port: 51413
-      nodePort: 51413
+      nodePort: 32110
   selector:
     app: transmission
