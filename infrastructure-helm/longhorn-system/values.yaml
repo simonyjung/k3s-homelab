@@ -6,4 +6,4 @@ longhorn:
   longhornUI:
     replicas: 1
   defaultSettings:
-    backupTarget: "nfs://192.168.40.118:/longhorn"
+    backupTarget: "nfs://192.168.40.118:/volume1/longhorn"
