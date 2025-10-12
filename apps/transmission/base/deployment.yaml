@@ -40,8 +40,8 @@ spec:
           persistentVolumeClaim:
             claimName: transmission-pvc
         - name: downloads
-          hostPath:
-            path: /mnt/Downloads
+          persistentVolumeClaim:
+            claimName: nfs-downloads-pvc
         - name: watch
-          hostPath:
-            path: /mnt/Watch
+          persistentVolumeClaim:
+            claimName: nfs-watch-pvc
