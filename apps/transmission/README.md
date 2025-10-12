@@ -2,6 +2,8 @@
 
 This document outlines the deployment of the Transmission BitTorrent client to the homelab Kubernetes cluster.
 
+The Web UI can be accessed when connected to the home network at [https://transmission.cluster.simonjung.io](https://transmission.cluster.simonjung.io)
+
 ## Deployment
 
 Transmission is configured to run a single replica of the `lscr.io/linuxserver/transmission:latest` Docker image.
