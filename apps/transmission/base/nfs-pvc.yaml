@@ -5,7 +5,7 @@ metadata:
   name: nfs-downloads-pv
 spec:
   capacity:
-    storage: 10Gi # This is a placeholder value, it's not enforced for NFS
+    storage: 10Gi  # This is a placeholder value, it's not enforced for NFS
   accessModes:
     - ReadWriteMany
   nfs:
@@ -19,7 +19,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: "" # Empty storage class to bind to the PV above
+  storageClassName: ""  # Empty storage class to bind to the PV above
   volumeName: nfs-downloads-pv
   resources:
     requests:
@@ -31,7 +31,7 @@ metadata:
   name: nfs-watch-pv
 spec:
   capacity:
-    storage: 1Gi # This is a placeholder value, it's not enforced for NFS
+    storage: 1Gi  # This is a placeholder value, it's not enforced for NFS
   accessModes:
     - ReadWriteMany
   nfs:
@@ -45,7 +45,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: "" # Empty storage class to bind to the PV above
+  storageClassName: ""  # Empty storage class to bind to the PV above
   volumeName: nfs-watch-pv
   resources:
     requests:
