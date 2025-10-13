@@ -31,6 +31,8 @@ The Transmission web interface is made accessible externally via an `Ingress` re
 ### NFS Setup
 Before deploying, ensure that the NFS permissions are correctly set on the Synology NAS.
 
+NFS directories are connected via Static Provisioning as Downloads and Watch are preexisting NFS directories.
+
 [Configuring your synology NAS as NFS Storage](https://medium.com/@bastian.ohm/configuring-your-synology-nas-as-nfs-storage-for-kubernetes-cluster-5e668169e5a2)
 
 ### Portforwarding
