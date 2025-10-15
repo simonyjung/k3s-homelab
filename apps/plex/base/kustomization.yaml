@@ -6,3 +6,4 @@ resources:
   - deployment.yaml
   - persistentvolumeclaim.yaml
   - service.yaml
+  - onepasswordsecret.yaml
