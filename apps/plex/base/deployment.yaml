@@ -26,7 +26,10 @@ spec:
             - name: TZ
               value: "America/New_York"
             - name: PLEX_CLAIM
-              value: ""
+              valueFrom:
+                secretKeyRef:
+                  name: plex-claim-token-secret
+                  key: claim
           ports:
             - name: http
               containerPort: 32400
