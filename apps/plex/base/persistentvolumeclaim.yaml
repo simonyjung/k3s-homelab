@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: plex-config-pvc
+spec:
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 20Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: plex-tv-pv
+spec:
+  capacity:
+    storage: 10Gi  # This is a placeholder value, it's not enforced for NFS
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /volume1/media/TV Shows
+    server: 192.168.40.118
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: plex-tv-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""  # Empty storage class to bind to the PV above
+  volumeName: plex-tv-pv
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: plex-movies-pv
+spec:
+  capacity:
+    storage: 10Gi  # This is a placeholder value, it's not enforced for NFS
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /volume1/media/Movies
+    server: 192.168.40.118
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: plex-movies-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""  # Empty storage class to bind to the PV above
+  volumeName: plex-movies-pv
+  resources:
+    requests:
+      storage: 10Gi

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plex
+  labels:
+    app: plex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plex
+  template:
+    metadata:
+      labels:
+        app: plex
+    spec:
+      containers:
+        - name: plex
+          image: lscr.io/linuxserver/plex:latest
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "America/New_York"
+            - name: PLEX_CLAIM
+              value: ""
+          ports:
+            - name: http
+              containerPort: 32400
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: tv
+              mountPath: /tv
+            - name: movies
+              mountPath: /movies
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: plex-config-pvc
+        - name: tv
+          persistentVolumeClaim:
+            claimName: plex-tv-pvc
+        - name: movies
+          persistentVolumeClaim:
+            claimName: plex-movies-pvc
