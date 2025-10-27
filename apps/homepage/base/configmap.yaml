@@ -25,7 +25,7 @@ data:
     - Infrastructure:
         - ArgoCD:
             href: http://10.0.10.20:31362/
-            siteMonitor: http://10.0.10.20:31362/
+            ping: http://10.0.10.20:31362/
             description: GitOps CD
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg
         - Longhorn:
