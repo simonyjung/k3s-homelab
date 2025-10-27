@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: httpbin
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: httpbin
   ports:
