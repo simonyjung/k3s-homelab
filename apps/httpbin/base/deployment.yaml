@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,8 +14,8 @@ spec:
         app: httpbin
     spec:
       containers:
-      - name: httpbin
-        image: kennethreitz/httpbin:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 80
+        - name: httpbin
+          image: kennethreitz/httpbin:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
