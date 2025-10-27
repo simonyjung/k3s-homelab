@@ -25,14 +25,17 @@ data:
     - Infrastructure:
         - ArgoCD:
             href: http://10.0.10.20:31362/
+            ping: http://10.0.10.20:31362/
             description: GitOps CD
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg
         - Longhorn:
             href: https://longhorn.cluster.simonjung.io
+            ping: https://longhorn.cluster.simonjung.io
             description: Longhorn UI
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-longhorn.svg
         - Traefik:
             href: https://traefik.cluster.simonjung.io
+            ping: https://traefik.cluster.simonjung.io
             description: Traefik Dashboard
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/traefik.svg
     - Applications:
@@ -46,10 +49,12 @@ data:
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/plex.svg
         - Linkding:
             href: https://linkding.cluster.simonjung.io
+            ping: https://linkding.cluster.simonjung.io
             description: Bookmark Manager
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/linkding.svg
         - Transmission:
             href: https://transmission.cluster.simonjung.io
+            ping: https://transmission.cluster.simonjung.io
             description: Torrent Client
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/transmission.svg
   widgets.yaml: |
