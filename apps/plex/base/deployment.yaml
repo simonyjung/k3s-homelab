@@ -17,10 +17,6 @@ spec:
       labels:
         app: plex
     spec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
       containers:
         - name: plex
           image: lscr.io/linuxserver/plex:latest
