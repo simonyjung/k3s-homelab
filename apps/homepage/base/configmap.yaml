@@ -37,9 +37,13 @@ data:
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/traefik.svg
     - Applications:
         - Homepage:
-            herf: https://home.cluster.simonjung.io/
+            href: https://home.cluster.simonjung.io/
             description: Cluster Homepage/Service Catalog
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homepage.png
+        - Plex:
+            href: https://plex.tv
+            description: Media Server
+            icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/plex.svg
         - Linkding:
             href: https://linkding.cluster.simonjung.io
             description: Bookmark Manager
