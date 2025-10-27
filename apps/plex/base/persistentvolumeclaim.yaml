@@ -7,7 +7,7 @@ spec:
   storageClassName: longhorn
   resources:
     requests:
-      storage: 20Gi
+      storage: 50Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
