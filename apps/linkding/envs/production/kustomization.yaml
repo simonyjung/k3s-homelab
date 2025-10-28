@@ -7,3 +7,4 @@ resources:
   - ingress.yaml
   - certificate.yaml
   - onepasswordsecret.yaml
+  - cloudflared.yaml
