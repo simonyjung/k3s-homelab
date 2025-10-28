@@ -15,9 +15,9 @@ A Plex Claim Token is required for the initial setup to link the server to your 
 
 ## Service Exposure
 
-The Plex application is exposed via a `NodePort` service, making it accessible on a specific port on each cluster node.
+The Plex application is exposed directly on the node's IP address using `hostNetwork: true`. This improves network performance and resolves client relay issues by making Plex behave as if it were running directly on the host machine.
 
--   **Plex Port**: `32400` (internally) is mapped to NodePort `32400` (externally on the node).
+A headless service (`clusterIP: None`) is used to provide a stable DNS endpoint for the Plex pod within the cluster.
 
 ## Prerequisites
 
@@ -42,4 +42,4 @@ To access the Plex server from outside the local network, you must configure por
     -   **Forward Port**: `32400`
     -   **Protocol**: `TCP`
 
-**Note**: Replace `[IP_of_Kubernetes_Node]` with the static IP address of one of your Kubernetes cluster nodes.
+**Note**: Replace `[IP_of_Kubernetes_Node]` with the static IP address of the Kubernetes cluster node where the Plex pod is running. The `nodeSelector` in the deployment ensures that the Plex pod is always scheduled on the `amley01` node, so you should use the IP address of that node.

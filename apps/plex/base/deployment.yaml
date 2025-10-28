@@ -17,8 +17,13 @@ spec:
       labels:
         app: plex
     spec:
+      # Use hostNetwork to resolve relay issues with Plex clients
+      # Makes Plex listen on the node’s IP like a bare-metal install
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
+      # Schedule Plex only on amley01 node due to port forwarding setup on router
+      nodeSelector:
+        kubernetes.io/hostname: amley01
       containers:
         - name: plex
           image: lscr.io/linuxserver/plex:latest
