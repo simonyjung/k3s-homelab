@@ -49,7 +49,7 @@ data:
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/ubiquiti-unifi.svg
     - Applications:
         - Homepage:
-            href: https://homepage.simonjung.io/
+            href: https://home.simonjung.io/
             description: Cluster Homepage/Service Catalog
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homepage.png
         - Plex:
