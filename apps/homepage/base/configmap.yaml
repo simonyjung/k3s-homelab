@@ -38,6 +38,15 @@ data:
             siteMonitor: https://traefik.cluster.simonjung.io
             description: Traefik Dashboard
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/traefik.svg
+        - Synology NAS:
+            href: https://nas:5001
+            siteMonitor: https://nas:5001
+            description: Synology DiskStation Manager
+            icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/synology-light.svg
+        - Ubiquiti Unifi Controller:
+            href: https://unifi.ui.com/
+            description: Unifi Network Controller
+            icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/ubiquiti-unifi.svg
     - Applications:
         - Homepage:
             href: https://home.cluster.simonjung.io/
