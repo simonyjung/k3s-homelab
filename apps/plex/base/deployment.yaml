@@ -17,6 +17,8 @@ spec:
       labels:
         app: plex
     spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: plex
           image: lscr.io/linuxserver/plex:latest

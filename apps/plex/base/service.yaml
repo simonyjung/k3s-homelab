@@ -4,11 +4,11 @@ kind: Service
 metadata:
   name: plex
 spec:
-  type: NodePort
+  clusterIP: None
   ports:
     - protocol: TCP
       name: web-interface
       port: 32400
-      nodePort: 32400
+      targetPort: 32400
   selector:
     app: plex
