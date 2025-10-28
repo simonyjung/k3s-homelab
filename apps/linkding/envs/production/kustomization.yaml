@@ -6,3 +6,4 @@ resources:
   - ../../base
   - ingress.yaml
   - certificate.yaml
+  - onepasswordsecret.yaml
