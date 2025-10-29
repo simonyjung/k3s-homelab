@@ -28,6 +28,11 @@ data:
             ping: http://10.0.10.20:31362/
             description: GitOps CD
             icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg
+        - Grafana:
+            href: https://grafana.cluster.simonjung.io
+            siteMonitor: https://grafana.cluster.simonjung.io
+            description: Grafana Dashboards
+            icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/grafana.svg
         - Longhorn:
             href: https://longhorn.cluster.simonjung.io
             siteMonitor: https://longhorn.cluster.simonjung.io
