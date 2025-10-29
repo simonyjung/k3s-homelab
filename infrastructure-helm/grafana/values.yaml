@@ -1,5 +1,0 @@
----
-grafana:
-  persistence:
-    enabled: true
-    storageClassName: "longhorn"
