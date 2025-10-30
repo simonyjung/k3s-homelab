@@ -52,6 +52,15 @@ kube-prometheus-stack:
     fullnameOverride: alertmanager
     ingress:
       enabled: false
+    alertmanagerSpec:
+      storage: 
+        volumeClaimTemplate:
+          spec:
+            storageClassName: longhorn
+            accessModes: ["ReadWriteOnce"]
+            resources:
+                requests:
+                  storage: 10Gi
 
   ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
   ##
@@ -84,15 +93,13 @@ kube-prometheus-stack:
 
     # # To make Grafana persistent (Using Statefulset)
     # #
-    # persistence:
-    #   enabled: true
-    #   type: sts
-    #   storageClassName: longhorn
-    #   accessModes:
-    #     - ReadWriteOnce
-    #   size: 20Gi
-    #   finalizers:
-    #     - kubernetes.io/pvc-protection
+    persistence:
+      enabled: true
+      type: sts
+      storageClassName: longhorn
+      accessModes:
+        - ReadWriteOnce
+      size: 20Gi
 
     serviceAccount:
       create: true
@@ -241,6 +248,15 @@ kube-prometheus-stack:
   ##
   prometheus:
     enabled: true
+    prometheusSpec:    
+      storageSpec: 
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 20Gi
 
   thanosRuler:
     enabled: false
