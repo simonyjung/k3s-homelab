@@ -53,14 +53,14 @@ kube-prometheus-stack:
     ingress:
       enabled: false
     alertmanagerSpec:
-      storage: 
+      storage:
         volumeClaimTemplate:
           spec:
             storageClassName: longhorn
             accessModes: ["ReadWriteOnce"]
             resources:
-                requests:
-                  storage: 10Gi
+              requests:
+                storage: 10Gi
 
   ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
   ##
@@ -248,15 +248,15 @@ kube-prometheus-stack:
   ##
   prometheus:
     enabled: true
-    prometheusSpec:    
-      storageSpec: 
-      volumeClaimTemplate:
-        spec:
-          storageClassName: longhorn
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 20Gi
+    prometheusSpec:
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: longhorn
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 20Gi
 
   thanosRuler:
     enabled: false
