@@ -1,0 +1,246 @@
+---
+kube-prometheus-stack:
+  ## Provide a name to substitute for the full names of resources
+  ##
+  fullnameOverride: "prometheus"
+
+  ## Create default rules for monitoring the cluster
+  ##
+  defaultRules:
+    create: true
+    rules:
+      alertmanager: true
+      etcd: true
+      configReloaders: true
+      general: true
+      k8sContainerCpuUsageSecondsTotal: true
+      k8sContainerMemoryCache: true
+      k8sContainerMemoryRss: true
+      k8sContainerMemorySwap: true
+      k8sContainerResource: true
+      k8sContainerMemoryWorkingSetBytes: true
+      k8sPodOwner: true
+      kubeApiserverAvailability: true
+      kubeApiserverBurnrate: true
+      kubeApiserverHistogram: true
+      kubeApiserverSlos: true
+      kubeControllerManager: true
+      kubelet: true
+      kubeProxy: true
+      kubePrometheusGeneral: true
+      kubePrometheusNodeRecording: true
+      kubernetesApps: true
+      kubernetesResources: true
+      kubernetesStorage: true
+      kubernetesSystem: true
+      kubeSchedulerAlerting: true
+      kubeSchedulerRecording: true
+      kubeStateMetrics: true
+      network: true
+      node: true
+      nodeExporterAlerting: true
+      nodeExporterRecording: true
+      prometheus: true
+      prometheusOperator: true
+      windows: true
+
+  ## Configuration for alertmanager
+  ## ref: https://prometheus.io/docs/alerting/alertmanager/
+  ##
+  alertmanager:
+    enabled: true
+    fullnameOverride: alertmanager
+    ingress:
+      enabled: false
+
+  ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+  ##
+  grafana:
+    enabled: true
+    fullnameOverride: grafana
+
+    ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
+    ##
+    forceDeployDatasources: false
+
+    ## ForceDeployDashboard Create dashboard configmap even if grafana deployment has been disabled
+    ##
+    forceDeployDashboards: false
+
+    ## Deploy default dashboards
+    ##
+    defaultDashboardsEnabled: true
+    ## Timezone for the default dashboards
+    ## Other options are: browser or a specific timezone, i.e. Europe/Luxembourg
+    ##
+    defaultDashboardsTimezone: utc
+
+    # Use an existing secret for the admin user.
+    admin:
+      ## Name of the secret. Can be templated.
+      existingSecret: "grafana-admin-credentials"
+      userKey: admin-user
+      passwordKey: admin-password
+
+    # # To make Grafana persistent (Using Statefulset)
+    # #
+    # persistence:
+    #   enabled: true
+    #   type: sts
+    #   storageClassName: longhorn
+    #   accessModes:
+    #     - ReadWriteOnce
+    #   size: 20Gi
+    #   finalizers:
+    #     - kubernetes.io/pvc-protection
+
+    serviceAccount:
+      create: true
+      autoMount: true
+
+
+    serviceMonitor:
+      # If true, a ServiceMonitor CRD is created for a prometheus operator
+      # https://github.com/prometheus-operator/prometheus-operator
+      #
+      enabled: true
+
+
+  ## Component scraping the kube api server
+  ##
+  kubeApiServer:
+    enabled: true
+
+  ## Component scraping the kubelet and kubelet-hosted cAdvisor
+  ##
+  kubelet:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      metricRelabelings:
+        - action: replace
+          sourceLabels:
+            - node
+          targetLabel: instance
+
+
+  ## Component scraping the kube controller manager
+  ##
+  kubeControllerManager:
+    enabled: true
+
+  ## Component scraping coreDns. Use either this or kubeDns
+  ##
+  coreDns:
+    enabled: true
+  ## Component scraping kubeDns. Use either this or coreDns
+  ##
+  kubeDns:
+    enabled: false
+
+  ## Component scraping etcd
+  ##
+  kubeEtcd:
+    enabled: true
+
+  ## Component scraping kube scheduler
+  ##
+  kubeScheduler:
+    enabled: true
+    ## If your kube scheduler is not deployed as a pod, specify IPs it can be found on
+    ##
+    endpoints: []
+    # - 10.141.4.22
+    # - 10.141.4.23
+    # - 10.141.4.24
+
+  ## Component scraping kube proxy
+  ##
+  kubeProxy:
+    enabled: true
+    ## If your kube proxy is not deployed as a pod, specify IPs it can be found on
+    ##
+    endpoints: []
+    # - 10.141.4.22
+    # - 10.141.4.23
+    # - 10.141.4.24
+
+  ## Component scraping kube state metrics
+  ##
+  kubeStateMetrics:
+    enabled: true
+
+  ## Configuration for kube-state-metrics subchart
+  ##
+  kube-state-metrics:
+    fullnameOverride: kube-state-metrics
+    selfMonitor:
+      enabled: true
+    prometheus:
+      monitor:
+        enabled: true
+        relabelings:
+          - action: replace
+            regex: (.*)
+            replacement: $1
+            sourceLabels:
+              - __meta_kubernetes_pod_node_name
+            targetLabel: kubernetes_node
+
+  ## Deploy node exporter as a daemonset to all nodes
+  ##
+  nodeExporter:
+    enabled: true
+    serviceMonitor:
+      relabelings:
+        - action: replace
+          regex: (.*)
+          replacement: $1
+          sourceLabels:
+            - __meta_kubernetes_pod_node_name
+          targetLabel: kubernetes_node
+
+  ## Configuration for prometheus-node-exporter subchart
+  ##
+  prometheus-node-exporter:
+    fullnameOverride: node-exporter
+    podLabels:
+      jobLabel: node-exporter
+    releaseLabel: true
+    extraArgs:
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)
+      - --collector.filesystem.fs-types-exclude=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs|erofs)$
+    service:
+      portName: http-metrics
+
+    prometheus:
+      monitor:
+        enabled: true
+        relabelings:
+          - action: replace
+            regex: (.*)
+            replacement: $1
+            sourceLabels:
+              - __meta_kubernetes_pod_node_name
+            targetLabel: kubernetes_node
+
+  ## Manages Prometheus and Alertmanager components
+  ##
+  prometheusOperator:
+    enabled: true
+    prometheusConfigReloader:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 50Mi
+        limits:
+          memory: 100Mi
+
+
+  ## Deploy a Prometheus instance
+  ##
+  prometheus:
+    enabled: true
+
+  thanosRuler:
+    enabled: false
