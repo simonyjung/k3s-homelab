@@ -1,0 +1,50 @@
+---
+- Infrastructure:
+    - ArgoCD:
+        href: http://10.0.10.20:31362/
+        ping: http://10.0.10.20:31362/
+        description: GitOps CD
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg
+    - Grafana:
+        href: https://grafana.cluster.simonjung.io
+        siteMonitor: https://grafana.cluster.simonjung.io
+        description: Grafana Dashboards
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/grafana.svg
+    - Longhorn:
+        href: https://longhorn.cluster.simonjung.io
+        siteMonitor: https://longhorn.cluster.simonjung.io
+        description: Longhorn UI
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-longhorn.svg
+    - Traefik:
+        href: https://traefik.cluster.simonjung.io
+        siteMonitor: https://traefik.cluster.simonjung.io
+        description: Traefik Dashboard
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/traefik.svg
+    - Synology NAS:
+        href: https://nas:5001
+        siteMonitor: https://nas:5001
+        description: Synology DiskStation Manager
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/synology-light.svg
+    - Ubiquiti Unifi Controller:
+        href: https://unifi.ui.com/
+        description: Unifi Network Controller
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/ubiquiti-unifi.svg
+- Applications:
+    - Homepage:
+        href: https://home.simonjung.io/
+        description: Cluster Homepage/Service Catalog
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homepage.png
+    - Plex:
+        href: https://plex.tv
+        description: Media Server
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/plex.svg
+    - Linkding:
+        href: https://linkding.simonjung.io
+        siteMonitor: https://linkding.simonjung.io
+        description: Bookmark Manager
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/linkding.svg
+    - Transmission:
+        href: https://transmission.cluster.simonjung.io
+        siteMonitor: https://transmission.cluster.simonjung.io
+        description: Torrent Client
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/transmission.svg
