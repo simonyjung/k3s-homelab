@@ -71,7 +71,18 @@ The k3s cluster is comprised of 3 cost-effective and energy-efficient MiniPCs. T
 
 ## Repository Structure
 
-![diagram](./docs/assets/3-level-structure.png)
+![diagram|300](./docs/assets/3-level-structure.png)
+
+The repository follows a 3-level structure:
+
+Level 1 – Root Application (App-of-Apps):
+A single root YAML manifest references all ApplicationSets. Deploying this file bootstraps an empty cluster with every required application in a single step.
+
+Level 2 – ApplicationSets:
+ApplicationSets define groups of related applications for a specific environment. They let Argo CD manage multiple apps declaratively without manually creating individual Application resources.
+
+Level 3 – Base Applications:
+These are fully self-contained Kustomize or Helm templates. Each can be deployed independently to any cluster without relying on Argo CD.
 
 ```
 .
