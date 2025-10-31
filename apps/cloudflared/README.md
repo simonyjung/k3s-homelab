@@ -4,6 +4,10 @@
 
 Cloudflared provides a secure way to expose web services running in a private network to the internet, without opening up firewall ports. It creates a persistent outbound-only connection to the Cloudflare network.
 
+<div align="center">
+    <img src="../../docs/assets/cloudflare-tunnel.png" width="50%">
+</div>
+
 ## Prerequisites
 
 - A registered domain name on Cloudflare.
