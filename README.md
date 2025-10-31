@@ -73,7 +73,10 @@ The k3s cluster is comprised of 3 cost-effective and energy-efficient MiniPCs. T
 
 ## Repository Structure
 
-![diagram|300](./docs/assets/3-level-structure.png)
+<div align="center">
+    <img src="./docs/assets/3-level-structure.png" width="50%">
+</div>
+
 
 The repository follows a 3-level structure:
 
