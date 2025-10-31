@@ -6,22 +6,22 @@
 
 ### A Kubernetes Homelab Repository
 
-_... managed with ArgoCD_ 
+_... powered by K3s and ArgoCD_ 
 
 </div>
 
 <div align="center">
-    <a href="https://argo-cd.readthedocs.io/en/stable/" target="_blank" style="border:none; outline:none;">
-        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg" align="center" width="20px" height="20px"/>
+    <a href="https://argo-cd.readthedocs.io/en/stable/" target="_blank">
+        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg" align="center" width="25px" height="25px"/>
     </a>
-    <a href="https://k3s.io/" target="_blank" style="border:none; outline:none;">
-        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-k3s.svg" align="center" width="20px" height="20px"/>
+    <a href="https://k3s.io/" target="_blank">
+        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-k3s.svg" align="center" width="25px" height="25px"/>
     </a>
-    <a href="https://longhorn.io/" target="_blank" style="border:none; outline:none;">
-        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-longhorn.svg" align="center" width="20px" height="20px"/>
+    <a href="https://longhorn.io/" target="_blank">
+        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-longhorn.svg" align="center" width="25px" height="25px"/>
     </a>
-    <a href="https://developer.1password.com/docs/k8s/operator/" target="_blank" style="border:none; outline:none;">
-        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/1password.svg" align="center" width="20px" height="20px"/>
+    <a href="https://developer.1password.com/docs/k8s/operator/">
+        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/1password.svg" align="center" width="25px" height="25px"/>
     </a>
 </div>
 
@@ -32,6 +32,8 @@ _... managed with ArgoCD_
 A fully declarative, GitOps-driven homelab platform designed to emulate real-world production environments with modern DevOps and Platform Engineering best practices.
 
 This project uses an [App of Apps](https://medium.com/containers-101/how-to-structure-your-argo-cd-repositories-using-application-sets-1150e75d05b3) pattern to bootstrap an empty cluster into a fully functional, observable, and self-healing Kubernetes environment.
+
+Check out the publically available [service catalog/homepage](https://home.simonjung.io).
 
 ---
 
@@ -86,7 +88,7 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 
 ```
 .
-├── apps/
+├── apps/                  # Level 3
 │   ├── cloudflared/
 │   ├── homepage/
 │   ├── linkding/
@@ -94,14 +96,14 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 │   └── transmission/
 ├── apps-helm/
 │   └── redis/
-├── appsets/
+├── appsets/               # Level 2
 ├── docs/
 ├── infrastructure/
 ├── infrastructure-helm/
 │   ├── cert-manager/
 │   ├── longhorn-system/
 │   └── monitoring/
-└── root-argocd-app.yaml
+└── root-argocd-app.yaml   # Level 1
 ```
 
 - **apps/**: Contains Kubernetes manifests for applications deployed using Kustomize.
