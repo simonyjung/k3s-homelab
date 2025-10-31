@@ -11,17 +11,17 @@ _... managed with ArgoCD_
 </div>
 
 <div align="center">
-    <a href="https://argo-cd.readthedocs.io/en/stable/" target="_blank">
-        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg" align="center" width="20px" height="20px" style="border:none; outline:none;"/>
+    <a href="https://argo-cd.readthedocs.io/en/stable/" target="_blank" style="border:none; outline:none;">
+        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg" align="center" width="20px" height="20px"/>
     </a>
-    <a href="https://k3s.io/" target="_blank">
-        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-k3s.svg" align="center" width="20px" height="20px" style="border:none; outline:none;"/>
+    <a href="https://k3s.io/" target="_blank" style="border:none; outline:none;">
+        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-k3s.svg" align="center" width="20px" height="20px"/>
     </a>
-    <a href="https://longhorn.io/" target="_blank">
-        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-longhorn.svg" align="center" width="20px" height="20px" style="border:none; outline:none;"/>
+    <a href="https://longhorn.io/" target="_blank" style="border:none; outline:none;">
+        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-longhorn.svg" align="center" width="20px" height="20px"/>
     </a>
-    <a href="https://1password.com/developer" target="_blank">
-        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/1password.svg" align="center" width="20px" height="20px" style="border:none; outline:none;"/>
+    <a href="https://developer.1password.com/docs/k8s/operator/" target="_blank" style="border:none; outline:none;">
+        <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/1password.svg" align="center" width="20px" height="20px"/>
     </a>
 </div>
 
