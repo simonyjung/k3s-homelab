@@ -68,3 +68,33 @@ The k3s cluster is comprised of 3 cost-effective and energy-efficient MiniPCs. T
 | Ubiquiti Cloud Gateway Ultra | 1     |           |      |                    | Network management             |
 
 ---
+
+## Repository Structure
+
+```
+.
+├── apps/
+│   ├── cloudflared/
+│   ├── homepage/
+│   ├── linkding/
+│   ├── plex/
+│   └── transmission/
+├── apps-helm/
+│   └── redis/
+├── appsets/
+├── docs/
+├── infrastructure/
+├── infrastructure-helm/
+│   ├── cert-manager/
+│   ├── longhorn-system/
+│   └── monitoring/
+└── root-argocd-app.yaml
+```
+
+- **apps/**: Contains Kubernetes manifests for applications deployed using Kustomize.
+- **apps-helm/**: Contains Helm charts for applications.
+- **appsets/**: Contains ArgoCD ApplicationSets for managing applications across different environments.
+- **docs/**: Contains documentation for the project.
+- **infrastructure/**: Contains Kubernetes manifests for infrastructure components.
+- **infrastructure-helm/**: Contains Helm charts for infrastructure components.
+- **root-argocd-app.yaml**: The root ArgoCD application that bootstraps the entire cluster.
