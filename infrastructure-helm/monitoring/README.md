@@ -18,6 +18,6 @@ Grafana UI: [https://grafana.cluster.simonjung.io](https://grafana.cluster.simon
 
 Both Prometheus and Grafana are configured to use `longhorn` as the `storageClassName` for persistent storage, ensuring that data is not lost when a pod is rescheduled or terminated.
 
--   **Prometheus**: `20Gi` of persistent storage.
+-   **Prometheus**: `50Gi` of persistent storage.
 -   **Grafana**: `20Gi` of persistent storage.
 -   **Alertmanager**: `10Gi` of persistent storage.
