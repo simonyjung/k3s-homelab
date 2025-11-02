@@ -16,5 +16,3 @@ traefik:
       enabled: true
       entryPoints: [web, websecure]
       matchRule: Host(`traefik.cluster.simonjung.io`)
-  service:
-    type: ClusterIP
