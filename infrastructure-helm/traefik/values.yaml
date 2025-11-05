@@ -18,3 +18,8 @@ traefik:
       matchRule: Host(`traefik.cluster.simonjung.io`)
       tls:
         secretName: traefik-ingress-secret
+certificate:
+  secretName: traefik-ingress-secret
+  issuerRef:
+    name: cloudflare-clusterissuer
+    kind: ClusterIssuer
