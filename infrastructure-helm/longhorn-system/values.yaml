@@ -13,5 +13,5 @@ certificate:
   issuerRef:
     name: cloudflare-clusterissuer
     kind: ClusterIssuer
-    dnsNames:
-      - longhorn.cluster.simonjung.io
+  dnsNames:
+    - longhorn.cluster.simonjung.io
