@@ -15,3 +15,5 @@ certificate:
     kind: ClusterIssuer
   dnsNames:
     - longhorn.cluster.simonjung.io
+ingress:
+  host: longhorn.cluster.simonjung.io
