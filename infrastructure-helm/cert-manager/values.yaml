@@ -13,7 +13,8 @@ clusterIssuer:
     email: "admin@simonjung.io"
     server: "https://acme-v02.api.letsencrypt.org/directory"
     privateKeySecretRefName: "cloudflare-clusterissuer-account-key"
-    cloudflare:
-      apiTokenSecretRef:
-        name: "cloudflare-api-token-secret"
-        key: "api-token"
+
+cloudflare:
+  secretName: cloudflare-api-token-secret
+  key: api-token
+  itemPath: "vaults/Kubernetes/items/cloudflare-api-token"

@@ -13,5 +13,5 @@ spec:
       - dns01:
           cloudflare:
             apiTokenSecretRef:
-              name: {{.Values.clusterIssuer.acme.cloudflare.apiTokenSecretRef.name}}
-              key: {{.Values.clusterIssuer.acme.cloudflare.apiTokenSecretRef.key}}
+              name: {{.Values.cloudflare.secretName}}
+              key: {{.Values.cloudflare.key}}
