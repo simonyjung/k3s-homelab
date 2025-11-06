@@ -6,3 +6,14 @@ cert-manager:
   extraArgs:
     - --dns01-recursive-nameservers-only
     - --dns01-recursive-nameservers=1.1.1.1:53,1.0.0.1:53
+
+clusterIssuer:
+  name: "cloudflare-clusterissuer"
+  acme:
+    email: "admin@simonjung.io"
+    server: "https://acme-v02.api.letsencrypt.org/directory"
+    privateKeySecretRefName: "cloudflare-clusterissuer-account-key"
+    cloudflare:
+      apiTokenSecretRef:
+        name: "cloudflare-api-token-secret"
+        key: "api-token"
