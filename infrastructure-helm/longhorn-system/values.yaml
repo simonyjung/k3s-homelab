@@ -7,3 +7,11 @@ longhorn:
     replicas: 1
   defaultSettings:
     backupTarget: "nfs://192.168.40.118:/volume1/longhorn"
+certificate:
+  name: longhorn-ingress-certificate
+  secretName: longhorn-ingress-secret
+  issuerRef:
+    name: cloudflare-clusterissuer
+    kind: ClusterIssuer
+    dnsNames:
+      - longhorn.cluster.simonjung.io
