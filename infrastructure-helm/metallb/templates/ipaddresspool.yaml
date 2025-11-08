@@ -2,7 +2,6 @@
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
-  name: k3s-lb-pool
+  name: {{.Values.ipAddressPool.name}}
 spec:
-  addresses:
-    - 10.100.111.10-10.100.111.40
+  addresses: {{.Values.ipAddressPool.addresses}}
