@@ -273,4 +273,5 @@ certificate:
 ingress:
   host: grafana.cluster.simonjung.io
 onePasswordSecret:
-  itemPath: "vaults/Kubernetes/items/grafana-admin-credentials"
+  name: grafana-admin-credentials
+  itemPath: vaults/Kubernetes/items/grafana-admin-credentials
