@@ -260,3 +260,17 @@ kube-prometheus-stack:
 
   thanosRuler:
     enabled: false
+# Ingress and tls certificate is handled with custom values to be
+# consistent with the rest of the repository
+certificate:
+  name: grafrana-ingress-certificate
+  secretName: grafana-ingress-secret
+  issuerRef:
+    name: cloudflare-clusterissuer
+    kind: ClusterIssuer
+  dnsNames:
+    - grafana.cluster.simonjung.io
+ingress:
+  host: grafana.cluster.simonjung.io
+onePasswordSecret:
+  itemPath: "vaults/Kubernetes/items/grafana-admin-credentials"

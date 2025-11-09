@@ -7,7 +7,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
 spec:
   rules:
-    - host: grafana.cluster.simonjung.io
+    - host: {{.Values.ingress.host}}
       http:
         paths:
           - path: /
@@ -19,5 +19,5 @@ spec:
                   number: 80
   tls:
     - hosts:
-        - grafana.cluster.simonjung.io
-      secretName: grafana-ingress-secret
+        - {{.Values.ingress.host}}
+      secretName: {{.Values.certificate.secretName}}
