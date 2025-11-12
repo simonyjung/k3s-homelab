@@ -1,2 +1,7 @@
 AGENTS.md
 .DS_Store
+
+# Node
+node_modules
+package-lock.json
+package.json
