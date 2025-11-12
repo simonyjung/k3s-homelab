@@ -1,69 +1,12 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
     ":dependencyDashboard",
-    ":separateMajorReleases",
-    ":disableRateLimiting"
-  ],
-  "labels": ["dependencies"],
-  "prConcurrentLimit": 5,
-  "timezone": "America/New_York",
-  "enabledManagers": [
-    "github-actions",
-    "helm",
-    "helm-values",
-    "kubernetes",
-    "dockerfile"
-  ],
-  "separateMinorPatch": true,
-  "kubernetes": {
-    "fileMatch": [
-      "(^|/)apps/.+\\.ya?ml$",
-      "(^|/)appsets/.+\\.ya?ml$",
-      "(^|/)infrastructure/.+\\.ya?ml$",
-      "(^|/)root-argocd-app\\.ya?ml$"
-    ]
-  },
-  "helm-values": {
-    "fileMatch": [
-      "(^|/)apps-helm/.+/envs/.+/values\\.ya?ml$"
-    ]
-  },
-  "regexManagers": [
-    {
-      "fileMatch": [
-        "(^|/)apps/.+\\.ya?ml$",
-        "(^|/)infrastructure/.+\\.ya?ml$"
-      ],
-      "matchStrings": [
-        "image:\\s?(?<depName>[^:]+):(?<currentValue>[^\\s]+)"
-      ],
-      "datasourceTemplate": "docker"
-    },
-    {
-      "fileMatch": [
-        "(^|/)apps/.+/kustomization\\.ya?ml$"
-      ],
-      "matchStrings": [
-        "-\\sname:\\s(?<depName>.+)\\s+newTag:\\s(?<currentValue>.+)"
-      ],
-      "datasourceTemplate": "docker"
-    }
-  ],
-  "packageRules": [
-    {
-      "matchManagers": ["github-actions"],
-      "groupName": "GitHub Actions"
-    },
-    {
-      "matchManagers": ["helm-values", "kubernetes"],
-      "groupName": "Kubernetes manifests"
-    },
-    {
-      "matchDatasources": ["docker"] ,
-      "groupName": "Container images",
-      "schedule": ["before 4am on monday"]
-    }
+    ":semanticPrefixFixDepsChoreOthers",
+    ":ignoreModulesAndTests",
+    "group:monorepos",
+    "group:recommended",
+    "mergeConfidence:age-confidence-badges",
+    "replacements:all",
+    "workarounds:all"
   ]
 }
