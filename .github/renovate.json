@@ -8,5 +8,12 @@
     "mergeConfidence:age-confidence-badges",
     "replacements:all",
     "workarounds:all"
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["^apps/.*/.*\\.yaml$"],
+      "matchStrings": ["image: (?<depName>.*?):(?<currentValue>.*)"],
+      "datasourceTemplate": "docker"
+    }
   ]
 }
