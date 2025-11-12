@@ -1,0 +1,36 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":separateMajorReleases",
+    ":disableRateLimiting"
+  ],
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 5,
+  "timezone": "America/New_York",
+  "enabledManagers": [
+    "github-actions",
+    "helm-values",
+    "helmfile",
+    "kubernetes",
+    "dockerfile",
+    "ansible"
+  ],
+  "separateMinorPatch": true,
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "matchManagers": ["helm-values", "helmfile", "kubernetes"],
+      "groupName": "Kubernetes manifests"
+    },
+    {
+      "matchDatasources": ["docker"] ,
+      "groupName": "Container images",
+      "schedule": ["before 4am on monday"]
+    }
+  ]
+}
