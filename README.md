@@ -59,6 +59,12 @@ Goals:
 
 ---
 
+## Dependency Management
+
+This repository uses [Renovate](https://github.com/renovatebot/renovate) to automatically update dependencies of Docker images, and Helm charts. The configuration is managed in the [`.github/renovate.json`](./.github/renovate.json) file.
+
+---
+
 ## Hardware
 
 The k3s cluster is comprised of 3 cost-effective and energy-efficient MiniPCs. The home network is managed by a Ubiquiti Cloud Gateway Ultra. Off-cluster storage for media is provided by a Synology NAS.
