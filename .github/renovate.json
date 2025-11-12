@@ -11,20 +11,53 @@
   "timezone": "America/New_York",
   "enabledManagers": [
     "github-actions",
+    "helm",
     "helm-values",
-    "helmfile",
     "kubernetes",
-    "dockerfile",
-    "ansible"
+    "dockerfile"
   ],
   "separateMinorPatch": true,
+  "kubernetes": {
+    "fileMatch": [
+      "(^|/)apps/.+\\.ya?ml$",
+      "(^|/)appsets/.+\\.ya?ml$",
+      "(^|/)infrastructure/.+\\.ya?ml$",
+      "(^|/)root-argocd-app\\.ya?ml$"
+    ]
+  },
+  "helm-values": {
+    "fileMatch": [
+      "(^|/)apps-helm/.+/envs/.+/values\\.ya?ml$"
+    ]
+  },
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "(^|/)apps/.+\\.ya?ml$",
+        "(^|/)infrastructure/.+\\.ya?ml$"
+      ],
+      "matchStrings": [
+        "image:\\s?(?<depName>[^:]+):(?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "fileMatch": [
+        "(^|/)apps/.+/kustomization\\.ya?ml$"
+      ],
+      "matchStrings": [
+        "-\\sname:\\s(?<depName>.+)\\s+newTag:\\s(?<currentValue>.+)"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
   "packageRules": [
     {
       "matchManagers": ["github-actions"],
       "groupName": "GitHub Actions"
     },
     {
-      "matchManagers": ["helm-values", "helmfile", "kubernetes"],
+      "matchManagers": ["helm-values", "kubernetes"],
       "groupName": "Kubernetes manifests"
     },
     {
