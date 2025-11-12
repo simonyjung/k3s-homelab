@@ -9,10 +9,15 @@
     "replacements:all",
     "workarounds:all"
   ],
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": ["^apps/.*/.*\\.yaml$"],
-      "matchStrings": ["image: (?<depName>.*?):(?<currentValue>.*)"],
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^apps/.*/.*\\.yaml$/"
+      ],
+      "matchStrings": [
+        "image: (?<depName>.*?):(?<currentValue>.*)"
+      ],
       "datasourceTemplate": "docker"
     }
   ]
