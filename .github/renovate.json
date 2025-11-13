@@ -20,5 +20,12 @@
       ],
       "datasourceTemplate": "docker"
     }
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["lscr.io/linuxserver/transmission"],
+      "versioning": "semver"
+    }
   ]
 }

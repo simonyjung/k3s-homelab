@@ -15,7 +15,6 @@ spec:
     spec:
       containers:
         - name: transmission
-          # renovate: datasource=docker depName=lscr.io/linuxserver/transmission versioning=semver
           image: lscr.io/linuxserver/transmission:4.0.6
           env:
             - name: PUID
