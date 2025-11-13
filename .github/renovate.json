@@ -25,7 +25,8 @@
     {
       "matchDatasources": ["docker"],
       "matchPackageNames": ["lscr.io/linuxserver/transmission"],
-      "versioning": "semver"
+      "versioning": "semver",
+      "allowedVersions": "<8"
     }
   ]
 }
