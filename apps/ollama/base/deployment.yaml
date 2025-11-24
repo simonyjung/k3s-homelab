@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      volumes:
+        - name: ollama-volume
+          persistentVolumeClaim:
+            claimName: ollama-pvc
+      containers:
+        - name: ollama
+          image: ollama/ollama:0.13.0-rocm
+          env:
+            - name: OLLAMA_FLASH_ATTENTION
+              value: "true"
+            - name: OLLAMA_DEBUG
+              value: "0"
+            - name: OLLAMA_CONTEXT_LENGTH
+              value: "8192"
+          ports:
+            - containerPort: 11434
+          volumeMounts:
+            - name: ollama-volume
+              mountPath: /root/.ollama
+            - name: dev-dri
+              mountPath: /dev/dri
+            - name: dev-kfd
+              mountPath: /dev/kfd
+          securityContext:
+            privileged: true
+            runAsGroup: 108

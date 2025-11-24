@@ -58,11 +58,37 @@ sudo cat /var/lib/rancher/k3s/server/node-token
     sudo systemctl disable firewalld --now
     ```
 
-5.  **Install K3s Agent**: Run the official K3s installation script, substituting `<server_ip>` and `<node_token>` with the values gathered previously.
+5. **Disable Swap**: 
+
+    ```bash
+    sudo vim /etc/fstab
+
+    # comment out lines that look like this:
+    # /dev/mapper/fedora-swap none swap defaults 0 0
+    # UUID=xxxx none swap sw 0 0
+    ```
+
+    or if zram swap is used. Check with `swapon --show`
+
+    ```bash
+    sudo swapoff -a
+    sudo dnf remove zram-generator-defaults
+    ```
+
+6.  **Install K3s Agent**: Run the official K3s installation script, substituting `<server_ip>` and `<node_token>` with the values gathered previously.
 
     ```bash
     curl -sfL https://get.k3s.io | K3S_URL=https://<server_ip>:6443 K3S_TOKEN=<node_token> sh -
     ```
+
+## For Framework Desktop Nodes
+
+1. Add user to render and video groups.
+
+```bash
+sudo usermod -aG render,video fedora
+sudo reboot
+```
 
 ## Additional Resources
 
