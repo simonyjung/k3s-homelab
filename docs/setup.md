@@ -78,7 +78,11 @@ sudo cat /var/lib/rancher/k3s/server/node-token
 6.  **Install K3s Agent**: Run the official K3s installation script, substituting `<server_ip>` and `<node_token>` with the values gathered previously.
 
     ```bash
+    # CPU Node
     curl -sfL https://get.k3s.io | K3S_URL=https://<server_ip>:6443 K3S_TOKEN=<node_token> sh -
+
+    # Framework Desktop
+    curl -sfL https://get.k3s.io | K3S_URL=https://<server_ip>:6443 K3S_TOKEN=<node_token> --node-label="gpu-amd" sh -
     ```
 
 ## For Framework Desktop Nodes
@@ -90,6 +94,8 @@ sudo usermod -aG render,video fedora
 sudo reboot
 ```
 
+
 ## Additional Resources
 
 - [K3s Installation Requirements](https://docs.k3s.io/installation/requirements)
+- [Using a Framework Desktop for local AI](https://frame.work/blog/using-a-framework-desktop-for-local-ai)

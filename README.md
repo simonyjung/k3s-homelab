@@ -71,8 +71,8 @@ The k3s cluster is comprised of 3 cost-effective and energy-efficient MiniPCs. T
 
 | Device                       | Count | Disk Size | RAM  | Operating System   | Notes                          |
 | ---------------------------- | ----- | --------- | ---- | ------------------ | ------------------------------ |
-| GMKtec Mini PC NucBox G5 N97 | 3     | 256GB     | 12GB | Fedora Server 42   | k3s master + worker nodes      |
-| Framework Desktop            | 1     | 1TB       | 32GB | Fedora Server 43   | gpu worker node                |
+| GMKtec Mini PC NucBox G5 N97 | 3     | 256GB     | 12GB | Fedora Server 43   | k3s master + worker nodes      |
+| Framework Desktop            | 1     | 1TB       | 32GB | Fedora Server 43   | GPU worker node                |
 | Synology NAS - DS923+        | 1     | 24TB      | 4GB  |                    | NFS volumes for existing media |
 | Ubiquiti Cloud Gateway Ultra | 1     |           |      |                    | Network management             |
 
