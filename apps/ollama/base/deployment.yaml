@@ -19,6 +19,14 @@ spec:
         - name: ollama-volume
           persistentVolumeClaim:
             claimName: ollama-pvc
+        - name: dev-kfd
+          hostPath:
+            path: /dev/kfd
+            type: CharDevice
+        - name: dev-dri
+          hostPath:
+            path: /dev/dri
+            type: Directory
       nodeSelector:
         gpu: amd
       containers:
