@@ -1,0 +1,21 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transmission
+spec:
+  template:
+    spec:
+      containers:
+        - name: transmission
+          env:
+            - name: USER
+              valueFrom:
+                secretKeyRef:
+                  name: transmission-production-secret
+                  key: username
+            - name: PASS
+              valueFrom:
+                secretKeyRef:
+                  name: transmission-production-secret
+                  key: password
