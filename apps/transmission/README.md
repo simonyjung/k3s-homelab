@@ -52,3 +52,7 @@ To access the Transmission service from outside your local network, you will nee
     -   **Protocol:** TCP/UDP
 
 Replace `[IP_of_Kubernetes_Node]` with the IP address of one of your Kubernetes cluster nodes.
+
+## Authentication
+
+The production deployment of Transmission requires a password to login to the web ui. The credentials can be found in 1Password under `transmission-production`.
