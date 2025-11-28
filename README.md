@@ -39,7 +39,7 @@ Check out the publically available [service catalog/homepage](https://home.simon
 
 ## Overview
 
-This homelab serves as both a learning platform and a production environment for my personal use, demonstrating the management of Kubernetes clusters through GitOps workflows.
+This homelab serves as both a learning platform and a production environment for my personal use.
 
 Goals:
 
