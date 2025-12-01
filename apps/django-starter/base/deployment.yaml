@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: django-starter
+  name: django-starter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: django-starter
+  template:
+    metadata:
+      labels:
+        app: django-starter
+    spec:
+      containers:
+        - image: simonjungdocker/django-starter:0.0.1
+          name: django-starter
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 25m
+            limits:
+              memory: 768Mi
+              cpu: 100m
