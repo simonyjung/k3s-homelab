@@ -6,3 +6,6 @@ resources:
   - ../../base
   - ingress.yaml
   - certificate.yaml
+
+patchesStrategicMerge:
+  - deployment.yaml
