@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: django-starter-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: django-starter.cluster.simonjung.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: django-starter
+                port:
+                  number: 8000
+  tls:
+    - hosts:
+        - django-starter.cluster.simonjung.io
+      secretName: django-starter-ingress-secret
