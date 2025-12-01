@@ -1,0 +1,18 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: django-starter
+  name: django-starter
+spec:
+  template:
+    metadata:
+      labels:
+        app: django-starter
+    spec:
+      containers:
+        - name: django-starter
+          env:
+            - name: HOST_NAME
+              value: "django-starter.cluster.simonjung.io"
