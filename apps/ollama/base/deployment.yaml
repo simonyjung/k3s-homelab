@@ -31,7 +31,7 @@ spec:
         gpu: amd
       containers:
         - name: ollama
-          image: ollama/ollama:0.13.0-rocm
+          image: ollama/ollama:0.13.1-rocm
           env:
             - name: OLLAMA_FLASH_ATTENTION
               value: "true"
