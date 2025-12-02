@@ -17,7 +17,7 @@ spec:
         app: django-starter
     spec:
       containers:
-        - image: simonjungdocker/django-starter:0.0.3
+        - image: simonjungdocker/django-starter:0.0.4
           name: django-starter
           ports:
             - name: http
