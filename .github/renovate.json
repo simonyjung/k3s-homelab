@@ -19,6 +19,18 @@
         "image: (?<depName>.*?):(?<currentValue>.*)"
       ],
       "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^infrastructure/system-upgrade/plans\\.yaml$/"
+      ],
+      "matchStrings": [
+        "version: (?<currentValue>v\\d+\\.\\d+\\.\\d+\\+k3s\\d+)"
+      ],
+      "depNameTemplate": "k3s-io/k3s",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\+k3s(?<build>\\d+)$"
     }
   ],
   "packageRules": [
@@ -27,6 +39,12 @@
       "matchPackageNames": ["lscr.io/linuxserver/transmission"],
       "versioning": "semver",
       "allowedVersions": "<8"
+    },
+    {
+      "description": "k8s control planes cannot skip minors: one PR per minor hop, in order",
+      "matchDepNames": ["k3s-io/k3s"],
+      "separateMultipleMinor": true,
+      "commitMessageTopic": "k3s"
     }
   ]
 }
