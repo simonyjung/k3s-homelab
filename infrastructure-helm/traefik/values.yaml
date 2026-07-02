@@ -16,6 +16,8 @@ traefik:
       enabled: true
       entryPoints: [web, websecure]
       matchRule: Host(`traefik.cluster.simonjung.io`)
+      middlewares:
+        - name: dashboard-auth
       tls:
         secretName: traefik-ingress-secret
 certificate:
@@ -23,3 +25,7 @@ certificate:
   issuerRef:
     name: cloudflare-clusterissuer
     kind: ClusterIssuer
+# htpasswd credentials for the basic-auth middleware guarding the dashboard
+dashboardAuth:
+  secretName: dashboard-basic-auth
+  itemPath: vaults/Kubernetes/items/dashboard-basic-auth

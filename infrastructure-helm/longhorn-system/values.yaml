@@ -42,3 +42,7 @@ recurringJobs:
     cron: "0 0 * * *"
     retain: 0
     concurrency: 1
+# htpasswd credentials for the basic-auth middleware guarding the UI
+dashboardAuth:
+  secretName: dashboard-basic-auth
+  itemPath: vaults/Kubernetes/items/dashboard-basic-auth
