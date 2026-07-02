@@ -12,7 +12,7 @@ spec:
         repoURL: git@github.com:simonyjung/k3s-homelab.git
         revision: HEAD
         directories:
-          - path: infrastructure/*/
+          - path: infrastructure/*
   template:
     metadata:
       name: '{{index .path.segments 1}}'
