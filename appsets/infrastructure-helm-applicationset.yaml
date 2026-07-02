@@ -35,6 +35,9 @@ spec:
       syncPolicy:
         syncOptions:
           - CreateNamespace=true
+          # Server-side apply: required for charts with CRDs too large for the
+          # client-side last-applied-configuration annotation (kube-prometheus-stack)
+          - ServerSideApply=true
         # automated sync by default retries failed attempts 5 times
         # with following delays between attempts ( 5s, 10s, 20s, 40s, 80s )
         # retry controlled using `retry` field.
