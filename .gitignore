@@ -2,6 +2,10 @@ AGENTS.md
 CLAUDE.md
 .DS_Store
 
+# Helm build artifacts (charts are re-fetched via `helm dependency build`)
+Chart.lock
+**/charts/*.tgz
+
 # Node
 node_modules
 package-lock.json
