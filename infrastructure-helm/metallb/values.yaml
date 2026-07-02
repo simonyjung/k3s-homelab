@@ -1,5 +1,8 @@
 ---
+# L2 mode: the pool MUST be inside the LAN subnet (10.0.10.0/24) so
+# clients can ARP for the VIPs, and MUST stay outside the UCG Ultra's
+# DHCP scope. See docs/load-balancing.md.
 ipAddressPool:
   name: k3s-lb-pool
   addresses:
-    - 10.100.111.10-10.100.111.40
+    - 10.0.10.200-10.0.10.210

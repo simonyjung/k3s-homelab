@@ -1,5 +1,10 @@
 ---
 traefik:
+  # Pin the LAN entrypoint VIP; *.cluster.simonjung.io points here.
+  # See docs/load-balancing.md.
+  service:
+    annotations:
+      metallb.io/loadBalancerIPs: 10.0.10.200
   ports:
     web:
       http:
