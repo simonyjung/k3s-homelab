@@ -127,7 +127,7 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 - **apps/**: Kubernetes manifests for applications deployed using Kustomize (`base/` + `envs/<env>/` overlays).
 - **apps-helm/**: Helm umbrella charts for applications (currently empty; recreated automatically when a chart is added).
 - **appsets/**: ArgoCD ApplicationSets that auto-discover the directories above.
-- **docs/**: Documentation, including [upgrades](./docs/upgrades.md) and [backup/restore](./docs/restore.md).
+- **docs/**: Documentation, including [upgrades](./docs/upgrades.md), [backup/restore](./docs/restore.md), and [dashboard auth](./docs/dashboard-auth.md).
 - **infrastructure/**: Plain-manifest (Kustomize) infrastructure components, e.g. the K3s system-upgrade-controller.
 - **infrastructure-helm/**: Helm umbrella charts for infrastructure components, including self-managed Argo CD and the 1Password operator.
 - **root-argocd-app.yaml**: The root ArgoCD application that bootstraps the entire cluster.
