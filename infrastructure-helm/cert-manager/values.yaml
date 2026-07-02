@@ -6,6 +6,12 @@ cert-manager:
   extraArgs:
     - --dns01-recursive-nameservers-only
     - --dns01-recursive-nameservers=1.1.1.1:53,1.0.0.1:53
+  # Expose controller metrics to the monitoring stack (certificate
+  # expiry timestamps, ready status, ACME renewals)
+  prometheus:
+    enabled: true
+    servicemonitor:
+      enabled: true
 
 clusterIssuer:
   name: "cloudflare-clusterissuer"
