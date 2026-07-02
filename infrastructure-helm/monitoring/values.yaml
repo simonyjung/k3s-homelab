@@ -52,7 +52,46 @@ kube-prometheus-stack:
     fullnameOverride: alertmanager
     ingress:
       enabled: false
+    ## Alerts go to Pushover. Credentials come from the
+    ## pushover-alertmanager secret (1Password operator) mounted via
+    ## alertmanagerSpec.secrets - only file references live in git.
+    config:
+      route:
+        receiver: pushover
+        group_by: ["alertname", "namespace"]
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 12h
+        routes:
+          - receiver: "null"
+            matchers:
+              - alertname = "Watchdog"
+          - receiver: "null"
+            matchers:
+              - severity = "info"
+      receivers:
+        - name: "null"
+        - name: pushover
+          pushover_configs:
+            - user_key_file: /etc/alertmanager/secrets/pushover-alertmanager/user-key
+              token_file: /etc/alertmanager/secrets/pushover-alertmanager/api-token
+              send_resolved: true
+      # Standard kube-prometheus-stack inhibitions, preserved because
+      # setting config replaces the chart default wholesale
+      inhibit_rules:
+        - source_matchers: ["severity = critical"]
+          target_matchers: ["severity = warning"]
+          equal: ["namespace", "alertname"]
+        - source_matchers: ["severity = warning"]
+          target_matchers: ["severity = info"]
+          equal: ["namespace", "alertname"]
+        - source_matchers: ["alertname = InfoInhibitor"]
+          target_matchers: ["severity = info"]
+          equal: ["namespace"]
+        - target_matchers: ["alertname = InfoInhibitor"]
     alertmanagerSpec:
+      secrets:
+        - pushover-alertmanager
       storage:
         volumeClaimTemplate:
           spec:
@@ -275,3 +314,6 @@ ingress:
 onePasswordSecret:
   name: grafana-admin-credentials
   itemPath: vaults/Kubernetes/items/grafana-admin-credentials
+onePasswordSecretPushover:
+  name: pushover-alertmanager
+  itemPath: vaults/Kubernetes/items/pushover-alertmanager
