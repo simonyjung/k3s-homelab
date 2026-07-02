@@ -54,6 +54,7 @@ Goals:
 - GitOps Automation - ArgoCD continously reconciles desired vs live state.
 - Zero-Trust Networking - Cloudflare Tunnels to expose services without port forwarding.
 - Resilient Storage - Longhorn provides replication and snapshot recovery.
+- Off-cluster Backups - nightly incremental Longhorn backups to the NAS with bounded retention; restore procedures in [docs/restore.md](./docs/restore.md).
 - External Secrets - 1Password Operator manages Kubernetes secrets securely.
 - Observability - Prometheus and Grafana provide system-level insights.
 
