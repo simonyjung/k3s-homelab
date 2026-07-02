@@ -1,10 +1,12 @@
 ---
 extends: default
 
-# Vendored third-party manifests are not held to local lint rules
+# Files that are not plain YAML or not ours are excluded from linting
 ignore: |
   infrastructure/system-upgrade/crd.yaml
   infrastructure/system-upgrade/system-upgrade-controller.yaml
+  # helm templates with block-level control flow are not parseable YAML
+  infrastructure-helm/longhorn-system/templates/recurringjobs.yaml
 
 rules:
   # 120 chars should be enough, but don't fail if a line is longer
