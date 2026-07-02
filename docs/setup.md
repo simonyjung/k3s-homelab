@@ -81,8 +81,9 @@ sudo cat /var/lib/rancher/k3s/server/node-token
     # CPU Node
     curl -sfL https://get.k3s.io | K3S_URL=https://<server_ip>:6443 K3S_TOKEN=<node_token> sh -
 
-    # Framework Desktop
-    curl -sfL https://get.k3s.io | K3S_URL=https://<server_ip>:6443 K3S_TOKEN=<node_token> --node-label="gpu-amd" sh -
+    # Framework Desktop (GPU node) - extra args go after `sh -s -`;
+    # the gpu=amd label is what GPU workloads' nodeSelectors match on
+    curl -sfL https://get.k3s.io | K3S_URL=https://<server_ip>:6443 K3S_TOKEN=<node_token> sh -s - --node-label "gpu=amd"
     ```
 
 ## For Framework Desktop Nodes

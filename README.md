@@ -63,6 +63,10 @@ Goals:
 
 This repository uses [Renovate](https://github.com/renovatebot/renovate) to automatically update dependencies of Docker images, and Helm charts. The configuration is managed in the [`.github/renovate.json`](./.github/renovate.json) file.
 
+### Kubernetes updates
+
+Renovate also tracks [K3s releases](https://github.com/k3s-io/k3s/releases) and raises a PR when a new version is available, by watching the `version:` fields in [`infrastructure/system-upgrade/plans.yaml`](./infrastructure/system-upgrade/plans.yaml). Merging the PR **is** the cluster upgrade: Argo CD syncs the updated upgrade plans and the [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) rolls the new K3s version across the nodes (control plane first, then agents one at a time). Because Kubernetes control planes cannot skip minor versions, Renovate opens one PR per minor — merge them in order, letting the cluster settle between hops. See [docs/upgrades.md](./docs/upgrades.md) for the full procedure.
+
 ---
 
 ## Hardware
