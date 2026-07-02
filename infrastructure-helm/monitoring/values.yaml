@@ -263,7 +263,7 @@ kube-prometheus-stack:
 # Ingress and tls certificate is handled with custom values to be
 # consistent with the rest of the repository
 certificate:
-  name: grafrana-ingress-certificate
+  name: grafana-ingress-certificate
   secretName: grafana-ingress-secret
   issuerRef:
     name: cloudflare-clusterissuer

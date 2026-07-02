@@ -1,6 +1,6 @@
 ---
 apiVersion: v2
-name: montioring
+name: monitoring
 description: An Umbrella helm chart for monitoring using prometheus and grafana
 type: application
 version: 0.1.0
