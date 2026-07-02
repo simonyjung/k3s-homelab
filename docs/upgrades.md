@@ -82,10 +82,10 @@ uncordoned automatically when their upgrade job succeeds.
   infrastructure-helm ApplicationSet (required pairing with
   `ServerSideApply=true`). If an app is stuck OutOfSync right after an
   upgrade with no real drift, suspect this class of problem.
-- **Node powered off during an upgrade** (`amleyg00` is sometimes off): its
-  plan job simply waits; the node upgrades when it next boots. The other
-  nodes are not blocked (server plan runs first regardless; agent plan
-  processes nodes it can reach).
+- **Node unreachable during an upgrade:** its plan job simply waits; the
+  node upgrades when it next comes back. The other nodes are not blocked
+  (server plan runs first regardless; agent plan processes nodes it can
+  reach).
 
 ## Upgrading the controller itself
 
