@@ -6,6 +6,9 @@ name: CI
       - '*.md'
     branches:
       - main
+  pull_request:
+    paths-ignore:
+      - '*.md'
   schedule:
     - cron: "0 5 * * 2"
 
@@ -29,3 +32,33 @@ jobs:
       - name: Lint code.
         run: |
           yamllint .
+
+  validate:
+    name: Validate rendering
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v7
+
+      - name: Build Kustomize overlays.
+        run: |
+          for dir in apps/*/envs/*/; do
+            echo "::group::${dir}"
+            kustomize build "${dir}" > /dev/null
+            echo "::endgroup::"
+          done
+
+      - name: Render Helm charts.
+        run: |
+          for chart in apps-helm/* infrastructure-helm/*; do
+            echo "::group::${chart}"
+            helm dependency build "${chart}"
+            if [ -d "${chart}/envs" ]; then
+              for values in "${chart}"/envs/*/values.yaml; do
+                helm template "${chart}" -f "${values}" > /dev/null
+              done
+            else
+              helm template "${chart}" -f "${chart}/values.yaml" > /dev/null
+            fi
+            echo "::endgroup::"
+          done
