@@ -1,16 +1,28 @@
 ---
-# Mirrors the pre-existing hand-installed release (argo-cd 8.5.10,
-# release name "argocd") so ArgoCD adopts itself without drift.
 argo-cd:
+  global:
+    domain: argocd.cluster.simonjung.io
+    # Chart 10.x flips networkPolicy creation on by default; keep off until
+    # the policies are reviewed deliberately (k3s enforces NetworkPolicy)
+    networkPolicy:
+      create: false
+  configs:
+    params:
+      # Serve plain HTTP behind Traefik's TLS termination (standard
+      # pattern for TLS-terminating ingress)
+      server.insecure: true
   server:
     service:
-      # Preserve the out-of-band NodePort setup used to reach the UI
-      # (was changed from the chart-default ClusterIP on the live svc)
+      # Legacy NodePort UI access; retired once the ingress is verified
       type: NodePort
       nodePortHttp: 31362
       nodePortHttps: 31910
-  # Chart 10.x flips networkPolicy creation on by default; keep off until
-  # the policies are reviewed deliberately (k3s enforces NetworkPolicy)
-  global:
-    networkPolicy:
-      create: false
+    certificate:
+      enabled: true
+      issuer:
+        kind: ClusterIssuer
+        name: cloudflare-clusterissuer
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      tls: true
