@@ -12,11 +12,6 @@ argo-cd:
       # pattern for TLS-terminating ingress)
       server.insecure: true
   server:
-    service:
-      # Legacy NodePort UI access; retired once the ingress is verified
-      type: NodePort
-      nodePortHttp: 31362
-      nodePortHttps: 31910
     certificate:
       enabled: true
       issuer:

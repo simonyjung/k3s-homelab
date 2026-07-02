@@ -1,8 +1,8 @@
 ---
 - Infrastructure:
     - ArgoCD:
-        href: http://10.0.10.20:31362/
-        ping: http://10.0.10.20:31362/
+        href: https://argocd.cluster.simonjung.io
+        siteMonitor: https://argocd.cluster.simonjung.io
         description: GitOps CD
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg
     - Grafana:
