@@ -1,0 +1,11 @@
+---
+# Mirrors the pre-existing hand-installed release (argo-cd 8.5.10,
+# release name "argocd") so ArgoCD adopts itself without drift.
+argo-cd:
+  server:
+    service:
+      # Preserve the out-of-band NodePort setup used to reach the UI
+      # (was changed from the chart-default ClusterIP on the live svc)
+      type: NodePort
+      nodePortHttp: 31362
+      nodePortHttps: 31910
