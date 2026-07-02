@@ -24,6 +24,15 @@ spec:
           image: sissbruecker/linkding:1.45.0
           ports:
             - containerPort: 9090
+          # Gate traffic until Django has migrated/started (Recreate
+          # strategy restarts on every image bump)
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9090
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
           volumeMounts:
             - name: linkding-volume
               mountPath: /etc/linkding/data

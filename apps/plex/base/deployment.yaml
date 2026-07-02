@@ -45,6 +45,30 @@ spec:
             - name: http
               containerPort: 32400
               protocol: TCP
+          # First boot after an image bump can be slow (db migrations,
+          # library housekeeping) - give it up to 5 minutes
+          startupProbe:
+            httpGet:
+              path: /identity
+              port: 32400
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /identity
+              port: 32400
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          # Conservative on purpose: library scans can make Plex slow to
+          # answer; require ~2 minutes of failures before a restart
+          livenessProbe:
+            httpGet:
+              path: /identity
+              port: 32400
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 4
           volumeMounts:
             - name: config
               mountPath: /config

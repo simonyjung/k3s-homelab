@@ -29,6 +29,18 @@ spec:
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: home.simonjung.io
+          # Host header must match HOMEPAGE_ALLOWED_HOSTS or the app
+          # answers 400
+          readinessProbe:
+            httpGet:
+              path: /api/healthcheck
+              port: 3000
+              httpHeaders:
+                - name: Host
+                  value: home.simonjung.io
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
           volumeMounts:
             - mountPath: /app/config/custom.js
               name: homepage-config

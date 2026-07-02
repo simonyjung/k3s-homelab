@@ -28,6 +28,22 @@ spec:
             - containerPort: 51413
             - containerPort: 51413
               protocol: UDP
+          # TCP probes: the web UI sits behind basic auth, so httpGet
+          # would always see 401
+          readinessProbe:
+            tcpSocket:
+              port: 9091
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          # Conservative: verifying a large torrent can make the daemon
+          # sluggish; require ~2 minutes of failures before a restart
+          livenessProbe:
+            tcpSocket:
+              port: 9091
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 4
           volumeMounts:
             - name: config
               mountPath: /config
