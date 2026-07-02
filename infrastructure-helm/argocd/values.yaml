@@ -9,3 +9,8 @@ argo-cd:
       type: NodePort
       nodePortHttp: 31362
       nodePortHttps: 31910
+  # Chart 10.x flips networkPolicy creation on by default; keep off until
+  # the policies are reviewed deliberately (k3s enforces NetworkPolicy)
+  global:
+    networkPolicy:
+      create: false
