@@ -1,0 +1,17 @@
+---
+connect:
+  connect:
+    serviceAccount:
+      create: true
+    # Existing secrets in this namespace, created manually - never in git.
+    # op-credentials holds 1password-credentials.json for the Connect server.
+    credentialsName: op-credentials
+    credentialsKey: 1password-credentials.json
+  operator:
+    create: true
+    # Watches all namespaces (empty list = cluster-wide)
+    watchNamespace: []
+    pollingInterval: 600
+    token:
+      name: onepassword-token
+      key: token

@@ -1,0 +1,11 @@
+---
+apiVersion: v2
+name: 1password
+description: An Umbrella helm chart for 1Password Connect server and operator
+type: application
+version: 0.1.0
+appVersion: "1.0"
+dependencies:
+  - name: connect
+    version: 2.4.1
+    repository: https://1password.github.io/connect-helm-charts
