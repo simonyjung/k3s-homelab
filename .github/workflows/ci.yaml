@@ -42,7 +42,7 @@ jobs:
 
       - name: Build Kustomize overlays.
         run: |
-          for dir in apps/*/envs/*/; do
+          for dir in apps/*/envs/*/ infrastructure/*/; do
             [ -d "${dir}" ] || continue
             echo "::group::${dir}"
             kustomize build "${dir}" > /dev/null

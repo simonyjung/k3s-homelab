@@ -103,28 +103,31 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 
 ```
 .
-├── apps/                  # Level 3
-│   ├── cloudflared/
+├── apps/                  # Level 3 (Kustomize apps)
+│   ├── django-starter/
 │   ├── homepage/
 │   ├── linkding/
 │   ├── plex/
 │   └── transmission/
-├── apps-helm/
-│   └── redis/
 ├── appsets/               # Level 2
 ├── docs/
-├── infrastructure/
-├── infrastructure-helm/
+├── infrastructure/        # Kustomize infrastructure (plain manifests)
+│   └── system-upgrade/
+├── infrastructure-helm/   # Helm umbrella charts for infrastructure
+│   ├── 1password/
+│   ├── argocd/
 │   ├── cert-manager/
 │   ├── longhorn-system/
-│   └── monitoring/
+│   ├── metallb/
+│   ├── monitoring/
+│   └── traefik/
 └── root-argocd-app.yaml   # Level 1
 ```
 
-- **apps/**: Contains Kubernetes manifests for applications deployed using Kustomize.
-- **apps-helm/**: Contains Helm charts for applications.
-- **appsets/**: Contains ArgoCD ApplicationSets for managing applications across different environments.
-- **docs/**: Contains documentation for the project.
-- **infrastructure/**: Contains Kubernetes manifests for infrastructure components.
-- **infrastructure-helm/**: Contains Helm charts for infrastructure components.
+- **apps/**: Kubernetes manifests for applications deployed using Kustomize (`base/` + `envs/<env>/` overlays).
+- **apps-helm/**: Helm umbrella charts for applications (currently empty; recreated automatically when a chart is added).
+- **appsets/**: ArgoCD ApplicationSets that auto-discover the directories above.
+- **docs/**: Documentation, including [upgrades](./docs/upgrades.md) and [backup/restore](./docs/restore.md).
+- **infrastructure/**: Plain-manifest (Kustomize) infrastructure components, e.g. the K3s system-upgrade-controller.
+- **infrastructure-helm/**: Helm umbrella charts for infrastructure components, including self-managed Argo CD and the 1Password operator.
 - **root-argocd-app.yaml**: The root ArgoCD application that bootstraps the entire cluster.
