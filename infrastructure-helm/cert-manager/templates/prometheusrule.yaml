@@ -1,0 +1,33 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cert-manager-certificates
+spec:
+  groups:
+    - name: cert-manager-certificates
+      rules:
+        - alert: CertificateNotReady
+          expr: certmanager_certificate_ready_status{condition="False"} == 1
+          for: 30m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Certificate {{`{{ $labels.namespace }}/{{ $labels.name }}`}} has been not Ready for 30m"
+            description: "cert-manager cannot issue or renew this certificate; check the Certificate and Order/Challenge resources."
+        - alert: CertificateExpiringSoon
+          expr: (certmanager_certificate_expiration_timestamp_seconds - time()) < 21 * 86400
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Certificate {{`{{ $labels.namespace }}/{{ $labels.name }}`}} expires in under 21 days"
+            description: "Renewal should happen ~30 days before expiry; it appears to be failing."
+        - alert: CertificateExpiryCritical
+          expr: (certmanager_certificate_expiration_timestamp_seconds - time()) < 7 * 86400
+          for: 1h
+          labels:
+            severity: critical
+          annotations:
+            summary: "Certificate {{`{{ $labels.namespace }}/{{ $labels.name }}`}} expires in under 7 days"
+            description: "Renewal has been failing for weeks; users will see TLS errors when it lapses."

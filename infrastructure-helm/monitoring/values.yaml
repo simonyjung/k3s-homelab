@@ -288,6 +288,11 @@ kube-prometheus-stack:
   prometheus:
     enabled: true
     prometheusSpec:
+      # Discover ServiceMonitors/PrometheusRules from all releases and
+      # namespaces (e.g. cert-manager), not only those labeled with this
+      # chart's release
+      serviceMonitorSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
       storageSpec:
         volumeClaimTemplate:
           spec:
