@@ -43,6 +43,7 @@ jobs:
       - name: Build Kustomize overlays.
         run: |
           for dir in apps/*/envs/*/; do
+            [ -d "${dir}" ] || continue
             echo "::group::${dir}"
             kustomize build "${dir}" > /dev/null
             echo "::endgroup::"
@@ -50,7 +51,9 @@ jobs:
 
       - name: Render Helm charts.
         run: |
+          # -d guard: skips unmatched globs (e.g. apps-helm/ empty) and stray files
           for chart in apps-helm/* infrastructure-helm/*; do
+            [ -d "${chart}" ] || continue
             echo "::group::${chart}"
             helm dependency build "${chart}"
             if [ -d "${chart}/envs" ]; then
