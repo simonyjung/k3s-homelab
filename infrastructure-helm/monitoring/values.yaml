@@ -10,7 +10,7 @@ kube-prometheus-stack:
     create: true
     rules:
       alertmanager: true
-      etcd: true
+      etcd: false
       configReloaders: true
       general: true
       k8sContainerCpuUsageSecondsTotal: true
@@ -24,17 +24,17 @@ kube-prometheus-stack:
       kubeApiserverBurnrate: true
       kubeApiserverHistogram: true
       kubeApiserverSlos: true
-      kubeControllerManager: true
+      kubeControllerManager: false
       kubelet: true
-      kubeProxy: true
+      kubeProxy: false
       kubePrometheusGeneral: true
       kubePrometheusNodeRecording: true
       kubernetesApps: true
       kubernetesResources: true
       kubernetesStorage: true
       kubernetesSystem: true
-      kubeSchedulerAlerting: true
-      kubeSchedulerRecording: true
+      kubeSchedulerAlerting: false
+      kubeSchedulerRecording: false
       kubeStateMetrics: true
       network: true
       node: true
@@ -173,7 +173,7 @@ kube-prometheus-stack:
   ## Component scraping the kube controller manager
   ##
   kubeControllerManager:
-    enabled: true
+    enabled: false
 
   ## Component scraping coreDns. Use either this or kubeDns
   ##
@@ -187,12 +187,12 @@ kube-prometheus-stack:
   ## Component scraping etcd
   ##
   kubeEtcd:
-    enabled: true
+    enabled: false
 
   ## Component scraping kube scheduler
   ##
   kubeScheduler:
-    enabled: true
+    enabled: false
     ## If your kube scheduler is not deployed as a pod, specify IPs it can be found on
     ##
     endpoints: []
@@ -203,7 +203,7 @@ kube-prometheus-stack:
   ## Component scraping kube proxy
   ##
   kubeProxy:
-    enabled: true
+    enabled: false
     ## If your kube proxy is not deployed as a pod, specify IPs it can be found on
     ##
     endpoints: []
