@@ -60,11 +60,15 @@ spec:
             privileged: true
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "1Gi"
+              cpu: "1"
             limits:
+              # Memory limit stays at 2Gi while the node's BIOS iGPU carve-out
+              # (24GiB VRAM) leaves only 7.5GiB for the OS; raise to 4Gi after
+              # reclaiming. CPU cap is loose - HW transcode barely uses CPU,
+              # but software-fallback bursts shouldn't be throttled.
               memory: "2Gi"
-              cpu: "3000m"
+              cpu: "8"
       volumes:
         - name: config
           persistentVolumeClaim:
