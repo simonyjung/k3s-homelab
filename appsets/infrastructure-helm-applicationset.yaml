@@ -16,6 +16,11 @@ spec:
   template:
     metadata:
       name: '{{index .path.segments 1}}'
+      # Pair with ServerSideApply: diff via server dry-run so API-server
+      # defaulted fields (e.g. k8s 1.34 STS pvc retention policy) don't
+      # show as permanent OutOfSync under the legacy client-side differ
+      annotations:
+        argocd.argoproj.io/compare-options: ServerSideDiff=true
     spec:
       # The project the application belongs to.
       project: default
