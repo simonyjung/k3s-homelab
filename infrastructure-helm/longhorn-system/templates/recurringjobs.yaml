@@ -1,0 +1,18 @@
+{{- range .Values.recurringJobs }}
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: {{ .name }}
+  namespace: longhorn-system
+spec:
+  name: {{ .name }}
+  task: {{ .task }}
+  cron: {{ .cron | quote }}
+  retain: {{ .retain }}
+  concurrency: {{ .concurrency }}
+  # default group: applies to every volume without explicit job assignment
+  groups:
+    - default
+  labels: {}
+{{- end }}

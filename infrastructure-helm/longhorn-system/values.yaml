@@ -17,3 +17,28 @@ certificate:
     - longhorn.cluster.simonjung.io
 ingress:
   host: longhorn.cluster.simonjung.io
+# Recurring jobs (default group = all volumes). Backups go to the NFS
+# backup target above; retain bounds growth - the job deletes its own
+# backups beyond the newest N per volume. Manual backups are never
+# auto-pruned. snapshot-cleanup purges system/error snapshots on-node.
+recurringJobs:
+  - name: backup-daily
+    task: backup
+    cron: "0 2 * * *"
+    retain: 7
+    concurrency: 2
+  - name: backup-weekly
+    task: backup
+    cron: "0 3 * * 0"
+    retain: 4
+    concurrency: 2
+  - name: snapshot-cleanup
+    task: snapshot-cleanup
+    cron: "0 4 * * *"
+    retain: 0
+    concurrency: 2
+  - name: filesystem-trim
+    task: filesystem-trim
+    cron: "0 0 * * *"
+    retain: 0
+    concurrency: 1
