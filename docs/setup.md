@@ -2,6 +2,13 @@
 
 This guide outlines the process for provisioning a new Fedora-based node and adding it to an existing K3s cluster.
 
+> **Note (server only):** the K3s **server** (`amley00`) runs with the
+> built-in klipper load balancer disabled (`disable: [servicelb]` in
+> `/etc/rancher/k3s/config.yaml`) because MetalLB owns `LoadBalancer`
+> services. If the server is ever rebuilt, reapply this before starting
+> K3s — see [load-balancing.md](./load-balancing.md). Agent nodes need
+> nothing.
+
 ## Adding a node to the cluster
 
 ## Prerequisites
