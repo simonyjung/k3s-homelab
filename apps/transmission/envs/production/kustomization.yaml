@@ -8,5 +8,5 @@ resources:
   - certificate.yaml
   - onepasswordsecret.yaml
 
-patchesStrategicMerge:
-  - deployment.yaml
+patches:
+  - path: deployment.yaml

@@ -7,9 +7,6 @@ resources:
   - onepasswordsecret.yaml
   - cloudflared.yaml
 
-patchesStrategicMerge:
-  - clusterrolebinding.yaml
-
 configMapGenerator:
   - name: homepage
     files:
@@ -21,3 +18,6 @@ configMapGenerator:
       - config/services.yaml
       - config/settings.yaml
       - config/widgets.yaml
+
+patches:
+  - path: clusterrolebinding.yaml

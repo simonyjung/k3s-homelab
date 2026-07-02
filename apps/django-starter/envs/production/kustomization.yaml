@@ -7,5 +7,5 @@ resources:
   - ingress.yaml
   - certificate.yaml
 
-patchesStrategicMerge:
-  - deployment.yaml
+patches:
+  - path: deployment.yaml
