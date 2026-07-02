@@ -1,6 +1,11 @@
 ---
 extends: default
 
+# Vendored third-party manifests are not held to local lint rules
+ignore: |
+  infrastructure/system-upgrade/crd.yaml
+  infrastructure/system-upgrade/system-upgrade-controller.yaml
+
 rules:
   # 120 chars should be enough, but don't fail if a line is longer
   line-length:

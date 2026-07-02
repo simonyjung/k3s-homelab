@@ -1,0 +1,46 @@
+---
+# K3s upgrade plans, executed by the system-upgrade-controller.
+# Upgrade path must move one Kubernetes minor at a time:
+# bump spec.version through v1.34.x -> v1.35.x -> v1.36.x, one hop
+# per commit, verifying cluster health between hops.
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: k3s-server
+  namespace: system-upgrade
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  concurrency: 1
+  cordon: true
+  version: v1.34.9+k3s1
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+  serviceAccountName: system-upgrade
+  upgrade:
+    image: rancher/k3s-upgrade
+---
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: k3s-agent
+  namespace: system-upgrade
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  concurrency: 1
+  cordon: true
+  version: v1.34.9+k3s1
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: DoesNotExist
+  serviceAccountName: system-upgrade
+  # Wait for the server plan to finish before touching agents
+  prepare:
+    image: rancher/k3s-upgrade
+    args: [prepare, k3s-server]
+  upgrade:
+    image: rancher/k3s-upgrade
