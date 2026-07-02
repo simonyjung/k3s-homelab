@@ -5,6 +5,7 @@ metadata:
   name: longhorn-ingress
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: longhorn-system-dashboard-auth@kubernetescrd
 spec:
   rules:
     - host: {{.Values.ingress.host}}
