@@ -49,6 +49,29 @@ node). On node failure the speakers elect a new owner (~10 s) and send
 gratuitous ARP so clients update their caches. This is failover, not
 load balancing — fine at homelab scale.
 
+## Control-plane VIP (kube-vip)
+
+The Kubernetes API has its own floating VIP, **`10.0.10.250:6443`**,
+separate from MetalLB: [kube-vip](https://kube-vip.io) runs as a
+DaemonSet on the three server nodes (`infrastructure/kube-vip/`) in ARP
+mode, control-plane-only (`svc_enable=false` — MetalLB keeps sole
+ownership of `LoadBalancer` services). One server holds the VIP; on
+failure another takes it over within a few seconds, same L2
+active/passive pattern as MetalLB above. Kubeconfigs point at the VIP
+instead of a node IP, so the API stays reachable through any single
+server outage.
+
+Two host-level prerequisites (outside git, like the `disable:` config):
+
+- every server's `/etc/rancher/k3s/config.yaml` carries
+  `tls-san: [10.0.10.250]` so the API serving cert covers the VIP;
+- `10.0.10.250` must stay outside the UCG DHCP scope and outside the
+  MetalLB pool.
+
+Caveat: kube-vip's leader election runs through the Kubernetes API
+itself, so if the whole control plane is down the VIP freezes — direct
+node IPs (`10.0.10.20/.21/.22:6443`) always work as a fallback.
+
 ## klipper servicelb is disabled
 
 K3s ships its own load balancer (klipper `servicelb`, the `svclb-*`
