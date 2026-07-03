@@ -16,7 +16,9 @@ The cluster was last upgraded 1.33 → 1.36 this way on 2026-07-02.
   verbatim from the upstream release (v0.19.2). They are exempted from
   yamllint in `.yamllint`.
 - `plans.yaml` — two `Plan` CRs pinned to an explicit k3s version:
-  - `k3s-server` upgrades the control-plane node (`amley00`) first.
+  - `k3s-server` upgrades the control-plane nodes (`amley00`, `amley01`,
+    `amley02`) first, one at a time (`concurrency: 1`) — etcd quorum
+    holds throughout.
   - `k3s-agent` upgrades the agent nodes one at a time (`concurrency: 1`),
     and its `prepare` step blocks until the server plan finishes.
 
@@ -45,6 +47,9 @@ uncordoned automatically when their upgrade job succeeds.
      first if not.
    - Longhorn backup target is reachable:
      `kubectl get backuptarget -n longhorn-system` shows `AVAIL: true`.
+   - A recent etcd snapshot exists on the servers:
+     `ssh amley00 sudo k3s etcd-snapshot ls` (scheduled twice daily; see
+     [restore.md](./restore.md)).
 
 3. **Bump the version** (both plans) in
    `infrastructure/system-upgrade/plans.yaml`:
@@ -54,8 +59,10 @@ uncordoned automatically when their upgrade job succeeds.
    ```
 
 4. **Commit and merge to `main`.** ArgoCD syncs the plans; SUC upgrades the
-   server node, then each agent. Expect a brief API outage while `amley00`'s
-   k3s restarts. A full pass over 4 nodes takes roughly 10–15 minutes.
+   server nodes one at a time, then the agent. The API stays up throughout
+   (HA control plane), though kubectl may blip while `amley00` — the address
+   in the kubeconfig — restarts. A full pass over 4 nodes takes roughly
+   10–15 minutes.
 
 5. **Verify:**
 

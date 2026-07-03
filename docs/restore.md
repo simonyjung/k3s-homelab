@@ -73,6 +73,30 @@ both first.
    The appset restores the automated sync policy from its template within
    a few minutes; confirm the app returns to `Synced/Healthy`.
 
+## Control-plane (etcd) snapshots
+
+The control plane is three servers (`amley00/01/02`) on **embedded
+etcd**, which snapshots itself on a schedule: 00:00 and 12:00 host time,
+retention 5, written to `/var/lib/rancher/k3s/server/db/snapshots` on
+each server. Check them with `ssh <server> sudo k3s etcd-snapshot ls`.
+
+- **One server lost** (disk death, OS reinstall): no etcd restore
+  needed. Delete the old node object and rejoin the machine as a server
+  per [setup.md](./setup.md) — etcd re-replicates to it.
+- **Quorum lost (2+ servers dead):** on the best surviving server, stop
+  k3s and reset the cluster from a snapshot, then rejoin the others:
+
+  ```bash
+  sudo k3s server --cluster-reset \
+    --cluster-reset-restore-path=<snapshot file>
+  ```
+
+  See the [K3s backup/restore docs](https://docs.k3s.io/datastore/backup-restore)
+  for details.
+- Snapshots live on the servers' own disks; losing all three machines
+  loses them too. Cluster *state* is mostly rebuildable from git (below),
+  so this is acceptable — app data is what the Longhorn NFS backups are for.
+
 ## Full disaster recovery (rebuild the cluster)
 
 Order matters: ArgoCD and the 1Password secrets are the only two things
