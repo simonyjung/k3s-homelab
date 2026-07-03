@@ -9,6 +9,11 @@ This guide outlines the process for provisioning a new Fedora-based node and add
 > K3s — see [load-balancing.md](./load-balancing.md). Agent nodes need
 > nothing.
 
+> **Every node** also gets automatic security updates with a staggered
+> weekly reboot window — apply the dnf5-automatic config from
+> [node-updates.md](./node-updates.md) as the final provisioning step,
+> choosing an unused weekday.
+
 ## Adding a node to the cluster
 
 ## Prerequisites
