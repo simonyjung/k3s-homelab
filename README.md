@@ -58,6 +58,7 @@ Goals:
 - Off-cluster Backups - nightly incremental Longhorn backups to the NAS with bounded retention; restore procedures in [docs/restore.md](./docs/restore.md).
 - External Secrets - 1Password Operator manages Kubernetes secrets securely.
 - Observability - Prometheus and Grafana provide system-level insights.
+- Patched Nodes - unattended security updates with staggered one-node-per-night reboot windows; see [docs/node-updates.md](./docs/node-updates.md).
 
 ---
 
@@ -128,7 +129,7 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 - **apps/**: Kubernetes manifests for applications deployed using Kustomize (`base/` + `envs/<env>/` overlays).
 - **apps-helm/**: Helm umbrella charts for applications (currently empty; recreated automatically when a chart is added).
 - **appsets/**: ArgoCD ApplicationSets that auto-discover the directories above.
-- **docs/**: Documentation, including [upgrades](./docs/upgrades.md), [backup/restore](./docs/restore.md), [load balancing](./docs/load-balancing.md), and [dashboard auth](./docs/dashboard-auth.md).
+- **docs/**: Documentation, including [upgrades](./docs/upgrades.md), [node OS updates](./docs/node-updates.md), [backup/restore](./docs/restore.md), [load balancing](./docs/load-balancing.md), and [dashboard auth](./docs/dashboard-auth.md).
 - **infrastructure/**: Plain-manifest (Kustomize) infrastructure components, e.g. the K3s system-upgrade-controller.
 - **infrastructure-helm/**: Helm umbrella charts for infrastructure components, including self-managed Argo CD and the 1Password operator.
 - **root-argocd-app.yaml**: The root ArgoCD application that bootstraps the entire cluster.
