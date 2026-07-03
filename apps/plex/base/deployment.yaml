@@ -36,15 +36,16 @@ spec:
               value: "1000"
             - name: TZ
               value: "America/New_York"
-            # The linuxserver image ships no VAAPI userspace driver, so
-            # Plex fails "Failed to initialise VAAPI connection" and falls
-            # back to software transcoding. This documented linuxserver mod
-            # installs the mesa/AMD driver (radeonsi) at container start;
-            # it needs internet on startup and adds ~30s to pod boot.
+            # Plex's bundled libva + radeonsi driver pair cannot drive the
+            # Strix Halo GPU (VAAPI init fails; the distro stack encodes
+            # h264_vaapi fine on this node). This documented linuxserver
+            # mod installs the system mesa driver and libva at container
+            # start (needs internet on startup, ~30s extra boot) so the
+            # transcoder can be pointed at the working stack.
             - name: DOCKER_MODS
               value: "linuxserver/mods:universal-package-install"
             - name: INSTALL_PACKAGES
-              value: "mesa-va-drivers"
+              value: "mesa-va-drivers|libva2|libva-drm2"
             - name: PLEX_CLAIM
               valueFrom:
                 secretKeyRef:
