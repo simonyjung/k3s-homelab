@@ -115,12 +115,18 @@ sudo mkdir -p /etc/rancher/k3s
 sudo sh -c 'cat > /etc/rancher/k3s/config.yaml <<EOF
 server: https://<existing_server_ip>:6443
 token: <node_token>
+tls-san:
+  - 10.0.10.250
 disable:
   - servicelb
   - traefik
 EOF'
 curl -sfL https://get.k3s.io | sudo sh -s - server
 ```
+
+The `tls-san` entry keeps the API serving cert valid for the
+control-plane VIP `10.0.10.250` (kube-vip) — see
+[load-balancing.md](./load-balancing.md).
 
 If the node was previously in the cluster under the same hostname
 (e.g. after an OS reinstall), first remove its old identity so it can
