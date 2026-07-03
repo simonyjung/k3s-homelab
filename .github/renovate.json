@@ -13,10 +13,12 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/^apps/.*/.*\\.yaml$/"
+        "/^apps/.*/.*\\.yaml$/",
+        "/^infrastructure/system-upgrade/system-upgrade-controller\\.yaml$/"
       ],
       "matchStrings": [
-        "image: (?<depName>.*?):(?<currentValue>.*)"
+        "image: (?<depName>.*?):(?<currentValue>.*)",
+        "SYSTEM_UPGRADE_JOB_KUBECTL_IMAGE: (?<depName>.*?):(?<currentValue>.*)"
       ],
       "datasourceTemplate": "docker"
     },
@@ -45,6 +47,13 @@
       "matchDepNames": ["k3s-io/k3s"],
       "separateMultipleMinor": true,
       "commitMessageTopic": "k3s"
+    },
+    {
+      "description": "SUC manifests are vendored: the PR is a notification, re-vendor before merging",
+      "matchPackageNames": ["rancher/system-upgrade-controller"],
+      "prBodyNotes": [
+        "⚠️ **Vendored manifests** — do not merge the tag bump alone. Re-download `crd.yaml` + `system-upgrade-controller.yaml` from the upstream release into `infrastructure/system-upgrade/` (see docs/upgrades.md, 'Upgrading the controller itself')."
+      ]
     }
   ]
 }

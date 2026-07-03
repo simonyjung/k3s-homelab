@@ -89,8 +89,12 @@ uncordoned automatically when their upgrade job succeeds.
 
 ## Upgrading the controller itself
 
-SUC is vendored, so Renovate does not bump it. Occasionally refresh from the
-latest release:
+Renovate watches the vendored manifest's image tags and raises a PR when a
+new SUC release (or a newer `rancher/kubectl` job image) is available. For
+the kubectl image the tag bump is the whole change — merge it. For the
+**controller** a tag bump alone is not enough: the vendored RBAC/CRD
+manifests may have changed between releases, so treat the PR as a
+notification and re-vendor from the upstream release instead:
 
 ```bash
 cd infrastructure/system-upgrade
