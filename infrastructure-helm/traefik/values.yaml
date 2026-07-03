@@ -1,5 +1,10 @@
 ---
 traefik:
+  # Two replicas so losing any single node (reboot, upgrade) never leaves
+  # the ingress VIP with no backend - a 1-replica traefik made its node a
+  # de-facto SPOF despite MetalLB failover.
+  deployment:
+    replicas: 2
   # Pin the LAN entrypoint VIP; *.cluster.simonjung.io points here.
   # See docs/load-balancing.md.
   service:
