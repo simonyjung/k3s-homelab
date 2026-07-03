@@ -53,6 +53,7 @@ Goals:
 - Declarative Infrastructure - Everything is Git-versioned and reproducible.
 - GitOps Automation - ArgoCD continously reconciles desired vs live state.
 - Zero-Trust Networking - Cloudflare Tunnels to expose services without port forwarding.
+- Highly Available Control Plane - three K3s servers on embedded etcd, so the API survives any single node failure or reboot; etcd snapshots twice daily.
 - Highly Available Ingress - MetalLB provides a floating VIP for LAN traffic, so no single node is a bottleneck; design in [docs/load-balancing.md](./docs/load-balancing.md).
 - Resilient Storage - Longhorn provides replication and snapshot recovery.
 - Off-cluster Backups - nightly incremental Longhorn backups to the NAS with bounded retention; restore procedures in [docs/restore.md](./docs/restore.md).
@@ -78,8 +79,8 @@ The k3s cluster is comprised of 3 cost-effective and energy-efficient MiniPCs. T
 
 | Device                       | Count | Disk Size | RAM  | Operating System   | Notes                          |
 | ---------------------------- | ----- | --------- | ---- | ------------------ | ------------------------------ |
-| GMKtec Mini PC NucBox G5 N97 | 3     | 256GB     | 12GB | Fedora Server 43   | k3s master + worker nodes      |
-| Framework Desktop            | 1     | 1TB       | 32GB | Fedora Server 43   | GPU worker node                |
+| GMKtec Mini PC NucBox G5 N97 | 3     | 256GB     | 12GB | Fedora Server 44   | k3s servers (HA control plane + etcd) + workers |
+| Framework Desktop            | 1     | 1TB       | 32GB | Fedora Server 44   | GPU worker node                |
 | Synology NAS - DS923+        | 1     | 24TB      | 4GB  |                    | NFS volumes for existing media |
 | Ubiquiti Cloud Gateway Ultra | 1     |           |      |                    | Network management             |
 

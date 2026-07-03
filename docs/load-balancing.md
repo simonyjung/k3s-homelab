@@ -57,18 +57,21 @@ daemonsets that bind service ports on every node's real IP). It is
 two controllers fighting over the same services is how the VIPs ended up
 decorative the first time.
 
-This is node-level config on the **server** (agents need nothing), the
-one piece of this design that lives outside git:
+This is node-level config on **every server** (`amley00`, `amley01`,
+`amley02` — agents need nothing), the one piece of this design that
+lives outside git:
 
 ```yaml
-# /etc/rancher/k3s/config.yaml on amley00
+# /etc/rancher/k3s/config.yaml on each server
+# (traefik is also disabled: ArgoCD deploys its own)
 disable:
   - servicelb
+  - traefik
 ```
 
 applied with `sudo systemctl restart k3s`.
 
-> **If amley00 is ever rebuilt, this must be reapplied** — otherwise
+> **If a server is ever rebuilt, this must be reapplied** — otherwise
 > klipper comes back and both LBs claim the services. See
 > [setup.md](./setup.md).
 
