@@ -1,0 +1,24 @@
+---
+tailscale-operator:
+  # OAuth credentials come from the operator-oauth Secret created by the
+  # 1Password operator below (keys client_id/client_secret). Mounting the
+  # secret as a volume overrides the chart's plaintext oauth block.
+  oauthSecretVolume:
+    secret:
+      secretName: operator-oauth
+  # Kubernetes API server proxy in auth mode: kubectl over the tailnet,
+  # Tailscale identity mapped to K8s RBAC via an impersonation grant in
+  # the tailnet ACL policy (see README.md)
+  apiServerProxyConfig:
+    mode: "true"
+
+# Subnet router (templates/connector.yaml): advertises the LAN so tailnet
+# devices can reach MetalLB VIPs, the kube-vip API VIP and node SSH
+connector:
+  hostname: amley-subnet-router
+  routes:
+    - "10.0.10.0/24"
+
+onepassword:
+  secretName: operator-oauth
+  itemPath: "vaults/Kubernetes/items/tailscale-operator-oauth"
