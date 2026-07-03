@@ -36,16 +36,11 @@ spec:
               value: "1000"
             - name: TZ
               value: "America/New_York"
-            # Plex's bundled libva + radeonsi driver pair cannot drive the
-            # Strix Halo GPU (VAAPI init fails; the distro stack encodes
-            # h264_vaapi fine on this node). This documented linuxserver
-            # mod installs the system mesa driver and libva at container
-            # start (needs internet on startup, ~30s extra boot) so the
-            # transcoder can be pointed at the working stack.
-            - name: DOCKER_MODS
-              value: "linuxserver/mods:universal-package-install"
-            - name: INSTALL_PACKAGES
-              value: "mesa-va-drivers|libva2|libva-drm2"
+            # No hardware transcoding on this GPU until Plex updates their
+            # driver bundle: their musl-linked transcoder only loads Plex's
+            # own radeonsi build, which supports up to gfx1103 — Strix Halo
+            # is gfx1151. System mesa cannot be substituted across the
+            # musl/glibc wall. Re-test after PMS upgrades (plan.md).
             - name: PLEX_CLAIM
               valueFrom:
                 secretKeyRef:
