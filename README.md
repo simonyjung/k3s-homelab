@@ -124,6 +124,7 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 │   ├── metallb/
 │   ├── monitoring/
 │   └── traefik/
+├── notes/                 # Operations journal (plan + history)
 └── root-argocd-app.yaml   # Level 1
 ```
 
@@ -133,4 +134,5 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 - **docs/**: Documentation, including [upgrades](./docs/upgrades.md), [node OS updates](./docs/node-updates.md), [backup/restore](./docs/restore.md), [load balancing](./docs/load-balancing.md), and [dashboard auth](./docs/dashboard-auth.md).
 - **infrastructure/**: Plain-manifest (Kustomize) infrastructure components, e.g. the K3s system-upgrade-controller.
 - **infrastructure-helm/**: Helm umbrella charts for infrastructure components, including self-managed Argo CD and the 1Password operator.
+- **notes/**: Operations journal — the [active plan](./notes/plan.md) and per-quarter history of completed items, updated alongside the PRs that do the work.
 - **root-argocd-app.yaml**: The root ArgoCD application that bootstraps the entire cluster.
