@@ -17,10 +17,11 @@ spec:
         gpu: amd
       containers:
         - name: linkding
-          # Doubled from base 250m for the scale-up experiment
+          # 1000 rps experiment step 2: base 250m -> 500m -> 1000m
+          # (step 1 result: 400 renders/s at 76% of 2x500m, knee not hit)
           resources:
             limits:
-              cpu: 500m
+              cpu: 1000m
       volumes:
         # The base RWO PVC cannot be shared by 2 replicas; dev only keeps
         # favicons/assets here (bookmarks live in postgres) - per-pod

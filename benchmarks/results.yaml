@@ -357,3 +357,44 @@
     restart-in-place preference. Also consider whether
     .spec.failoverDelay / smart shutdown timeouts should be tuned if
     dev-grade failover time ever matters.
+
+- run: 2026-07-04-linkding-knee-2x500m-1
+  testid: linkding-knee-2x500m
+  scenario: linkding-knee
+  window_utc: ["2026-07-04T20:20:59Z", "2026-07-04T20:26:55Z"]
+  status: completed
+  target:
+    app: linkding (postgres-backed, scale experiment step 1)
+    namespace: linkding-development
+    endpoint: http://linkding.linkding-development.svc:3000/login (via 301 -> /login/, see note)
+    image: sissbruecker/linkding:1.45.0
+    replicas: 2  # pinned amleyg00, PVC swapped for emptyDir (PR #126)
+    cpu_request: 125m
+    cpu_limit: 500m
+    memory_request: 768Mi
+    memory_limit: 1Gi
+  profile: ramping-arrival-rate 10->400 iterations/s over 7m, maxVUs 400
+  results:
+    requests_total: 177598  # = 2x iterations, see note
+    failures_total: 0
+    error_rate: 0.0
+    peak_iterations_per_s: 400
+    peak_http_rps: 800
+    p95_s_low_load: 0.0024
+    p95_s_at_peak: 0.105
+    vus_peak: 3
+    dropped_iterations: 0
+  bottleneck: >-
+    None reached - full profile, zero failures, pods at 0.38 of their
+    0.50 limits (unthrottled). Horizontal scaling on postgres works:
+    ~525 renders/core vs ~320/core when throttled at 250m (record 6).
+    p95 rising 2.4ms -> 105ms in the top stage hints the next ceiling
+    (likely uwsgi workers) is near. METHODOLOGY NOTE discovered here:
+    GET /login 301s to /login/ (django APPEND_SLASH) and k6 follows -
+    every prior linkding-knee record counted redirect+render PAIRS, so
+    record 6's "160 rps" = ~80 renders/s and record 7's "41-46" =
+    ~20-23 renders/s. Ratios between records remain valid. Scenario now
+    targets /login/ directly.
+  followup: >-
+    Step 2: cpu limit 1000m (2x1000m total) + ramp to 1200 targeting the
+    1000 renders/s goal; watch for a worker-count ceiling before CPU.
