@@ -115,6 +115,28 @@ kube-prometheus-stack:
     ##
     forceDeployDashboards: false
 
+    # Official k6 dashboard (trend-stats variant, not native-histograms),
+    # downloaded from grafana.com at startup into a Benchmarks folder.
+    # Filter runs by their testid tag (set per TestRun in benchmarks/).
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: benchmarks
+            orgId: 1
+            folder: Benchmarks
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/benchmarks
+    dashboards:
+      benchmarks:
+        k6-prometheus:
+          gnetId: 19665
+          revision: 3
+          datasource: Prometheus
+
     ## Deploy default dashboards
     ##
     defaultDashboardsEnabled: true
@@ -293,6 +315,9 @@ kube-prometheus-stack:
       # chart's release
       serviceMonitorSelectorNilUsesHelmValues: false
       ruleSelectorNilUsesHelmValues: false
+      # Accept pushed metrics on /api/v1/write - k6 load-test runners
+      # (benchmarks/) stream their results here via remote write
+      enableRemoteWriteReceiver: true
       storageSpec:
         volumeClaimTemplate:
           spec:
