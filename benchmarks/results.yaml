@@ -91,3 +91,148 @@
   followup: >-
     Closes the 8.2(c)/9.1 A/B loop. Optional: a knee-finder run
     (ramp to 300+ rps, maxVUs 400) if the actual ceiling matters.
+
+- run: 2026-07-04-homepage-knee-1
+  testid: homepage-knee
+  scenario: homepage-knee
+  window_utc: ["2026-07-04T05:06:57Z", "2026-07-04T05:13:08Z"]
+  status: completed
+  target:
+    app: homepage
+    namespace: homepage-production
+    endpoint: http://homepage.homepage-production.svc:3000/
+    image: ghcr.io/gethomepage/homepage:v1.13.2
+    replicas: 2
+    cpu_request: 25m
+    cpu_limit: 500m
+    memory_request: 256Mi
+    memory_limit: 768Mi
+  profile: ramping-arrival-rate 25->300 rps over 7m, preAllocatedVUs 200, maxVUs 400
+  results:
+    requests_total: 68249
+    failures_total: 0
+    error_rate: 0.0
+    peak_rps_requested: 300
+    peak_rps_sustained_1m: 299.5
+    p95_s_low_load: 0.0085
+    p95_s_overload_max: 0.160
+    vus_peak: 71
+  bottleneck: >-
+    Knee forming but not the ceiling: full 300 rps delivered with zero
+    errors, but p95 rose 19x (8.5ms -> 160ms) and both pods spent >90%
+    of CFS periods throttled near their 500m limits. Latency departure
+    starts in the 150-300 rps ramp.
+  followup: iterate at 600 rps to find the hard ceiling (next record)
+
+- run: 2026-07-04-homepage-knee-600-1
+  testid: homepage-knee-600
+  scenario: homepage-knee
+  window_utc: ["2026-07-04T05:15:58Z", "2026-07-04T05:22:00Z"]
+  status: completed
+  target:
+    app: homepage
+    namespace: homepage-production
+    endpoint: http://homepage.homepage-production.svc:3000/
+    image: ghcr.io/gethomepage/homepage:v1.13.2
+    replicas: 2
+    cpu_request: 25m
+    cpu_limit: 500m
+    memory_request: 256Mi
+    memory_limit: 768Mi
+  profile: ramping-arrival-rate 50->600 rps over 7m, preAllocatedVUs 300, maxVUs 600
+  results:
+    requests_total: 131738
+    failures_total: 254
+    error_rate: 0.0019
+    peak_rps_requested: 600
+    peak_rps_sustained_1m: 538.3
+    p95_s_low_load: 0.0077
+    p95_s_overload_max: 1.05
+    vus_peak: 600  # pinned at maxVUs
+    dropped_iterations: 4761
+  bottleneck: >-
+    KNEE FOUND - hard CPU ceiling. Throughput plateaus at ~530-540 rps:
+    both pods pinned at exactly 0.500 cores (the limit), VU pool
+    exhausted, 4761 iterations dropped, p95 1.05s at the top yet only
+    0.2% failures - it degrades slow rather than erroring. Full curve
+    for 2x500m: comfortable to ~150 rps (p95 <20ms), knee 150-300
+    (p95 160ms @ 300), ceiling ~530 rps. Raising the ceiling means
+    raising cpu_limit or replicas; current capacity is ~2 orders of
+    magnitude above real usage - no action needed.
+  followup: none - curve fully characterized for the 2x500m config
+
+- run: 2026-07-04-django-starter-dev-baseline-1
+  testid: django-starter-dev-baseline
+  scenario: django-starter-dev-baseline
+  window_utc: ["2026-07-04T05:23:57Z", "2026-07-04T05:30:59Z"]
+  status: completed
+  target:
+    app: django-starter
+    namespace: django-starter-development
+    endpoint: http://django-starter.django-starter-development.svc:8000/ (Host header django-starter-dev.cluster.simonjung.io - ALLOWED_HOSTS 400s without it)
+    image: simonjungdocker/django-starter:0.0.4
+    replicas: 1
+    cpu_request: 25m
+    cpu_limit: 100m
+    memory_request: 512Mi
+    memory_limit: 768Mi
+  profile: ramping-arrival-rate 5->100 rps over 8m, preAllocatedVUs 100, maxVUs 200
+  results:
+    requests_total: 25049
+    failures_total: 0
+    error_rate: 0.0
+    peak_rps_requested: 100
+    peak_rps_sustained_1m: 100
+    p95_s_low_load: 0.0012
+    p95_s_overload_max: 0.0017  # never stressed
+    vus_peak: 1
+  bottleneck: >-
+    None within the profile - the app's / is a ~320-byte page served in
+    ~600us; the full 100 rps used a single VU and (verified separately
+    with a sustained burst + kubectl top) roughly 77m CPU, so even the
+    100m limit has headroom at this load. Baseline is excellent;
+    revisit after the app grows real views/db queries. Note two
+    observability traps hit: gunicorn does not access-log successes
+    (empty pod logs != no traffic), and the ad-hoc PromQL container-CPU
+    spot check returned garbage for this pod - kubectl top during a
+    burst was the reliable cross-check.
+  followup: >-
+    Re-baseline when django-starter gains real functionality; a
+    knee-finder would currently measure gunicorn, not the app.
+
+- run: 2026-07-04-linkding-knee-1
+  testid: linkding-knee
+  scenario: linkding-knee
+  window_utc: ["2026-07-04T05:37:57Z", "2026-07-04T05:44:56Z"]
+  status: completed
+  target:
+    app: linkding
+    namespace: linkding-development  # identical image+limits to prod (dev only patches PVC/Service); knee transfers without saturating the real bookmarks
+    endpoint: http://linkding.linkding-development.svc:3000/login
+    image: sissbruecker/linkding:1.45.0
+    replicas: 1
+    cpu_request: 125m
+    cpu_limit: 250m
+    memory_request: 768Mi
+    memory_limit: 1Gi
+  profile: ramping-arrival-rate 5->200 rps over 7m, preAllocatedVUs 150, maxVUs 300
+  results:
+    requests_total: 43561
+    failures_total: 810
+    error_rate: 0.019
+    peak_rps_requested: 200
+    peak_rps_sustained_1m: 159.7
+    p95_s_low_load: 0.0022
+    p95_s_overload_max: 6.8
+    vus_peak: 300  # pinned at maxVUs
+    dropped_iterations: 22353
+  bottleneck: >-
+    KNEE FOUND first run - CPU-bound at the 250m limit (pod peaked at
+    0.227 cores, ~91% of limit). Login-page renders: p95 2.2ms at low
+    load, plateau ~160 rps with the VU pool exhausted, 22k dropped
+    iterations, p95 up to 6.8s, 1.9% errors at the top. Pod healthy
+    after, no restarts - the new 8.1 livenessProbe did not trip under
+    overload. For a single-user bookmark app, ~160 rps of full Django
+    page renders is enormous headroom; no action needed. If it ever
+    mattered: raise cpu_limit (sqlite forbids replicas>1).
+  followup: none - single-replica sqlite app, capacity fine as-is
