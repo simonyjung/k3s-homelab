@@ -10,7 +10,8 @@ spec:
       name: homepage-ramp-script
       file: script.js
   # testid is what the Grafana k6 dashboard's test picker filters on
-  arguments: -o experimental-prometheus-rw --tag testid=homepage-ramp
+  # (A/B vs run 2026-07-04-homepage-ramp-1: now 2 replicas x 500m cpu)
+  arguments: -o experimental-prometheus-rw --tag testid=homepage-ramp-2replicas
   runner:
     # Generate load from the GPU node - keeps the generator off the
     # etcd servers and (usually) off the node running the target
