@@ -3,12 +3,12 @@
     - ArgoCD:
         href: https://argocd.cluster.simonjung.io
         siteMonitor: https://argocd.cluster.simonjung.io
-        description: GitOps CD
+        description: GitOps - reconciles the cluster to git
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/argo-cd.svg
     - Grafana:
         href: https://grafana.cluster.simonjung.io
         siteMonitor: https://grafana.cluster.simonjung.io
-        description: Grafana Dashboards
+        description: Metrics & dashboards for cluster and apps
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/grafana.svg
     - Benchmarks:
         href: https://grafana.cluster.simonjung.io/d/ccbb2351-2ae2-462f-ae0e-f2c893ad1028/k6-prometheus
@@ -17,48 +17,48 @@
     - Longhorn:
         href: https://longhorn.cluster.simonjung.io
         siteMonitor: https://longhorn.cluster.simonjung.io
-        description: Longhorn UI
+        description: Replicated volumes, snapshots & backups
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-longhorn.svg
     - Traefik:
         href: https://traefik.cluster.simonjung.io
         siteMonitor: https://traefik.cluster.simonjung.io
-        description: Traefik Dashboard
+        description: Ingress routing for *.cluster URLs
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/traefik.svg
     - Synology NAS:
         href: https://nas:5001
         siteMonitor: https://nas:5001
-        description: Synology DiskStation Manager
+        description: NAS - media, NFS volumes & backup target
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/synology-light.svg
     - Ubiquiti Unifi Controller:
         href: https://unifi.ui.com/
-        description: Unifi Network Controller
+        description: Home network, VLANs & WiFi
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/ubiquiti-unifi.svg
 - Applications:
     - Homepage:
         href: https://home.simonjung.io/
-        description: Cluster Homepage/Service Catalog
+        description: This dashboard - service catalog
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homepage.png
     - Plex:
         href: https://plex.tv
-        description: Media Server
+        description: Movie & TV streaming
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/plex.svg
     - Linkding:
         href: https://linkding.simonjung.io
         siteMonitor: https://linkding.simonjung.io
-        description: Bookmark Manager
+        description: Bookmark manager & archive
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/linkding.svg
     - Transmission:
         href: https://transmission.cluster.simonjung.io
         siteMonitor: https://transmission.cluster.simonjung.io
-        description: Torrent Client
+        description: Torrent downloads to the NAS
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/transmission.svg
     - Django Starter:
         href: https://django-starter.cluster.simonjung.io
         siteMonitor: https://django-starter.cluster.simonjung.io
-        description: Django Starter (production)
+        description: Django app template - production
         icon: si-django
     - Django Starter Dev:
         href: https://django-starter-dev.cluster.simonjung.io
         siteMonitor: https://django-starter-dev.cluster.simonjung.io
-        description: Django Starter (development)
+        description: Django app template - development
         icon: si-django
