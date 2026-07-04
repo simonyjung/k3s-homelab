@@ -1,0 +1,34 @@
+---
+apiVersion: k6.io/v1alpha1
+kind: TestRun
+metadata:
+  name: linkding-write
+spec:
+  parallelism: 1
+  script:
+    configMap:
+      name: linkding-write-script
+      file: script.js
+  arguments: -o experimental-prometheus-rw --tag testid=linkding-write-postgres
+  runner:
+    nodeSelector:
+      gpu: amd
+    env:
+      - name: K6_PROMETHEUS_RW_SERVER_URL
+        value: http://prometheus-prometheus.monitoring.svc:9090/api/v1/write
+      - name: K6_PROMETHEUS_RW_TREND_STATS
+        value: "p(95),p(99),min,max,avg,med"
+      # Out-of-git prereq: kubectl create secret generic linkding-api-token
+      # -n benchmarks --from-literal=token=<drf token>
+      - name: LINKDING_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: linkding-api-token
+            key: token
+    resources:
+      requests:
+        cpu: 500m
+        memory: 256Mi
+      limits:
+        cpu: "2"
+        memory: 1Gi

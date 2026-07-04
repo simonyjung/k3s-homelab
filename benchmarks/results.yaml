@@ -277,3 +277,83 @@
     none for linkding. General lesson for capacity math: a millicore
     limit is worth 3.5-4x less on the N97 servers than on amleyg00 -
     factor node class into any future limit tuning.
+
+- run: 2026-07-04-linkding-write-postgres-1
+  testid: linkding-write-postgres
+  scenario: linkding-write
+  window_utc: ["2026-07-04T19:47:55Z", "2026-07-04T19:53:55Z"]
+  status: completed
+  target:
+    app: linkding (postgres-backed, CNPG linkding-db instances=2)
+    namespace: linkding-development
+    endpoint: POST http://linkding.linkding-development.svc:3000/api/bookmarks/
+    image: sissbruecker/linkding:1.45.0
+    replicas: 1
+    cpu_request: 125m
+    cpu_limit: 250m
+    memory_request: 768Mi
+    memory_limit: 1Gi
+  profile: ramping-arrival-rate 5->120 writes/s over 7m, preAllocatedVUs 100, maxVUs 300
+  results:
+    requests_total: 8120
+    failures_total: 1371  # all status 0 = k6-side timeouts, no HTTP errors
+    error_rate: 0.169
+    peak_rps_requested: 120
+    peak_rps_sustained_1m: 23.8
+    p95_s_low_load: 0.030
+    p95_s_overload_max: 35.9
+    vus_peak: 300  # pinned
+    dropped_iterations: 19029
+  bottleneck: >-
+    Write knee ~24/s and it is STILL linkding cpu (0.244 of 0.250 limit;
+    each API write is a full Django request incl. token-auth query).
+    Postgres loafed: primary 0.17 of 0.5 cores, standby idle - the
+    database has ~3x headroom at the app's ceiling, so a sqlite-vs-
+    postgres write A/B is unobservable at these limits; Django saturates
+    first. Setup notes: linkding uses its OWN ApiToken model (DRF
+    authtoken tokens get "Invalid token"); title+description supplied
+    inline so no synchronous URL scraping; token lives in the
+    linkding-api-token secret in the benchmarks namespace (out-of-git).
+  followup: >-
+    To ever see the DB in a write benchmark, raise linkding's cpu limit
+    first. Record 9 is the CNPG failover drill on this same stack.
+
+- run: 2026-07-04-linkding-write-failover-1
+  testid: linkding-write-failover
+  scenario: linkding-write (one-off variant - constant-arrival-rate 15/s for 6m)
+  window_utc: ["2026-07-04T19:55:55Z", "2026-07-04T20:02:22Z"]
+  status: completed
+  target:
+    app: linkding (postgres-backed, CNPG linkding-db instances=2)
+    namespace: linkding-development
+    endpoint: POST http://linkding.linkding-development.svc:3000/api/bookmarks/
+    image: sissbruecker/linkding:1.45.0
+    replicas: 1
+    cpu_request: 125m
+    cpu_limit: 250m
+    memory_request: 768Mi
+    memory_limit: 1Gi
+  profile: constant-arrival-rate 15 writes/s for 6m; PRIMARY POD (linkding-db-1) DELETED at 19:58:05
+  results:
+    requests_total: 4388
+    failures_total: 1859
+    error_rate: 0.42
+    write_outage_seconds: 200  # errors 19:58:12 -> ~20:01:30 at ~10-11 fail/s
+    p95_s_max: 17.3
+  bottleneck: >-
+    HEADLINE FINDING: deleting the primary pod does NOT give seconds-level
+    failover. The PVC survives a pod delete, so the operator restarts the
+    SAME instance in place (waiting on the single-replica Longhorn volume
+    to reattach) instead of promoting the standby - promotion to
+    linkding-db-2 only completed ~3m20s after the kill (CNPG status:
+    Failing over at +6s, new primary healthy at 20:01:24). Writes failed
+    at ~10-11/s (2/3 of offered load) for the whole window; the linkding
+    pod itself was liveness-restarted once during the outage. Full
+    redundancy (old primary re-cloned as standby) restored automatically.
+  followup: >-
+    Drill variants to test the faster paths: (a) clean switchover via
+    'kubectl cnpg promote' (planned maintenance path), (b) true node-level
+    failure (kubelet gone, not pod delete) which skips the
+    restart-in-place preference. Also consider whether
+    .spec.failoverDelay / smart shutdown timeouts should be tuned if
+    dev-grade failover time ever matters.
