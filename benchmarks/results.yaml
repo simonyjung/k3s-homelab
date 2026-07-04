@@ -1,0 +1,57 @@
+---
+# Benchmark run log - append one record per run, newest last.
+#
+# Prometheus retention is 10 days: this file is the durable record, so
+# log a run promptly after it finishes. Query with yq, e.g.
+#   yq '.[] | select(.target.app == "homepage")' benchmarks/results.yaml
+#
+# Schema (keep keys stable so runs stay comparable):
+#   run          unique id: <date>-<testid>-<n>
+#   testid       the k6 --tag testid value (dashboard test picker)
+#   scenario     directory under benchmarks/
+#   window_utc   [start, end] of the metric window (from k6_vus timestamps)
+#   status       completed | cancelled | failed
+#   target       what was under test WHEN the run happened - image,
+#                replicas and limits are the knobs A/B runs compare, so
+#                snapshot them here; the repo may change later
+#   profile      executor + rate shape (requested load)
+#   results      numbers pulled from Prometheus before retention expiry;
+#                durations in SECONDS (k6 remote write converts to s)
+#   bottleneck   one line: what actually limited throughput
+#   followup     plan item / next run that acts on this
+#
+- run: 2026-07-04-homepage-ramp-1
+  testid: homepage-ramp
+  scenario: homepage-ramp
+  window_utc: ["2026-07-04T04:08:57Z", "2026-07-04T04:16:38Z"]
+  status: completed
+  target:
+    app: homepage
+    namespace: homepage-production
+    endpoint: http://homepage.homepage-production.svc:3000/
+    image: ghcr.io/gethomepage/homepage:v1.13.2
+    replicas: 1
+    cpu_request: 25m
+    cpu_limit: 100m
+    memory_request: 512Mi
+    memory_limit: 768Mi
+  profile: ramping-arrival-rate 5->100 rps over 8m, preAllocatedVUs 100, maxVUs 200
+  results:
+    requests_total: 10022
+    failures_total: 1820
+    error_rate: 0.182
+    peak_rps_requested: 100
+    peak_rps_sustained_1m: 30.1
+    peak_rps_instant: 39.2
+    p95_s_low_load: 0.211
+    p95_s_overload_max: 37.8
+    vus_peak: 200  # pinned at maxVUs cap from ~45s in
+  bottleneck: >-
+    homepage cpu_limit 100m (0.1 core) hard-throttles SSR - the run
+    measured the limit, not the app. VUs pinned at cap within ~45s;
+    errors only began after the pin (overload queueing, not app bugs).
+    Achieved ceiling ~30-40 rps vs 100 requested. Pod healthy after,
+    no restarts, no OOM.
+  followup: >-
+    8.2(c) raises/drops the cpu limit alongside replicas 2 - re-run as
+    testid=homepage-ramp-2replicas and compare this record.

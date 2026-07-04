@@ -34,6 +34,25 @@ Re-runs share the same `testid`, so on the dashboard they are separated
 only by time range. For an A/B comparison, edit the `--tag testid=` in
 `testrun.yaml` (e.g. `homepage-ramp-2replicas`) before the second run.
 
+## Logging results
+
+**Prometheus retention is 10 days** — dashboard data expires; git is the
+durable record. After each run, append a record to
+[`results.yaml`](./results.yaml) (schema documented in the file) and PR
+it. Snapshot the target's image/replicas/limits *as they were during the
+run* — those are the knobs future A/B runs compare against. Pull the
+numbers from Prometheus before they age out:
+
+```bash
+kubectl port-forward -n monitoring svc/prometheus-prometheus 9099:9090 &
+# totals, split into ok / failed:
+curl -s http://localhost:9099/api/v1/query --data-urlencode \
+  'query=sum by (expected_response) (max_over_time(k6_http_reqs_total{testid="<id>"}[3h]))'
+```
+
+(`timestamp(k6_vus{testid=...})` min/max gives the run window; exported
+durations are in **seconds**.)
+
 ## Ground rules
 
 - **Never target `*.simonjung.io` hostnames** — those are Cloudflare
