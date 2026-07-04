@@ -31,29 +31,74 @@ Key properties:
 - Max security lag is ~1 week per node. Anything urgent can be applied by
   hand ahead of the timer.
 
-Config (identical on every node, only the timer weekday differs):
+### Setting up a node
 
-```ini
-# /etc/dnf/automatic.conf
-[commands]
-upgrade_type = security
-download_updates = true
-apply_updates = true
-reboot = when-needed
-```
+Identical on every node, only the timer weekday differs. New nodes get
+this as the final provisioning step ([setup.md](./setup.md)) — pick the
+next free weekday.
 
-```ini
-# /etc/systemd/system/dnf5-automatic.timer.d/override.conf
-[Timer]
-OnCalendar=
-OnCalendar=<Day> *-*-* 03:00
-RandomizedDelaySec=15m
-Persistent=true
-```
+1. **Verify the timezone.** The 03:00 schedule and the one-node-per-night
+   stagger assume local time is `America/New_York`; fresh installs often
+   default to UTC.
 
-Enable with `sudo systemctl daemon-reload && sudo systemctl enable --now
-dnf5-automatic.timer`. New nodes get this as part of provisioning
-([setup.md](./setup.md)) — pick the next free weekday.
+   ```bash
+   timedatectl
+   sudo timedatectl set-timezone America/New_York   # if needed
+   ```
+
+2. **Install the plugin:**
+
+   ```bash
+   sudo dnf install dnf5-plugin-automatic
+   ```
+
+3. **Configure security-only updates with conditional reboot** — the
+   package ships `/etc/dnf/automatic.conf` with a `[commands]` section;
+   change these keys in place (don't append a duplicate section):
+
+   ```ini
+   # /etc/dnf/automatic.conf
+   [commands]
+   upgrade_type = security
+   download_updates = true
+   apply_updates = true
+   reboot = when-needed
+   ```
+
+4. **Override the timer schedule** with a drop-in. The empty
+   `OnCalendar=` line is intentional — it clears the package default
+   before setting the node's slot:
+
+   ```bash
+   sudo mkdir -p /etc/systemd/system/dnf5-automatic.timer.d
+   ```
+
+   ```ini
+   # /etc/systemd/system/dnf5-automatic.timer.d/override.conf
+   [Timer]
+   OnCalendar=
+   OnCalendar=<Day> *-*-* 03:00
+   RandomizedDelaySec=15m
+   Persistent=true
+   ```
+
+5. **Enable:**
+
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now dnf5-automatic.timer
+   ```
+
+6. **Verify the drop-in applied** — `systemctl cat` must show
+   override.conf appended after the stock unit, and `NEXT` must be the
+   node's weekday at ~03:00 local (if it shows the package default
+   instead, the drop-in didn't parse — re-check step 4 and
+   `daemon-reload` again):
+
+   ```bash
+   systemctl cat dnf5-automatic.timer
+   systemctl list-timers dnf5-automatic.timer
+   ```
 
 ### Checking on it
 
@@ -104,6 +149,7 @@ Gotchas seen in practice:
 Symptom: `osImage` reports "Prerelease", `dnf repolist --enabled` shows a
 `rawhide` repo, RC kernels appear. A rawhide box cannot be downgrade-synced
 to a stable release reliably; the supported fix is a clean reinstall of
-the target Fedora release ([setup.md](./setup.md)), preserving
-`/etc/rancher/k3s` and `/var/lib/rancher/k3s` if it is the k3s server so
-the cluster state (sqlite datastore, certs, tokens) survives the rebuild.
+the target Fedora release ([setup.md](./setup.md)). With the HA control
+plane (three servers on embedded etcd) no k3s state needs preserving:
+drain and `kubectl delete node` first, wipe, then rejoin as a server per
+setup.md and etcd re-replicates (done for `amley00` 2026-07-04).
