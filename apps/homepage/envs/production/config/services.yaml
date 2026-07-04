@@ -57,8 +57,14 @@
         siteMonitor: https://django-starter.cluster.simonjung.io
         description: Django app template - production
         icon: si-django
+- Development:
     - Django Starter Dev:
         href: https://django-starter-dev.cluster.simonjung.io
         siteMonitor: https://django-starter-dev.cluster.simonjung.io
         description: Django app template - development
         icon: si-django
+    - Linkding Dev:
+        href: http://10.0.10.201:3000
+        siteMonitor: http://10.0.10.201:3000
+        description: Bookmark manager - development (postgres)
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/linkding.svg
