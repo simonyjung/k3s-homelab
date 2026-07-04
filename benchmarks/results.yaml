@@ -199,3 +199,40 @@
   followup: >-
     Re-baseline when django-starter gains real functionality; a
     knee-finder would currently measure gunicorn, not the app.
+
+- run: 2026-07-04-linkding-knee-1
+  testid: linkding-knee
+  scenario: linkding-knee
+  window_utc: ["2026-07-04T05:37:57Z", "2026-07-04T05:44:56Z"]
+  status: completed
+  target:
+    app: linkding
+    namespace: linkding-development  # identical image+limits to prod (dev only patches PVC/Service); knee transfers without saturating the real bookmarks
+    endpoint: http://linkding.linkding-development.svc:3000/login
+    image: sissbruecker/linkding:1.45.0
+    replicas: 1
+    cpu_request: 125m
+    cpu_limit: 250m
+    memory_request: 768Mi
+    memory_limit: 1Gi
+  profile: ramping-arrival-rate 5->200 rps over 7m, preAllocatedVUs 150, maxVUs 300
+  results:
+    requests_total: 43561
+    failures_total: 810
+    error_rate: 0.019
+    peak_rps_requested: 200
+    peak_rps_sustained_1m: 159.7
+    p95_s_low_load: 0.0022
+    p95_s_overload_max: 6.8
+    vus_peak: 300  # pinned at maxVUs
+    dropped_iterations: 22353
+  bottleneck: >-
+    KNEE FOUND first run - CPU-bound at the 250m limit (pod peaked at
+    0.227 cores, ~91% of limit). Login-page renders: p95 2.2ms at low
+    load, plateau ~160 rps with the VU pool exhausted, 22k dropped
+    iterations, p95 up to 6.8s, 1.9% errors at the top. Pod healthy
+    after, no restarts - the new 8.1 livenessProbe did not trip under
+    overload. For a single-user bookmark app, ~160 rps of full Django
+    page renders is enormous headroom; no action needed. If it ever
+    mattered: raise cpu_limit (sqlite forbids replicas>1).
+  followup: none - single-replica sqlite app, capacity fine as-is
