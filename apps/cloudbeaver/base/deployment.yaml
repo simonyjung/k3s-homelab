@@ -21,6 +21,12 @@ spec:
       containers:
         - name: cloudbeaver
           image: dbeaver/cloudbeaver:26.1.1
+          # TLS terminates at traefik; the pod only ever sees http. With
+          # forceHttps on (image default) every request - including API
+          # POSTs like the connection test - gets 301'd and breaks.
+          env:
+            - name: CLOUDBEAVER_FORCE_HTTPS
+              value: "false"
           ports:
             - name: http
               containerPort: 8978
