@@ -90,6 +90,11 @@ kube-prometheus-stack:
           equal: ["namespace"]
         - target_matchers: ["alertname = InfoInhibitor"]
     alertmanagerSpec:
+      # Two gossiping replicas on different nodes (operator wires the
+      # clustering automatically) - alert delivery survives a node loss;
+      # a dead single alertmanager can't page about its own node dying
+      replicas: 2
+      podAntiAffinity: "hard"
       secrets:
         - pushover-alertmanager
       storage:

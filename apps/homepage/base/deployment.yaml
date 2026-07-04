@@ -7,7 +7,7 @@ metadata:
     app: homepage
   name: homepage
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: homepage
@@ -17,6 +17,15 @@ spec:
       labels:
         app: homepage
     spec:
+      # Both replicas on one node would defeat the point - force them
+      # onto different nodes
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: homepage
       serviceAccountName: homepage
       automountServiceAccountToken: true
       containers:
@@ -68,13 +77,17 @@ spec:
               subPath: widgets.yaml
             - mountPath: /app/config/logs
               name: logs
+          # Memory right-sized from observed ~112Mi. CPU limit raised
+          # 100m -> 500m: the 2026-07-04 benchmark showed 100m throttles
+          # SSR to ~30 rps with multi-second latencies (see
+          # benchmarks/results.yaml, run 2026-07-04-homepage-ramp-1)
           resources:
             requests:
-              memory: 512Mi
+              memory: 256Mi
               cpu: 25m
             limits:
               memory: 768Mi
-              cpu: 100m
+              cpu: 500m
       volumes:
         - name: homepage-config
           configMap:

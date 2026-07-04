@@ -18,6 +18,12 @@ connector:
   hostname: amley-subnet-router
   routes:
     - "10.0.10.0/24"
+  # Two routers advertise the same route (tailscale fails over between
+  # them automatically) - a single-replica STS on a dead node strands
+  # indefinitely, which is a remote lockout exactly when a node died.
+  # The ProxyClass (templates/proxyclass.yaml) spreads them across nodes.
+  replicas: 2
+  proxyClass: node-spread
 
 onepassword:
   secretName: operator-oauth

@@ -1,0 +1,19 @@
+---
+# Spreads the Connector's replicas across nodes. The operator labels the
+# pods it manages with tailscale.com/managed and the parent resource
+# name, which is what the constraint selects on.
+apiVersion: tailscale.com/v1alpha1
+kind: ProxyClass
+metadata:
+  name: {{.Values.connector.proxyClass}}
+spec:
+  statefulSet:
+    pod:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              tailscale.com/managed: "true"
+              tailscale.com/parent-resource: {{.Values.connector.hostname}}

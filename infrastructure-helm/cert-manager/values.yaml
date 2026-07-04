@@ -12,6 +12,22 @@ cert-manager:
     enabled: true
     servicemonitor:
       enabled: true
+  # The webhook is failurePolicy=Fail on all cert-manager CRDs - while
+  # it is down, every production ArgoCD sync fails (each overlay applies
+  # a Certificate). Two replicas on different nodes, drain-safe.
+  webhook:
+    replicaCount: 2
+    podDisruptionBudget:
+      enabled: true
+      minAvailable: 1
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: webhook
+            app.kubernetes.io/instance: cert-manager
 
 clusterIssuer:
   name: "cloudflare-clusterissuer"
