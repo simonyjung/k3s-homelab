@@ -7,7 +7,13 @@ metadata:
     app: homepage
   name: homepage
 spec:
-  replicas: 2
+  # Single replica BY DESIGN: homepage keeps per-pod in-memory state, so
+  # >1 replica makes background API calls disagree with the serving pod
+  # and the UI flicker-re-renders (upstream: gethomepage discussion
+  # #2305). Sticky sessions don't help here - traffic arrives via the
+  # cloudflared tunnel (itself 2 replicas), not traefik. Node-failure
+  # recovery comes from the Longhorn node-down policy + fast reschedule.
+  replicas: 1
   selector:
     matchLabels:
       app: homepage
@@ -17,15 +23,6 @@ spec:
       labels:
         app: homepage
     spec:
-      # Both replicas on one node would defeat the point - force them
-      # onto different nodes
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: DoNotSchedule
-          labelSelector:
-            matchLabels:
-              app: homepage
       serviceAccountName: homepage
       automountServiceAccountToken: true
       containers:
