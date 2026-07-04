@@ -55,3 +55,39 @@
   followup: >-
     8.2(c) raises/drops the cpu limit alongside replicas 2 - re-run as
     testid=homepage-ramp-2replicas and compare this record.
+
+- run: 2026-07-04-homepage-ramp-2replicas-1
+  testid: homepage-ramp-2replicas
+  scenario: homepage-ramp
+  window_utc: ["2026-07-04T04:43:59Z", "2026-07-04T04:51:51Z"]
+  status: completed
+  target:
+    app: homepage
+    namespace: homepage-production
+    endpoint: http://homepage.homepage-production.svc:3000/
+    image: ghcr.io/gethomepage/homepage:v1.13.2
+    replicas: 2  # + hostname TSC (PR #107)
+    cpu_request: 25m
+    cpu_limit: 500m  # was 100m in run 1
+    memory_request: 256Mi
+    memory_limit: 768Mi
+  profile: ramping-arrival-rate 5->100 rps over 8m, preAllocatedVUs 100, maxVUs 200
+  results:
+    requests_total: 25050
+    failures_total: 0
+    error_rate: 0.0
+    peak_rps_requested: 100
+    peak_rps_sustained_1m: 99.9
+    peak_rps_instant: 100
+    p95_s_low_load: 0.0064
+    p95_s_overload_max: 0.0226  # never overloaded - this is p95 AT 100 rps
+    vus_peak: 14
+  bottleneck: >-
+    None found - the A/B against run 1 confirms the 100m cpu limit was
+    the entire story: same profile went from ~30 rps / 18% errors /
+    p95 37.8s to the full 100 rps / 0 errors / p95 22.6ms, using 14 of
+    200 VUs. 2.5x more total requests completed because the arrival
+    rate was never throttled. Knee is somewhere above 100 rps.
+  followup: >-
+    Closes the 8.2(c)/9.1 A/B loop. Optional: a knee-finder run
+    (ramp to 300+ rps, maxVUs 400) if the actual ceiling matters.
