@@ -1,0 +1,17 @@
+---
+# Runs TestRun CRs from benchmarks/ (applied manually - that directory is
+# deliberately outside every ApplicationSet glob so ArgoCD never re-fires
+# a load test). Results stream to Prometheus via remote write; see the
+# k6 dashboard in Grafana's Benchmarks folder.
+k6-operator:
+  # The appset already creates/adopts the k6-operator namespace
+  namespace:
+    create: false
+  manager:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
