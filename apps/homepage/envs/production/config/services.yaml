@@ -12,7 +12,7 @@
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/grafana.svg
     - Benchmarks:
         href: https://grafana.cluster.simonjung.io/d/ccbb2351-2ae2-462f-ae0e-f2c893ad1028/k6-prometheus
-        description: k6 load-test results & A/B comparisons
+        description: k6 Load-Test Results
         icon: si-k6
     - Longhorn:
         href: https://longhorn.cluster.simonjung.io
