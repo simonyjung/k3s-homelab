@@ -236,3 +236,44 @@
     page renders is enormous headroom; no action needed. If it ever
     mattered: raise cpu_limit (sqlite forbids replicas>1).
   followup: none - single-replica sqlite app, capacity fine as-is
+
+- run: 2026-07-04-linkding-knee-amley01-1
+  testid: linkding-knee-amley01
+  scenario: linkding-knee
+  window_utc: ["2026-07-04T18:24:55Z", "2026-07-04T18:27:30Z"]
+  status: cancelled  # knee unambiguous ~2.5 min in; no value in finishing
+  target:
+    app: linkding
+    namespace: linkding-development
+    endpoint: http://linkding.linkding-development.svc:3000/login
+    image: sissbruecker/linkding:1.45.0
+    replicas: 1
+    cpu_request: 125m
+    cpu_limit: 250m
+    memory_request: 768Mi
+    memory_limit: 1Gi
+    node: amley01 (N97 MiniPC, pinned via PR #114 for this run; pin reverted after)
+  profile: ramping-arrival-rate 5->200 rps over 7m, preAllocatedVUs 150, maxVUs 300 (identical to record 6)
+  results:
+    requests_total: 5357
+    failures_total: 443
+    error_rate: 0.083
+    peak_rps_requested: 200
+    peak_rps_sustained_1m: 41.1
+    peak_rps_instant: 46
+    p95_s_low_load: 0.0066
+    p95_s_overload_max: 10.5
+    vus_peak: 300  # pinned within ~2 min
+    dropped_iterations: 4681
+  bottleneck: >-
+    CPU-bound at the 250m limit on N97 hardware (kubectl top under load:
+    193m; CFS-throttled). Head-to-head vs record 6 (identical profile,
+    limits and image; only the node differs): amleyg00/Zen kneed at
+    ~160 rps with 2.2ms low-load p95; amley01/N97 knees at ~41-46 rps
+    with 6.6ms low-load p95 - a ~3.5-4x per-core gap. This is the
+    PRODUCTION-representative number: linkding-production runs on the
+    N97s with the same limits. Still ~40x a single user's real load.
+  followup: >-
+    none for linkding. General lesson for capacity math: a millicore
+    limit is worth 3.5-4x less on the N97 servers than on amleyg00 -
+    factor node class into any future limit tuning.
