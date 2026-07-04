@@ -27,6 +27,11 @@ spec:
           env:
             - name: CLOUDBEAVER_FORCE_HTTPS
               value: "false"
+            # Image default hides the "New connection" button outside
+            # the admin panel - single-admin instance, let the app view
+            # create connections directly
+            - name: CLOUDBEAVER_APP_SUPPORTS_CUSTOM_CONNECTIONS
+              value: "true"
           ports:
             - name: http
               containerPort: 8978
