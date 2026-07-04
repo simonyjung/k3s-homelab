@@ -1,0 +1,20 @@
+---
+# Single-replica storage for workloads that replicate at the APPLICATION
+# layer (CNPG postgres streaming replication): stacking Longhorn's 3x on
+# top would write every byte 6x and put the extra fsync load on the same
+# disks etcd uses. Durability across node loss comes from the app's own
+# replication - a lost volume is re-cloned by its operator, not Longhorn.
+# NOT a default StorageClass (see the 8.5 audit item on dual defaults).
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-1replica
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+parameters:
+  numberOfReplicas: "1"
+  dataLocality: best-effort
+  staleReplicaTimeout: "30"
+  fsType: ext4

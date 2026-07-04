@@ -4,7 +4,9 @@ kind: Kustomization
 
 resources:
   - ../../base
+  - postgres-cluster.yaml
 
 patches:
   - path: persistentvolumeclaim.yaml
   - path: service.yaml
+  - path: deployment.yaml
