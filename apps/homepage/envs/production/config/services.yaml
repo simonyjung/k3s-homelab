@@ -48,3 +48,13 @@
         siteMonitor: https://transmission.cluster.simonjung.io
         description: Torrent Client
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/transmission.svg
+    - Django Starter:
+        href: https://django-starter.cluster.simonjung.io
+        siteMonitor: https://django-starter.cluster.simonjung.io
+        description: Django Starter (production)
+        icon: si-django
+    - Django Starter Dev:
+        href: https://django-starter-dev.cluster.simonjung.io
+        siteMonitor: https://django-starter-dev.cluster.simonjung.io
+        description: Django Starter (development)
+        icon: si-django
