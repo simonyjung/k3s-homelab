@@ -13,6 +13,15 @@ spec:
       labels:
         app: cloudflared
     spec:
+      # Both replicas on one node would defeat the point - force them
+      # onto different nodes
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: cloudflared
       containers:
         - name: cloudflared
           image: cloudflare/cloudflared:2026.6.1

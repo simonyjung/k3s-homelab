@@ -15,6 +15,16 @@ spec:
       labels:
         app: linkding
     spec:
+      # Reschedule off a dead node after 60s instead of the default 300s
+      tolerations:
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 60
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 60
       volumes:
         - name: linkding-volume
           persistentVolumeClaim:
@@ -33,6 +43,15 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
             failureThreshold: 3
+          # Readiness only removes a sick pod from the Service - a wedged
+          # gunicorn is never restarted without this (~2 min tolerance)
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9090
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 4
           volumeMounts:
             - name: linkding-volume
               mountPath: /etc/linkding/data

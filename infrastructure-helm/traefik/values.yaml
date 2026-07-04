@@ -5,6 +5,25 @@ traefik:
   # de-facto SPOF despite MetalLB failover.
   deployment:
     replicas: 2
+  # Replicas on the same node would defeat the point - force them onto
+  # different nodes, and never let a voluntary drain evict both at once
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: traefik
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+  # Requests move the pods out of BestEffort QoS (first evicted under
+  # node memory pressure); ingress should be among the last to go
+  priorityClassName: system-cluster-critical
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
   # Pin the LAN entrypoint VIP; *.cluster.simonjung.io points here.
   # See docs/load-balancing.md.
   service:

@@ -7,6 +7,10 @@ longhorn:
     replicas: 1
   defaultSettings:
     backupTarget: "nfs://192.168.40.118:/volume1/longhorn"
+    # When a node dies (not drained), its pods stay Terminating forever
+    # because the kubelet can't confirm shutdown - force-delete them so
+    # RWO volumes reattach and workloads reschedule
+    nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
 certificate:
   name: longhorn-ingress-certificate
   secretName: longhorn-ingress-secret
