@@ -71,7 +71,19 @@ sudo cat /var/lib/rancher/k3s/server/node-token
     sudo systemctl disable firewalld --now
     ```
 
-5. **Disable Swap**: 
+5. **Disable Swap**:
+
+    Kubernetes assumes exact control over memory: the kubelet schedules
+    against physical RAM and enforces limits via cgroups, and swap breaks
+    both — a container at its memory limit spills to disk instead of being
+    OOM-killed, and swap masks the memory pressure the kubelet relies on to
+    evict pods before a node starts thrashing. On servers it's worse still:
+    etcd is latency-sensitive, and a swapped-out etcd process misses
+    heartbeats and triggers leader elections. A fast OOM-kill and reschedule
+    beats a node that's mysteriously slow everywhere. (Kubernetes has a
+    `NodeSwap` feature gate, but K3s doesn't enable it.)
+
+    If fstab declares swap, comment it out:
 
     ```bash
     sudo vim /etc/fstab
@@ -81,7 +93,11 @@ sudo cat /var/lib/rancher/k3s/server/node-token
     # UUID=xxxx none swap sw 0 0
     ```
 
-    or if zram swap is used. Check with `swapon --show`
+    Fedora Server defaults to zram swap instead of an fstab entry — less
+    harmful (compressed RAM, no disk latency) but it still distorts memory
+    accounting, so it goes too. Check with `swapon --show`; `swapoff -a`
+    alone doesn't survive a reboot, removing `zram-generator-defaults` is
+    what keeps it off:
 
     ```bash
     sudo swapoff -a
