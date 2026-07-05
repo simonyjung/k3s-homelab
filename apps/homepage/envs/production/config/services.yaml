@@ -96,8 +96,8 @@
         description: Django app template - development
         icon: si-django
     - Linkding Dev:
-        href: http://10.0.10.201:3000
-        siteMonitor: http://10.0.10.201:3000
+        href: https://linkding-dev.cluster.simonjung.io
+        siteMonitor: https://linkding-dev.cluster.simonjung.io
         description: Bookmark manager - development (postgres)
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/linkding.svg
     - Shaadi Mubarak Dev:
