@@ -46,7 +46,7 @@ Never commit or push directly to `main` — merging to `main` deploys. Branch �
 
 App name and namespace come from path segments: `{{index .path.segments 1}}-{{index .path.segments 3}}`. So a new dir `apps/myapp/envs/production/` deploys to namespace `myapp-production` with zero other changes. Namespaces are created automatically (`CreateNamespace=true`); there are no namespace manifests in the repo.
 
-Note: `infrastructure/` holds plain-Kustomize infrastructure (e.g. `system-upgrade/`, which drives K3s upgrades — see `docs/upgrades.md`); `infrastructure-helm/` holds the umbrella charts, including self-managed Argo CD and the 1Password operator. `apps-helm/` is currently empty (its appsets stay, discovering nothing until a chart is added).
+Note: `infrastructure/` holds plain-Kustomize infrastructure (e.g. `system-upgrade/`, which drives K3s upgrades — see `docs/upgrades.md`); `infrastructure-helm/` holds the umbrella charts, including self-managed Argo CD and the 1Password operator. `apps-helm/` holds the app umbrella charts (currently `glitchtip/`).
 
 ## Conventions when adding/editing
 
