@@ -541,3 +541,50 @@
     Knee still unfound (profile exhausted first) - rerun with the
     extended 2000/s profile (testid ...-pconn-2k). Watch postgres
     primary (450m of 500m at 1164/s, N97) as the likely next ceiling.
+
+- run: 2026-07-05-linkding-knee-2x1000m-pooled-pconn-2k-1
+  testid: linkding-knee-2x1000m-pooled-pconn-2k
+  scenario: linkding-knee
+  window_utc: ["2026-07-05T03:27:04Z", "2026-07-05T03:34:28Z"]
+  status: completed
+  target:
+    app: linkding (same config as record 13 - pgbouncer + persistent
+      connections; extended profile to find the knee record 13 missed)
+    namespace: linkding-development
+    endpoint: http://linkding.linkding-development.svc:3000/login/
+    image: sissbruecker/linkding:1.45.0
+    replicas: 2  # pinned amleyg00, emptyDir scratch
+    cpu_request: 125m
+    cpu_limit: 1000m
+    memory_request: 768Mi
+    memory_limit: 1Gi
+    database: linkding-db CNPG 2-instance (primary on amley00 N97,
+      cpu limit 500m); pooler 1x pgbouncer on amleyg00
+  profile: ramping-arrival-rate 100->2000 iterations/s over 7m, maxVUs 600
+  results:
+    requests_total: 280563
+    failures_total: 962
+    error_rate: 0.0034
+    peak_completed_rps: 1249
+    peak_successful_rps: 1249
+    p95_s_at_peak: 1.16  # queueing tail; median held 3.4ms
+    median_s: 0.0034
+    vus_peak: 600
+    dropped_iterations: 184436
+  bottleneck: >-
+    KNEE FOUND at ~1249 renders/s - and it is uwsgi concurrency, not
+    CPU: at the plateau the app pods sat at only ~650-700m of their
+    1000m limits, postgres at ~230m of 500m, pgbouncer ~15m. The image
+    hardcodes processes=2/threads=2 per pod (8 workers total) in
+    uwsgi.ini; past ~1250/s arrival bursts overflow the listen backlog
+    and the kernel resets connections (EOF signature, 0.34% of
+    requests), while accepted requests kept rendering at 3.4ms median.
+    Every hardware/database lever is now loose - the ceiling is the
+    app server's worker count.
+  followup: >-
+    1000 rps experiment CLOSED: goal exceeded (records 13/14), knee
+    found. If more is ever needed: uwsgi workers are not env-tunable
+    (fixed in the image's uwsgi.ini) so the lever is replicas - at
+    ~625 renders/s per 4-worker pod, 4 replicas projects to ~2500/s.
+    Consider reverting dev to quieter resource limits now that the
+    experiment is done.
