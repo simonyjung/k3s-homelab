@@ -62,6 +62,16 @@
         siteMonitor: https://django-starter.cluster.simonjung.io
         description: Django app template - production
         icon: si-django
+    - Shaadi Mubarak:
+        href: https://roy-jung.com
+        siteMonitor: https://roy-jung.com
+        description: Wedding e-invite & RSVP
+        icon: mdi-heart
+    - Shaadi Mubarak Admin:
+        href: https://shaadimubarak-api.cluster.simonjung.io/admin/
+        siteMonitor: https://shaadimubarak-api.cluster.simonjung.io
+        description: Guest list & open-tracking dashboard (LAN)
+        icon: mdi-heart-cog
 - Development:
     - Django Starter Dev:
         href: https://django-starter-dev.cluster.simonjung.io
@@ -73,3 +83,8 @@
         siteMonitor: http://10.0.10.201:3000
         description: Bookmark manager - development (postgres)
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/linkding.svg
+    - Shaadi Mubarak Dev:
+        href: https://shaadimubarak-dev.cluster.simonjung.io
+        siteMonitor: https://shaadimubarak-dev.cluster.simonjung.io
+        description: Wedding e-invite - development
+        icon: mdi-heart
