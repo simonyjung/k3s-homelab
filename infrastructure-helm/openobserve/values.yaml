@@ -105,6 +105,10 @@ fluent-bit:
           DB /var/log/flb_kube.db
           Mem_Buf_Limit 5MB
           Skip_Long_Lines On
+          # Stat-based watching: amleyg00 exhausts the default
+          # fs.inotify.max_user_instances (128) and inotify_init fails
+          # (EMFILE crashloop); polling avoids node-level sysctl tuning
+          Inotify_Watcher false
 
       [INPUT]
           Name systemd
