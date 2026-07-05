@@ -36,32 +36,73 @@ jobs:
   validate:
     name: Validate rendering
     runs-on: ubuntu-latest
+    env:
+      KUBECONFORM_VERSION: v0.8.0
+      # CRD schemas: https://github.com/datreeio/CRDs-catalog (covers every CRD kind this repo writes:
+      # onepassword.com, cert-manager.io, postgresql.cnpg.io, argoproj.io, upgrade.cattle.io)
+      CRD_SCHEMAS: >-
+        https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v7
 
-      - name: Build Kustomize overlays.
+      - name: Install kubeconform.
         run: |
+          url="https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}"
+          curl -sSL "${url}/kubeconform-linux-amd64.tar.gz" | sudo tar xz -C /usr/local/bin kubeconform
+
+      - name: Read fleet Kubernetes version.
+        id: k8s
+        run: |
+          # Validate against the exact version the cluster runs, straight from the upgrade plan.
+          version="$(grep -m1 -oP 'version: v\K[0-9.]+' infrastructure/system-upgrade/plans.yaml)"
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+
+      - name: Build Kustomize overlays and validate schemas.
+        run: |
+          set -o pipefail
+          fail=0
           for dir in apps/*/envs/*/ infrastructure/*/; do
             [ -d "${dir}" ] || continue
             echo "::group::${dir}"
-            kustomize build "${dir}" > /dev/null
+            # -skip CustomResourceDefinition: the CRD kind itself has no schema in the upstream catalog
+            kustomize build "${dir}" | kubeconform -strict -summary \
+              -kubernetes-version "${{ steps.k8s.outputs.version }}" \
+              -skip CustomResourceDefinition \
+              -schema-location default -schema-location "${CRD_SCHEMAS}" || fail=1
             echo "::endgroup::"
           done
+          exit "${fail}"
 
-      - name: Render Helm charts.
+      - name: Validate ArgoCD bootstrap manifests.
         run: |
+          kubeconform -strict -summary \
+            -kubernetes-version "${{ steps.k8s.outputs.version }}" \
+            -schema-location default -schema-location "${CRD_SCHEMAS}" \
+            root-argocd-app.yaml appsets/*.yaml
+
+      - name: Render Helm charts and validate schemas.
+        run: |
+          set -o pipefail
+          fail=0
           # -d guard: skips unmatched globs (e.g. apps-helm/ empty) and stray files
           for chart in apps-helm/* infrastructure-helm/*; do
             [ -d "${chart}" ] || continue
             echo "::group::${chart}"
             helm dependency build "${chart}"
             if [ -d "${chart}/envs" ]; then
-              for values in "${chart}"/envs/*/values.yaml; do
-                helm template "${chart}" -f "${values}" > /dev/null
-              done
+              values_files=("${chart}"/envs/*/values.yaml)
             else
-              helm template "${chart}" -f "${chart}/values.yaml" > /dev/null
+              values_files=("${chart}/values.yaml")
             fi
+            for values in "${values_files[@]}"; do
+              # -ignore-missing-schemas: upstream charts emit CR kinds the catalog may not carry;
+              # everything this repo writes by hand is covered and validated strictly above
+              helm template "${chart}" -f "${values}" | kubeconform -strict -summary \
+                -kubernetes-version "${{ steps.k8s.outputs.version }}" \
+                -skip CustomResourceDefinition -ignore-missing-schemas \
+                -schema-location default -schema-location "${CRD_SCHEMAS}" || fail=1
+            done
             echo "::endgroup::"
           done
+          exit "${fail}"
