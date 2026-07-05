@@ -1,0 +1,48 @@
+---
+# Audit-only deployment: no policy blocks admission, ever. Violations land in
+# PolicyReport CRs (`kubectl get policyreports -A`) as a live compliance
+# inventory. Flipping anything to Enforce is a deliberate, per-policy decision.
+kyverno:
+  features:
+    # Hard guarantee that a down/slow Kyverno can never block admission:
+    # every generated webhook gets failurePolicy=Ignore regardless of policy
+    # settings. Revisit only if a policy is ever promoted to Enforce.
+    forceFailurePolicyIgnore:
+      enabled: true
+  # Cleanup policies are unused; two fewer deployments to run and reschedule
+  cleanupController:
+    enabled: false
+  admissionController:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
+  # Scans existing (not just newly-admitted) resources — required for the
+  # inventory use case; reports controller writes the PolicyReport CRs
+  backgroundController:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+  reportsController:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+kyverno-policies:
+  # Pod Security Standards "baseline" set, audit only (both are chart
+  # defaults; pinned here so a chart-default change can't flip behavior)
+  podSecurityStandard: baseline
+  validationFailureAction: Audit
+  # Chart default is Fail; belt-and-braces with forceFailurePolicyIgnore above
+  failurePolicy: Ignore
+  # Also evaluate resources that already exist, not just new admissions
+  background: true

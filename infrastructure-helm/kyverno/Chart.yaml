@@ -1,0 +1,14 @@
+---
+apiVersion: v2
+name: kyverno
+description: An Umbrella helm chart for the Kyverno policy engine, audit mode only
+type: application
+version: 0.1.0
+appVersion: "1.0"
+dependencies:
+  - name: kyverno
+    version: 3.8.1
+    repository: https://kyverno.github.io/kyverno
+  - name: kyverno-policies
+    version: 3.8.1
+    repository: https://kyverno.github.io/kyverno

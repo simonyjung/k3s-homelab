@@ -1,0 +1,45 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Disallow Latest Tag
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      A floating or missing image tag defeats Renovate-driven pinning and makes
+      rollbacks ambiguous. This audits any container whose image is untagged or
+      tagged `latest`.
+spec:
+  background: true
+  rules:
+    - name: require-image-tag
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        failureAction: Audit
+        allowExistingViolations: true
+        message: "An image tag is required."
+        pattern:
+          spec:
+            containers:
+              - image: "*:*"
+    - name: disallow-latest
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        failureAction: Audit
+        allowExistingViolations: true
+        message: "Using a mutable image tag e.g. `latest` is not allowed."
+        pattern:
+          spec:
+            containers:
+              - image: "!*:latest"
