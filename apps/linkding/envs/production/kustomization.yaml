@@ -8,3 +8,5 @@ resources:
   - certificate.yaml
   - onepasswordsecret.yaml
   - cloudflared.yaml
+  - postgres-cluster.yaml
+  - postgres-pooler.yaml

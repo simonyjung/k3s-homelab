@@ -1,0 +1,30 @@
+---
+# Production linkding database, migrated off sqlite after the dev
+# experiment (results.yaml records 9-14): postgres + pgbouncer +
+# persistent connections beat the sqlite baseline on both throughput
+# and latency, and unlocks failover + horizontal scaling. Redundancy is
+# CNPG streaming replication on single-replica Longhorn volumes, per
+# CNPG's replicate-in-postgres guidance - a node loss promotes the
+# standby in seconds and the lost instance re-clones automatically.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: linkding-db
+spec:
+  instances: 2
+  bootstrap:
+    initdb:
+      database: linkding
+      owner: linkding
+  storage:
+    storageClass: longhorn-1replica
+    size: 2Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  monitoring:
+    enablePodMonitor: true
