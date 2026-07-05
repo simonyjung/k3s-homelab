@@ -46,6 +46,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
+          BASE: ${{ github.event.pull_request.base.ref }}
         run: |
           marker="<!-- render-diff -->"
           {
@@ -53,7 +54,7 @@ jobs:
             echo "## Rendered manifest diff"
             echo
             if [ -s render.diff ]; then
-              echo "What the cluster will see if this PR merges (rendered against \`${{ github.event.pull_request.base.ref }}\`):"
+              echo "What the cluster will see if this PR merges (rendered against \`${BASE}\`):"
               echo
               echo "| Rendered app | lines |"
               echo "|---|---|"
