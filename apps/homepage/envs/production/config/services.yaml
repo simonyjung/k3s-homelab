@@ -27,6 +27,11 @@
               query: count(ALERTS{alertstate="firing",severity=~"warning|critical"}) or on() vector(0)
             - label: Pending
               query: count(ALERTS{alertstate="pending",severity=~"warning|critical"}) or on() vector(0)
+    - OpenObserve:
+        href: https://logs.cluster.simonjung.io
+        siteMonitor: https://logs.cluster.simonjung.io
+        description: Log search - pod logs & k3s journal
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/openobserve.svg
     - Benchmarks:
         href: https://grafana.cluster.simonjung.io/d/ccbb2351-2ae2-462f-ae0e-f2c893ad1028/k6-prometheus
         description: k6 Load-Test Results
