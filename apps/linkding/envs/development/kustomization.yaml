@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ../../base
   - postgres-cluster.yaml
+  - postgres-pooler.yaml
 
 patches:
   - path: persistentvolumeclaim.yaml

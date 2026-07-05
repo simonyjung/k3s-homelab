@@ -1,0 +1,44 @@
+---
+# pgbouncer in front of linkding-db, via the CNPG Pooler CRD. The
+# unpooled knee (results.yaml record 11) collapsed on per-request
+# connection setup: Django opens a fresh postgres connection with a
+# full SSL handshake for EVERY request, and under load postgres logged
+# a storm of abandoned handshakes while renders went from ~2ms to
+# ~200ms. pgbouncer amortizes that: server-side connections persist,
+# client connects are cheap.
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: linkding-db-pooler-rw
+spec:
+  cluster:
+    name: linkding-db
+  instances: 1
+  type: rw
+  pgbouncer:
+    # session mode: a server conn is held per client conn and returned
+    # when the client disconnects - safe for Django's per-request
+    # connect/disconnect pattern (no prepared-statement/cursor caveats
+    # of transaction mode)
+    poolMode: session
+    parameters:
+      max_client_conn: "1000"
+      # uwsgi runs 2 procs x 2 threads per pod x 2 pods = ~8 concurrent
+      # DB clients; 20 server conns is ample and well under postgres's
+      # max_connections (100)
+      default_pool_size: "20"
+  template:
+    spec:
+      # Same node as the app pods and the benchmark runner - keep the
+      # measured path on one machine (see deployment.yaml)
+      nodeSelector:
+        gpu: amd
+      containers:
+        - name: pgbouncer
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
