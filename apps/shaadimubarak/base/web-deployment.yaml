@@ -18,7 +18,7 @@ spec:
       imagePullSecrets:
         - name: shaadimubarak-ghcr-pull-secret
       containers:
-        - image: ghcr.io/simonyjung/shaadimubarak-web:sha-0b251e4
+        - image: ghcr.io/simonyjung/shaadimubarak-web:sha-bd938e3
           name: shaadimubarak-web
           ports:
             - name: http
@@ -29,7 +29,7 @@ spec:
               value: "http://shaadimubarak-api:8000"
             # Public URL; SvelteKit checks form-action origins against this.
             - name: ORIGIN
-              value: "https://shaadimubarak.simonjung.io"
+              value: "https://roy-jung.com"
             # Guests only ever arrive through the Cloudflare tunnel, so the
             # real client IP is in this header.
             - name: ADDRESS_HEADER
