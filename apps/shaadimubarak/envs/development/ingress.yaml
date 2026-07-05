@@ -1,0 +1,36 @@
+---
+# LAN-only: both the invite site and the Django admin. No Cloudflare tunnel
+# in dev - nothing here is reachable from outside the network.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shaadimubarak-dev-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: shaadimubarak-dev.cluster.simonjung.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shaadimubarak-web
+                port:
+                  number: 3000
+    - host: shaadimubarak-api-dev.cluster.simonjung.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shaadimubarak-api
+                port:
+                  number: 8000
+  tls:
+    - hosts:
+        - shaadimubarak-dev.cluster.simonjung.io
+        - shaadimubarak-api-dev.cluster.simonjung.io
+      secretName: shaadimubarak-dev-ingress-secret

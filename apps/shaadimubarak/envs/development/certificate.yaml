@@ -1,0 +1,13 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: shaadimubarak-dev-ingress-certificate
+spec:
+  secretName: shaadimubarak-dev-ingress-secret
+  issuerRef:
+    name: cloudflare-clusterissuer
+    kind: ClusterIssuer
+  dnsNames:
+    - shaadimubarak-dev.cluster.simonjung.io
+    - shaadimubarak-api-dev.cluster.simonjung.io
