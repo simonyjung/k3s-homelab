@@ -31,8 +31,10 @@ badges:
 
   - id: alerts
     title: alerts firing
+    # Count only severities that page (mirrors the Alertmanager route
+    # allowlist) - ignores Watchdog/InfoInhibitor and info-level noise.
     query: >-
-      count(ALERTS{alertstate="firing",alertname!="Watchdog"})
+      count(ALERTS{alertstate="firing",severity=~"warning|critical"})
       or on() vector(0)
     valueExpr: string(int(result))
     colorExpr: 'result == 0.0 ? "green" : "red"'
