@@ -72,6 +72,7 @@ Goals:
 - Off-cluster Backups - nightly incremental Longhorn backups to the NAS with bounded retention; restore procedures in [docs/restore.md](./docs/restore.md).
 - External Secrets - 1Password Operator manages Kubernetes secrets securely.
 - Observability - Prometheus and Grafana provide system-level insights.
+- Centralized Logging - OpenObserve stores 15 days of every pod's logs plus the k3s journal (including etcd), shipped from all nodes by a Fluent Bit DaemonSet and searchable with full-text queries and dashboards.
 - CI Validation Gates - every PR renders all manifests, schema-checks them with kubeconform against the exact cluster version, and gets a bot comment with the full rendered diff of what the cluster will see on merge; see [docs/ci.md](./docs/ci.md).
 - Policy-as-Code Auditing - Kyverno evaluates Pod Security Standards plus best-practice policies in audit mode, maintaining a live compliance inventory without ever blocking admission; see [docs/policy.md](./docs/policy.md).
 - Benchmarking - version-controlled k6 load tests ([benchmarks/](./benchmarks/)) ramp requests-per-second against deployed apps, stream results to Prometheus for Grafana dashboards, and log findings to a durable run record.
