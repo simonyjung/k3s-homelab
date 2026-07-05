@@ -1,0 +1,89 @@
+---
+name: Render diff
+
+'on':
+  pull_request:
+    paths-ignore:
+      - '*.md'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: render-diff-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+
+  render-diff:
+    name: Rendered manifest diff
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the PR merge commit.
+        uses: actions/checkout@v7
+
+      - name: Check out the base branch.
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          path: .base
+
+      - name: Render both trees.
+        run: |
+          # Both renders use the PR's copy of the script (the base tree may predate it).
+          bash scripts/render-all.sh "${GITHUB_WORKSPACE}/.rendered/pr"
+          cd .base
+          bash "${GITHUB_WORKSPACE}/scripts/render-all.sh" "${GITHUB_WORKSPACE}/.rendered/base"
+
+      - name: Diff the renders.
+        run: |
+          # diff exit 1 just means "differences found"
+          diff -ruN .rendered/base .rendered/pr > render.diff || [ $? -eq 1 ]
+
+      - name: Upsert the PR comment.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          marker="<!-- render-diff -->"
+          {
+            echo "${marker}"
+            echo "## Rendered manifest diff"
+            echo
+            if [ -s render.diff ]; then
+              echo "What the cluster will see if this PR merges (rendered against \`${{ github.event.pull_request.base.ref }}\`):"
+              echo
+              echo "| Rendered app | lines |"
+              echo "|---|---|"
+              awk '
+                /^diff -ruN/ { f = $NF; sub(/^\.rendered\/pr\//, "", f); sub(/\.yaml$/, "", f); order[++n] = f }
+                /^\+/ && !/^\+\+\+/ { add[f]++ }
+                /^-/  && !/^---/    { del[f]++ }
+                END { for (i = 1; i <= n; i++) { x = order[i]
+                        printf "| `%s` | +%d / −%d |\n", x, add[x], del[x] } }
+              ' render.diff
+              echo
+              echo "<details><summary>Full diff</summary>"
+              echo
+              echo '```diff'
+              head -c 55000 render.diff
+              if [ "$(stat -c%s render.diff)" -gt 55000 ]; then
+                echo
+                echo "... (truncated — see the workflow run for the full diff)"
+              fi
+              echo '```'
+              echo
+              echo "</details>"
+            else
+              echo "No rendered changes — the cluster sees nothing new from this PR."
+            fi
+          } > comment.md
+          existing="$(gh api "repos/${REPO}/issues/${PR}/comments" --paginate \
+            -q ".[] | select(.body | startswith(\"${marker}\")) | .id" | head -1)"
+          if [ -n "${existing}" ]; then
+            gh api -X PATCH "repos/${REPO}/issues/comments/${existing}" -F body=@comment.md > /dev/null
+          else
+            gh api -X POST "repos/${REPO}/issues/${PR}/comments" -F body=@comment.md > /dev/null
+          fi
