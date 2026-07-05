@@ -25,6 +25,6 @@ patches:
 # deploy-dev CI job after every image build - do not bump by hand.
 images:
   - name: ghcr.io/simonyjung/shaadimubarak-api
-    newTag: sha-c5aebba
+    newTag: sha-b7e2547
   - name: ghcr.io/simonyjung/shaadimubarak-web
-    newTag: sha-c5aebba
+    newTag: sha-b7e2547
