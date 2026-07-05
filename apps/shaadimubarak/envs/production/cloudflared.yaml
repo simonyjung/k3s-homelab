@@ -78,7 +78,10 @@ data:
     no-autoupdate: true
 
     ingress:
-    - hostname: shaadimubarak.simonjung.io
+    # Apex only: SvelteKit's form-action origin check is pinned to ORIGIN,
+    # so a www host would 403 on RSVP submits - use a Cloudflare redirect
+    # rule (www -> apex) instead if www DNS is ever added.
+    - hostname: roy-jung.com
       service: http://shaadimubarak-web:3000
 
     # Catch-all: anything that didn't match a hostname above gets a 404.
