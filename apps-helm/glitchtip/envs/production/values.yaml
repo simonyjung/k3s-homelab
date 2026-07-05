@@ -1,0 +1,53 @@
+---
+# GlitchTip - Sentry-SDK-compatible error tracking for the in-cluster
+# Django apps. Chart options:
+# https://gitlab.com/glitchtip/glitchtip-helm-chart
+glitchtip:
+  fullnameOverride: glitchtip
+
+  glitchtip:
+    # Django SECRET_KEY, pulled by the 1Password operator (see
+    # onePasswordSecret below); the item needs a field labeled SECRET_KEY
+    existingSecret: glitchtip-secret-key
+    # Absolute-URL base for emails/DSNs; scheme required
+    domain: https://glitchtip.cluster.simonjung.io
+    # CNPG cluster from templates/postgres-cluster.yaml - the operator
+    # publishes a ready-made connection string in the -app secret
+    database:
+      existingSecret: glitchtip-db-app
+      existingSecretKey: uri
+
+  # Web pods (the worker runs embedded): chart defaults are 2 replicas,
+  # PDB minAvailable 1, soft hostname anti-affinity, requests 100m/256Mi.
+  # The migration Job is the only workload without default requests:
+  migrationJob:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  # ServiceMonitor for the built-in /metrics endpoint; prometheus picks
+  # up all ServiceMonitors (serviceMonitorSelectorNilUsesHelmValues off)
+  monitoring:
+    enabled: true
+
+# Bundled valkey (official valkey chart) stays at chart defaults: 1
+# replica, no persistence - it only holds sessions and pending tasks.
+
+# Umbrella extras (templates/)
+certificate:
+  name: glitchtip-ingress-certificate
+  secretName: glitchtip-ingress-secret
+  issuerRef:
+    name: cloudflare-clusterissuer
+    kind: ClusterIssuer
+  dnsNames:
+    - glitchtip.cluster.simonjung.io
+ingress:
+  host: glitchtip.cluster.simonjung.io
+onePasswordSecret:
+  name: glitchtip-secret-key
+  itemPath: vaults/Kubernetes/items/glitchtip-secret-key

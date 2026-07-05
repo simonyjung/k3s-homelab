@@ -1,0 +1,31 @@
+---
+# GlitchTip database, same shape as linkding-db (plan 9.1): CNPG
+# streaming replication on single-replica Longhorn volumes, per CNPG's
+# replicate-in-postgres guidance - a node loss promotes the standby in
+# seconds and the lost instance re-clones automatically. The chart's own
+# postgresql.enabled creates a bare Cluster (no resources, no
+# PodMonitor), so it stays disabled in favor of this one. No pgbouncer
+# Pooler: error-event ingestion is a trickle next to the linkding
+# benchmark traffic that motivated one; add a Pooler if that changes.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: glitchtip-db
+spec:
+  instances: 2
+  bootstrap:
+    initdb:
+      database: glitchtip
+      owner: glitchtip
+  storage:
+    storageClass: longhorn-1replica
+    size: 5Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  monitoring:
+    enablePodMonitor: true
