@@ -25,6 +25,16 @@ _... powered by K3s and ArgoCD_
     </a>
 </div>
 
+<div align="center">
+
+[![CI](https://github.com/simonyjung/k3s-homelab/actions/workflows/ci.yaml/badge.svg)](https://github.com/simonyjung/k3s-homelab/actions/workflows/ci.yaml)
+[![K3s](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsimonyjung%2Fk3s-homelab%2Fmain%2Finfrastructure%2Fsystem-upgrade%2Fplans.yaml&search=version%3A%20(v%5B0-9.%5D%2B%5C%2Bk3s%5B0-9%5D%2B)&replace=%241&label=k3s&logo=k3s&logoColor=white&color=FFC61C)](https://github.com/simonyjung/k3s-homelab/blob/main/infrastructure/system-upgrade/plans.yaml)
+[![GitOps](https://img.shields.io/badge/GitOps-Argo%20CD-EF7B4D?logo=argo&logoColor=white)](https://argo-cd.readthedocs.io/en/stable/)
+[![Renovate](https://img.shields.io/badge/renovate-enabled-1A1F6C?logo=renovate&logoColor=white)](https://github.com/simonyjung/k3s-homelab/blob/main/.github/renovate.json)
+[![Last deployed](https://img.shields.io/github/last-commit/simonyjung/k3s-homelab?label=last%20deployed&logo=github)](https://github.com/simonyjung/k3s-homelab/commits/main)
+
+</div>
+
 ---
 
 # k3s-homelab
