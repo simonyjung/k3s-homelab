@@ -69,7 +69,7 @@
         icon: mdi-heart
     - Shaadi Mubarak Admin:
         href: https://shaadimubarak-api.cluster.simonjung.io/admin/
-        siteMonitor: https://shaadimubarak-api.cluster.simonjung.io
+        siteMonitor: https://shaadimubarak-api.cluster.simonjung.io/admin/login/
         description: Guest list & open-tracking dashboard (LAN)
         icon: mdi-heart-cog
 - Development:
