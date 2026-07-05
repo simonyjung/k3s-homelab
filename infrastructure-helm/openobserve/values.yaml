@@ -55,6 +55,11 @@ fluent-bit:
   testFramework:
     enabled: false
 
+  # info logs every HTTP delivery (status line + response body, ~2 lines/s
+  # per node) which gets ingested right back - the pipeline was the top
+  # log producer in the cluster
+  logLevel: warn
+
   env:
     - name: OPENOBSERVE_USER
       valueFrom:
@@ -126,6 +131,15 @@ fluent-bit:
           Keep_Log Off
           K8S-Logging.Parser On
           K8S-Logging.Exclude On
+          # Pod annotations are per-record dead weight (checksum/config
+          # blobs); labels stay - app/instance labels are queried
+          Annotations Off
+
+      # The cri parser leaves a string `time` duplicating _timestamp
+      [FILTER]
+          Name modify
+          Match kube.*
+          Remove time
 
     # Streams: kube container logs -> "containers", k3s/k3s-agent journal
     # (incl. embedded etcd) -> "k3s", both in the "default" org
