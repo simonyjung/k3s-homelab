@@ -346,6 +346,18 @@ certificate:
     - grafana.cluster.simonjung.io
 ingress:
   host: grafana.cluster.simonjung.io
+# Alertmanager UI, LAN-only like Grafana/Longhorn. No auth of its own -
+# anyone on the LAN can view alerts and create silences.
+certificateAlertmanager:
+  name: alertmanager-ingress-certificate
+  secretName: alertmanager-ingress-secret
+  issuerRef:
+    name: cloudflare-clusterissuer
+    kind: ClusterIssuer
+  dnsNames:
+    - alertmanager.cluster.simonjung.io
+ingressAlertmanager:
+  host: alertmanager.cluster.simonjung.io
 onePasswordSecret:
   name: grafana-admin-credentials
   itemPath: vaults/Kubernetes/items/grafana-admin-credentials

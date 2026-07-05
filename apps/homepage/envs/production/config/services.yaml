@@ -10,6 +10,14 @@
         siteMonitor: https://grafana.cluster.simonjung.io
         description: Metrics & dashboards for cluster and apps
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/grafana.svg
+    - Alertmanager:
+        href: https://alertmanager.cluster.simonjung.io
+        siteMonitor: https://alertmanager.cluster.simonjung.io
+        description: Active alerts & silences
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/prometheus.svg
+        widget:
+          type: alertmanager
+          url: http://prometheus-alertmanager.monitoring.svc.cluster.local:9093
     - Benchmarks:
         href: https://grafana.cluster.simonjung.io/d/ccbb2351-2ae2-462f-ae0e-f2c893ad1028/k6-prometheus
         description: k6 Load-Test Results
