@@ -50,6 +50,13 @@ spec:
                 secretKeyRef:
                   name: linkding-db-app
                   key: password
+          # Settings shim (persistent DB connections) - overlays the
+          # image's placeholder custom.py, see custom.py in this dir
+          volumeMounts:
+            - name: custom-settings
+              mountPath: /etc/linkding/bookmarks/settings/custom.py
+              subPath: custom.py
+              readOnly: true
       volumes:
         # The base RWO PVC cannot be shared by 2 replicas; dev only keeps
         # favicons/assets here (bookmarks live in postgres) - per-pod
@@ -57,3 +64,6 @@ spec:
         - name: linkding-volume
           persistentVolumeClaim: null
           emptyDir: {}
+        - name: custom-settings
+          configMap:
+            name: linkding-custom-settings
