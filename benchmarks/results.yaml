@@ -449,3 +449,49 @@
     same profile, testid linkding-knee-2x1000m-pooled. If pooling
     restores throughput, revisit the 1000 renders/s target; else also
     consider raising linkding-db's cpu limit.
+
+- run: 2026-07-05-linkding-knee-2x1000m-pooled-1
+  testid: linkding-knee-2x1000m-pooled
+  scenario: linkding-knee
+  window_utc: ["2026-07-05T03:00:00Z", "2026-07-05T03:07:33Z"]
+  status: completed
+  target:
+    app: linkding (CNPG postgres via pgbouncer Pooler, session mode,
+      pool 20 - A/B against record 11 unpooled)
+    namespace: linkding-development
+    endpoint: http://linkding.linkding-development.svc:3000/login/
+    image: sissbruecker/linkding:1.45.0
+    replicas: 2  # pinned amleyg00, emptyDir scratch
+    cpu_request: 125m
+    cpu_limit: 1000m
+    memory_request: 768Mi
+    memory_limit: 1Gi
+    database: linkding-db CNPG 2-instance (primary on amley00 N97,
+      cpu limit 500m); pooler 1x pgbouncer on amleyg00
+  profile: ramping-arrival-rate 25->1200 iterations/s over 7m, maxVUs 600
+  results:
+    requests_total: 96077
+    failures_total: 1259
+    error_rate: 0.013
+    peak_completed_rps: 409
+    peak_successful_rps: 409
+    p95_s_at_peak: 5.6  # saturation tail; median 195ms, min 4.5ms
+    median_s: 0.195
+    vus_peak: 600
+    dropped_iterations: 135626
+  bottleneck: >-
+    pgbouncer fixed record 11: 31 -> 409 successful renders/s (13x).
+    Knee ~409/s, now app-CPU-bound again (pods ~900m of 1000m at peak;
+    pooler loafing at ~50m; renders 16ms average pre-knee). Note the
+    per-render app cost roughly DOUBLED vs sqlite (record 10: ~525
+    renders/core; here ~205/core): Django still connects+auths to
+    pgbouncer per request incl. a failed-TLS probe (sslmode=prefer,
+    pooler has no client TLS), and the postgres primary (500m, N97)
+    also pinned during the mid-run - either could become the next
+    ceiling. Errors (1.3%) were uwsgi EOFs/timeouts past the knee.
+  followup: >-
+    1000 renders/s goal still open; ~409/s is the 2x1000m + pooler
+    ceiling. Next levers, roughly in order: Django persistent
+    connections (CONN_MAX_AGE - check if linkding exposes it) to kill
+    the per-request reconnect, more replicas/CPU on amleyg00, raise
+    linkding-db primary cpu limit / move primary off the N97.
