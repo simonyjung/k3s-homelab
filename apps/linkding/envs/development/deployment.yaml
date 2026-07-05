@@ -24,21 +24,17 @@ spec:
               cpu: 1000m
           # Dev-only: point linkding at the CNPG cluster instead of
           # sqlite. Credentials come from the linkding-db-app secret the
-          # operator generates - they never leave the cluster. The -rw
-          # service in the host key always targets the current primary.
+          # operator generates - they never leave the cluster. Host is
+          # the pgbouncer Pooler service (NOT the -rw service): Django
+          # opens a DB connection per request and the unpooled SSL
+          # handshake storm was the record-11 knee.
           env:
             - name: LD_DB_ENGINE
               value: postgres
             - name: LD_DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: linkding-db-app
-                  key: host
+              value: linkding-db-pooler-rw
             - name: LD_DB_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: linkding-db-app
-                  key: port
+              value: "5432"
             - name: LD_DB_DATABASE
               valueFrom:
                 secretKeyRef:

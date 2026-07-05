@@ -9,7 +9,7 @@ spec:
     configMap:
       name: linkding-knee-script
       file: script.js
-  arguments: -o experimental-prometheus-rw --tag testid=linkding-knee-2x1000m
+  arguments: -o experimental-prometheus-rw --tag testid=linkding-knee-2x1000m-pooled
   runner:
     nodeSelector:
       gpu: amd

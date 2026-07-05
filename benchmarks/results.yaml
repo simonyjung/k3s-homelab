@@ -404,3 +404,48 @@
   followup: >-
     Step 2: cpu limit 1000m (2x1000m total) + ramp to 1200 targeting the
     1000 renders/s goal; watch for a worker-count ceiling before CPU.
+
+- run: 2026-07-05-linkding-knee-2x1000m-1
+  testid: linkding-knee-2x1000m
+  scenario: linkding-knee
+  window_utc: ["2026-07-05T02:48:03Z", "2026-07-05T02:55:34Z"]
+  status: completed
+  target:
+    app: linkding (FIRST run actually on CNPG postgres - see record 10
+      correction; unpooled, connection-per-request)
+    namespace: linkding-development
+    endpoint: http://linkding.linkding-development.svc:3000/login/
+    image: sissbruecker/linkding:1.45.0
+    replicas: 2  # pinned amleyg00, emptyDir scratch
+    cpu_request: 125m
+    cpu_limit: 1000m
+    memory_request: 768Mi
+    memory_limit: 1Gi
+    database: linkding-db CNPG 2-instance, primary cpu limit 500m
+  profile: ramping-arrival-rate 25->1200 iterations/s over 7m, maxVUs 600
+  results:
+    requests_total: 14147
+    failures_total: 2472
+    error_rate: 0.175
+    peak_completed_rps: 40
+    peak_successful_rps: 31
+    p95_s_at_peak: 46.7
+    median_s: 6.8
+    max_s: 60.0  # k6 request timeout
+    vus_peak: 600  # ceiling hit 44s into the run
+    dropped_iterations: 217602
+  bottleneck: >-
+    Postgres connection setup, NOT app CPU. Django opens a fresh DB
+    connection with a full SSL handshake per request; the CNPG primary
+    sat pinned at its 500m limit the entire run (kubectl top) burning
+    CPU on connection churn + abandoned-handshake storm ("could not
+    accept SSL connection: unexpected eof") while the 2x1000m app pods
+    idled at ~100m each. Renders 2ms (sqlite) -> 200ms+ (unpooled pg)
+    even at moderate load; system collapsed at ~30-40 completed
+    renders/s vs 400/s on sqlite (record 10) at HALF the app CPU.
+    Confirms the sqlite-vs-postgres caveat in record 10's correction.
+  followup: >-
+    A/B with pgbouncer via CNPG Pooler CRD (session mode, pool 20) -
+    same profile, testid linkding-knee-2x1000m-pooled. If pooling
+    restores throughput, revisit the 1000 renders/s target; else also
+    consider raising linkding-db's cpu limit.
