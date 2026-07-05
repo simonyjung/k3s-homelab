@@ -29,10 +29,6 @@ spec:
       default_pool_size: "20"
   template:
     spec:
-      # Same node as the app pods and the benchmark runner - keep the
-      # measured path on one machine (see deployment.yaml)
-      nodeSelector:
-        gpu: amd
       containers:
         - name: pgbouncer
           resources:

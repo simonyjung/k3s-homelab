@@ -4,24 +4,16 @@ kind: Deployment
 metadata:
   name: linkding
 spec:
-  # Horizontal scaling is possible in dev BECAUSE the backend is postgres
-  # (production stays sqlite = replicas 1 forever). Scale-up experiment
-  # for the 1000 rps target - see benchmarks/results.yaml records 6/10+.
-  replicas: 2
+  # Back to 1 replica (2026-07-05): the 1000 rps experiment is closed
+  # (results.yaml records 10-14; knee ~1249/s at 2x1000m) and scaling
+  # the render tier for real needs a shared SECRET_KEY + per-pod huey
+  # answer first - see plan.md follow-ups. Resources revert to base
+  # (250m); the postgres + pooler + persistent-connections stack stays.
+  replicas: 1
   template:
     spec:
-      # Pin to the Zen node: a millicore here is worth ~4x an N97
-      # millicore (record 7), so floating pods would make benchmark
-      # results placement-dependent noise
-      nodeSelector:
-        gpu: amd
       containers:
         - name: linkding
-          # 1000 rps experiment step 2: base 250m -> 500m -> 1000m
-          # (step 1 result: 400 renders/s at 76% of 2x500m, knee not hit)
-          resources:
-            limits:
-              cpu: 1000m
           # Dev-only: point linkding at the CNPG cluster instead of
           # sqlite. Credentials come from the linkding-db-app secret the
           # operator generates - they never leave the cluster. Host is
@@ -58,9 +50,8 @@ spec:
               subPath: custom.py
               readOnly: true
       volumes:
-        # The base RWO PVC cannot be shared by 2 replicas; dev only keeps
-        # favicons/assets here (bookmarks live in postgres) - per-pod
-        # scratch is fine
+        # Dev keeps emptyDir over the base PVC: bookmarks live in
+        # postgres and dev has no assets/favicons worth persisting
         - name: linkding-volume
           persistentVolumeClaim: null
           emptyDir: {}
