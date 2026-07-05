@@ -25,6 +25,12 @@ ingress:
 # backup target above; retain bounds growth - the job deletes its own
 # backups beyond the newest N per volume. Manual backups are never
 # auto-pruned. snapshot-cleanup purges system/error snapshots on-node.
+# snapshot-delete is the only task that prunes user-created snapshots
+# (manual, preupgrade, system-backup leftovers) - without it they pin
+# deleted blocks forever and actualSize grows past the volume size.
+# retain 3 = latest daily-backup snap + latest weekly-backup snap
+# (auto-cleanup keeps one per backup job) + one slot so a manual
+# snapshot survives ~a day before being pruned.
 recurringJobs:
   - name: backup-daily
     task: backup
@@ -46,6 +52,11 @@ recurringJobs:
     cron: "0 0 * * *"
     retain: 0
     concurrency: 1
+  - name: snapshot-delete
+    task: snapshot-delete
+    cron: "30 4 * * *"
+    retain: 3
+    concurrency: 2
 # htpasswd credentials for the basic-auth middleware guarding the UI
 dashboardAuth:
   secretName: dashboard-basic-auth
