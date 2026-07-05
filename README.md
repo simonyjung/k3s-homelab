@@ -72,6 +72,8 @@ Goals:
 - Off-cluster Backups - nightly incremental Longhorn backups to the NAS with bounded retention; restore procedures in [docs/restore.md](./docs/restore.md).
 - External Secrets - 1Password Operator manages Kubernetes secrets securely.
 - Observability - Prometheus and Grafana provide system-level insights.
+- CI Validation Gates - every PR renders all manifests, schema-checks them with kubeconform against the exact cluster version, and gets a bot comment with the full rendered diff of what the cluster will see on merge; see [docs/ci.md](./docs/ci.md).
+- Policy-as-Code Auditing - Kyverno evaluates Pod Security Standards plus best-practice policies in audit mode, maintaining a live compliance inventory without ever blocking admission; see [docs/policy.md](./docs/policy.md).
 - Benchmarking - version-controlled k6 load tests ([benchmarks/](./benchmarks/)) ramp requests-per-second against deployed apps, stream results to Prometheus for Grafana dashboards, and log findings to a durable run record.
 - Patched Nodes - unattended security updates with staggered one-node-per-night reboot windows; see [docs/node-updates.md](./docs/node-updates.md).
 
@@ -140,12 +142,14 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 │   ├── argocd/
 │   ├── cert-manager/
 │   ├── k6-operator/
+│   ├── kyverno/
 │   ├── longhorn-system/
 │   ├── metallb/
 │   ├── monitoring/
 │   ├── tailscale/
 │   └── traefik/
 ├── notes/                 # Operations journal (plan + history)
+├── scripts/               # Shared CI/local tooling (render-all.sh)
 └── root-argocd-app.yaml   # Level 1
 ```
 
@@ -153,7 +157,7 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 - **apps-helm/**: Helm umbrella charts for applications (currently empty; recreated automatically when a chart is added).
 - **appsets/**: ArgoCD ApplicationSets that auto-discover the directories above.
 - **benchmarks/**: k6 load-test scenarios and the [run log](./benchmarks/results.yaml) — deliberately outside the ApplicationSet globs; see [benchmarks/README.md](./benchmarks/README.md).
-- **docs/**: Documentation, including [upgrades](./docs/upgrades.md), [node OS updates](./docs/node-updates.md), [backup/restore](./docs/restore.md), [load balancing](./docs/load-balancing.md), and [dashboard auth](./docs/dashboard-auth.md).
+- **docs/**: Documentation, including [CI and PR validation](./docs/ci.md), [policy auditing](./docs/policy.md), [upgrades](./docs/upgrades.md), [node OS updates](./docs/node-updates.md), [backup/restore](./docs/restore.md), [load balancing](./docs/load-balancing.md), and [dashboard auth](./docs/dashboard-auth.md).
 - **infrastructure/**: Plain-manifest (Kustomize) infrastructure components, e.g. the K3s system-upgrade-controller.
 - **infrastructure-helm/**: Helm umbrella charts for infrastructure components, including self-managed Argo CD and the 1Password operator.
 - **notes/**: Operations journal — the [active plan](./notes/plan.md) and per-quarter history of completed items, updated alongside the PRs that do the work.
