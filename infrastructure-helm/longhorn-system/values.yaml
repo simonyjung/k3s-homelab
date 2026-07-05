@@ -34,6 +34,10 @@ ingress:
 # 04:30 run. A retain of 3 would preserve one stale snapshot forever:
 # steady state never has a third recurring snapshot to push it out.
 # For state that must survive a risky operation, take a backup.
+# The no-backup group (extraGroups) is the maintenance-only tier for
+# volumes on the longhorn-ephemeral class: trim + snapshot pruning,
+# never backed up. Explicit group membership replaces the implicit
+# default group, which is what keeps them out of the backup jobs.
 recurringJobs:
   - name: backup-daily
     task: backup
@@ -50,16 +54,19 @@ recurringJobs:
     cron: "0 4 * * *"
     retain: 0
     concurrency: 2
+    extraGroups: [no-backup]
   - name: filesystem-trim
     task: filesystem-trim
     cron: "0 0 * * *"
     retain: 0
     concurrency: 1
+    extraGroups: [no-backup]
   - name: snapshot-delete
     task: snapshot-delete
     cron: "30 4 * * *"
     retain: 2
     concurrency: 2
+    extraGroups: [no-backup]
 # htpasswd credentials for the basic-auth middleware guarding the UI
 dashboardAuth:
   secretName: dashboard-basic-auth
