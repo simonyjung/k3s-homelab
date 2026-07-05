@@ -18,7 +18,7 @@ spec:
       imagePullSecrets:
         - name: shaadimubarak-ghcr-pull-secret
       containers:
-        - image: ghcr.io/simonyjung/shaadimubarak-api:sha-bd938e3
+        - image: ghcr.io/simonyjung/shaadimubarak-api:sha-d39b2f0
           name: shaadimubarak-api
           ports:
             - name: http
