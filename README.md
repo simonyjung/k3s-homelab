@@ -73,6 +73,7 @@ Goals:
 - External Secrets - 1Password Operator manages Kubernetes secrets securely.
 - Observability - Prometheus and Grafana provide system-level insights.
 - Centralized Logging - OpenObserve stores 15 days of every pod's logs plus the k3s journal (including etcd), shipped from all nodes by a Fluent Bit DaemonSet and searchable with full-text queries and dashboards.
+- Error Tracking - GlitchTip captures application exceptions with stack traces and request context; apps report with the stock Sentry SDK against in-cluster DSNs, backed by a replicated CloudNativePG database.
 - CI Validation Gates - every PR renders all manifests, schema-checks them with kubeconform against the exact cluster version, and gets a bot comment with the full rendered diff of what the cluster will see on merge; see [docs/ci.md](./docs/ci.md).
 - Policy-as-Code Auditing - Kyverno evaluates Pod Security Standards plus best-practice policies in audit mode, maintaining a live compliance inventory without ever blocking admission; see [docs/policy.md](./docs/policy.md).
 - Benchmarking - version-controlled k6 load tests ([benchmarks/](./benchmarks/)) ramp requests-per-second against deployed apps, stream results to Prometheus for Grafana dashboards, and log findings to a durable run record.
@@ -132,6 +133,8 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 │   ├── plex/
 │   ├── shaadimubarak/
 │   └── transmission/
+├── apps-helm/             # Level 3 (Helm umbrella charts for apps)
+│   └── glitchtip/
 ├── appsets/               # Level 2
 ├── benchmarks/            # k6 load-test scenarios + run log (applied manually, never ArgoCD-synced)
 ├── docs/
@@ -142,11 +145,13 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 │   ├── 1password/
 │   ├── argocd/
 │   ├── cert-manager/
+│   ├── cloudnative-pg/
 │   ├── k6-operator/
 │   ├── kyverno/
 │   ├── longhorn-system/
 │   ├── metallb/
 │   ├── monitoring/
+│   ├── openobserve/
 │   ├── tailscale/
 │   └── traefik/
 ├── notes/                 # Operations journal (plan + history)
@@ -155,7 +160,7 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 ```
 
 - **apps/**: Kubernetes manifests for applications deployed using Kustomize (`base/` + `envs/<env>/` overlays).
-- **apps-helm/**: Helm umbrella charts for applications (currently empty; recreated automatically when a chart is added).
+- **apps-helm/**: Helm umbrella charts for applications, split per environment under `envs/<env>/values.yaml` (currently GlitchTip error tracking).
 - **appsets/**: ArgoCD ApplicationSets that auto-discover the directories above.
 - **benchmarks/**: k6 load-test scenarios and the [run log](./benchmarks/results.yaml) — deliberately outside the ApplicationSet globs; see [benchmarks/README.md](./benchmarks/README.md).
 - **docs/**: Documentation, including [CI and PR validation](./docs/ci.md), [policy auditing](./docs/policy.md), [upgrades](./docs/upgrades.md), [node OS updates](./docs/node-updates.md), [backup/restore](./docs/restore.md), [load balancing](./docs/load-balancing.md), and [dashboard auth](./docs/dashboard-auth.md).
