@@ -28,6 +28,11 @@ openobserve-standalone:
     ZO_MMDB_DISABLE_DOWNLOAD: "true"
     ZO_COMPACT_DATA_RETENTION_DAYS: "15"
     ZO_WEB_URL: "https://logs.cluster.simonjung.io"
+    # Default info logs every ingest POST (access log) and ~50 lines per
+    # search across the flight/grpc/wal/cache modules - with a dashboard
+    # open the server emitted ~120 lines/s, all self-describing chatter
+    # that fluent-bit ingested right back. Warnings/errors still log.
+    RUST_LOG: "warn"
 
   resources:
     requests:
