@@ -1,0 +1,30 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+  - ingress.yaml
+  - certificate.yaml
+  - onepasswordsecret.yaml
+
+patches:
+  - path: api-deployment.yaml
+  - path: web-deployment.yaml
+  # Dev doesn't need Postgres replication; one instance on Longhorn.
+  - patch: |-
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: shaadimubarak-db
+      spec:
+        instances: 1
+
+# Dev floats independently of the tags pinned in base (which production
+# inherits). The `newTag` lines are rewritten by the shaadimubarak repo's
+# deploy-dev CI job after every image build - do not bump by hand.
+images:
+  - name: ghcr.io/simonyjung/shaadimubarak-api
+    newTag: sha-c5aebba
+  - name: ghcr.io/simonyjung/shaadimubarak-web
+    newTag: sha-c5aebba

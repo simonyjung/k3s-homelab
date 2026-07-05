@@ -1,0 +1,15 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shaadimubarak-api
+spec:
+  template:
+    spec:
+      containers:
+        - name: shaadimubarak-api
+          env:
+            - name: DJANGO_ALLOWED_HOSTS
+              value: "shaadimubarak-api,shaadimubarak-api-dev.cluster.simonjung.io"
+            - name: DJANGO_CSRF_TRUSTED_ORIGINS
+              value: "https://shaadimubarak-api-dev.cluster.simonjung.io"
