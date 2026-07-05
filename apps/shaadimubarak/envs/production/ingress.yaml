@@ -1,0 +1,25 @@
+---
+# LAN-only exposure of the Django admin (guest list + tracking dashboard).
+# Guests never touch this host; the public invite goes through the tunnel.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shaadimubarak-api-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: shaadimubarak-api.cluster.simonjung.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shaadimubarak-api
+                port:
+                  number: 8000
+  tls:
+    - hosts:
+        - shaadimubarak-api.cluster.simonjung.io
+      secretName: shaadimubarak-api-ingress-secret
