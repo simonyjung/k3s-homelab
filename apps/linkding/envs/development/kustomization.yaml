@@ -4,6 +4,8 @@ kind: Kustomization
 
 resources:
   - ../../base
+  - ingress.yaml
+  - certificate.yaml
   - postgres-cluster.yaml
   - postgres-pooler.yaml
 
