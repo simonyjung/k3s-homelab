@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: glitchtip-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: {{.Values.ingress.host}}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: glitchtip-web
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - {{.Values.ingress.host}}
+      secretName: {{.Values.certificate.secretName}}
