@@ -1,0 +1,70 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: shaadimubarak-api
+  name: shaadimubarak-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shaadimubarak-api
+  template:
+    metadata:
+      labels:
+        app: shaadimubarak-api
+    spec:
+      containers:
+        - image: ghcr.io/simonyjung/shaadimubarak-api:sha-0b251e4
+          name: shaadimubarak-api
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          env:
+            - name: DJANGO_DEBUG
+              value: "false"
+            # `shaadimubarak-api` is the Host header the web pod sends over
+            # cluster DNS; the cluster.simonjung.io name is the LAN admin host.
+            - name: DJANGO_ALLOWED_HOSTS
+              value: "shaadimubarak-api,shaadimubarak-api.cluster.simonjung.io"
+            - name: DJANGO_CSRF_TRUSTED_ORIGINS
+              value: "https://shaadimubarak-api.cluster.simonjung.io"
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: shaadimubarak-django-secret
+                  key: DJANGO_SECRET_KEY
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shaadimubarak-db-app
+                  key: uri
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+              httpHeaders:
+                # Probes hit the pod IP, which Django would reject as an
+                # unknown host with DEBUG off.
+                - name: Host
+                  value: shaadimubarak-api
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: shaadimubarak-api
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 25m
+            limits:
+              memory: 512Mi
+              cpu: 200m

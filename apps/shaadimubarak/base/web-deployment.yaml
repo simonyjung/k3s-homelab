@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: shaadimubarak-web
+  name: shaadimubarak-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shaadimubarak-web
+  template:
+    metadata:
+      labels:
+        app: shaadimubarak-web
+    spec:
+      containers:
+        - image: ghcr.io/simonyjung/shaadimubarak-web:sha-0b251e4
+          name: shaadimubarak-web
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: API_BASE
+              value: "http://shaadimubarak-api:8000"
+            # Public URL; SvelteKit checks form-action origins against this.
+            - name: ORIGIN
+              value: "https://shaadimubarak.simonjung.io"
+            # Guests only ever arrive through the Cloudflare tunnel, so the
+            # real client IP is in this header.
+            - name: ADDRESS_HEADER
+              value: "cf-connecting-ip"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 25m
+            limits:
+              memory: 256Mi
+              cpu: 200m
