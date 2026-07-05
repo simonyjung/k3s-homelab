@@ -495,3 +495,49 @@
     connections (CONN_MAX_AGE - check if linkding exposes it) to kill
     the per-request reconnect, more replicas/CPU on amleyg00, raise
     linkding-db primary cpu limit / move primary off the N97.
+
+- run: 2026-07-05-linkding-knee-2x1000m-pooled-pconn-1
+  testid: linkding-knee-2x1000m-pooled-pconn
+  scenario: linkding-knee
+  window_utc: ["2026-07-05T03:16:21Z", "2026-07-05T03:23:25Z"]
+  status: completed
+  target:
+    app: linkding (CNPG postgres via pgbouncer + persistent Django
+      connections via custom.py shim - CONN_MAX_AGE None, health
+      checks, sslmode disable; third arm of the A/B vs records 11/12)
+    namespace: linkding-development
+    endpoint: http://linkding.linkding-development.svc:3000/login/
+    image: sissbruecker/linkding:1.45.0
+    replicas: 2  # pinned amleyg00, emptyDir scratch
+    cpu_request: 125m
+    cpu_limit: 1000m
+    memory_request: 768Mi
+    memory_limit: 1Gi
+    database: linkding-db CNPG 2-instance (primary on amley00 N97,
+      cpu limit 500m); pooler 1x pgbouncer on amleyg00
+  profile: ramping-arrival-rate 25->1200 iterations/s over 7m, maxVUs 600
+  results:
+    requests_total: 231749
+    failures_total: 0
+    error_rate: 0.0
+    peak_completed_rps: 1164
+    peak_successful_rps: 1164
+    p95_s_at_peak: 0.0056
+    median_s: 0.0024
+    max_s: 1.15
+    vus_peak: 300  # never grew past preallocation
+    dropped_iterations: 0
+  bottleneck: >-
+    NONE REACHED - full profile inc. the 1200/s stage completed with
+    zero failures; every scheduled iteration executed (avg 551.8/s =
+    exact profile average). 1000 renders/s GOAL ACHIEVED. Persistent
+    connections + sslmode=disable cut renders from 16ms to 2.4ms
+    median; at the 1164/s peak the app pods sat at ~820m of 1000m,
+    postgres primary ~450m of 500m, pgbouncer ~20m. ~700 renders/core
+    now BEATS the sqlite baseline (~525/core, record 10). Three-way:
+    unpooled 31/s @ 17.5% err -> pooled 409/s @ 1.3% -> pooled+pconn
+    1164+/s @ 0%.
+  followup: >-
+    Knee still unfound (profile exhausted first) - rerun with the
+    extended 2000/s profile (testid ...-pconn-2k). Watch postgres
+    primary (450m of 500m at 1164/s, N97) as the likely next ceiling.
