@@ -15,15 +15,17 @@ export const options = {
   scenarios: {
     ramp: {
       executor: 'ramping-arrival-rate',
-      startRate: 25,
+      startRate: 100,
       timeUnit: '1s',
       preAllocatedVUs: 300,
       maxVUs: 600,
+      // Extended after the pooled+pconn run finished 1200/s untouched
+      // (record 13, 0 failures at 1164/s sustained) - knee still unfound
       stages: [
-        { duration: '1m', target: 100 },
-        { duration: '2m', target: 500 },
-        { duration: '2m', target: 1000 },
-        { duration: '1m', target: 1200 },
+        { duration: '1m', target: 500 },
+        { duration: '2m', target: 1200 },
+        { duration: '2m', target: 1700 },
+        { duration: '1m', target: 2000 },
         { duration: '1m', target: 0 },
       ],
     },
