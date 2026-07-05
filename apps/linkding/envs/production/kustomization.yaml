@@ -10,3 +10,14 @@ resources:
   - cloudflared.yaml
   - postgres-cluster.yaml
   - postgres-pooler.yaml
+
+patches:
+  - path: deployment.yaml
+
+# Django settings shim mounted over linkding's custom.py hook - see
+# comments in custom.py. The name hash forces a rollout on change
+# (subPath mounts never hot-reload).
+configMapGenerator:
+  - name: linkding-custom-settings
+    files:
+      - custom.py
