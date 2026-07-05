@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkding
+spec:
+  template:
+    spec:
+      containers:
+        - name: linkding
+          # Postgres via the pgbouncer Pooler (never the -rw service
+          # directly): Django connects per request unless pooled, and
+          # the pooler follows primary switchover. Credentials come
+          # from the linkding-db-app secret the CNPG operator
+          # generates. The old sqlite file stays on the PVC (mounted
+          # at /etc/linkding/data) as a rollback artifact.
+          env:
+            - name: LD_DB_ENGINE
+              value: postgres
+            - name: LD_DB_HOST
+              value: linkding-db-pooler-rw
+            - name: LD_DB_PORT
+              value: "5432"
+            - name: LD_DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-db-app
+                  key: dbname
+            - name: LD_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-db-app
+                  key: username
+            - name: LD_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-db-app
+                  key: password
+          # Settings shim (persistent DB connections) - overlays the
+          # image's placeholder custom.py, see custom.py in this dir
+          volumeMounts:
+            - name: custom-settings
+              mountPath: /etc/linkding/bookmarks/settings/custom.py
+              subPath: custom.py
+              readOnly: true
+      volumes:
+        - name: custom-settings
+          configMap:
+            name: linkding-custom-settings
