@@ -1,0 +1,56 @@
+---
+# Replaces the chart's migrate Job (migrationJob.enabled: false). That
+# one is a helm post-install/pre-upgrade hook, which ArgoCD runs as
+# PreSync - and on a FIRST install PreSync deadlocks: it runs before the
+# Sync phase ever applies the CNPG Cluster, OnePasswordItem, and valkey
+# Secret the job's env needs (observed live 2026-07-05, plan 11.2; it
+# would also break the apply-root-app-to-an-empty-cluster bootstrap).
+# As a Sync-phase hook this Job is applied alongside its dependencies;
+# the kubelet retries env resolution (CreateContainerConfigError) until
+# the operators publish the secrets, then migrations run.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: glitchtip-migrate
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  # Generous: a first install waits out CNPG cluster bootstrap
+  activeDeadlineSeconds: 1800
+  backoffLimit: 10
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: glitchtip/glitchtip:{{.Values.glitchtip.image.tag}}
+          command: ["bin/run-migrate.sh"]
+          env:
+            - name: DEBUG
+              value: "False"
+            - name: GLITCHTIP_DOMAIN
+              value: {{.Values.glitchtip.glitchtip.domain | quote}}
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{.Values.glitchtip.glitchtip.existingSecret}}
+                  key: SECRET_KEY
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{.Values.glitchtip.glitchtip.database.existingSecret}}
+                  key: {{.Values.glitchtip.glitchtip.database.existingSecretKey}}
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  # the chart-rendered secret, named by its fullname
+                  name: {{.Values.glitchtip.fullnameOverride}}
+                  key: REDIS_URL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

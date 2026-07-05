@@ -16,9 +16,11 @@ DSN swap.
   operator-generated `glitchtip-db-app` secret (`uri` key).
 - **Secrets:** Django `SECRET_KEY` from 1Password item
   `glitchtip-secret-key` (field labeled `SECRET_KEY`).
-- **Migrations:** the chart's migrate Job runs as a helm
-  post-install/pre-upgrade hook, which ArgoCD executes as sync hooks and
-  recreates each time (`before-hook-creation`).
+- **Migrations:** the chart's own migrate Job is disabled — as a helm
+  pre-upgrade hook ArgoCD runs it as PreSync, which deadlocks on a first
+  install (it waits on secrets the Sync phase hasn't applied yet).
+  `templates/migrate-job.yaml` replaces it as a Sync-phase hook. Bump
+  the pinned `glitchtip.image.tag` together with chart dependency bumps.
 
 First deploy: register the first account promptly — the first signup is
 open, then registration is closed by default. Email is the console

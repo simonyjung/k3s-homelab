@@ -5,6 +5,12 @@
 glitchtip:
   fullnameOverride: glitchtip
 
+  image:
+    # Pinned (instead of following the chart's appVersion) so the web
+    # pods and templates/migrate-job.yaml can never run different
+    # versions - bump both together when the chart dependency bumps
+    tag: "6.2.0"
+
   glitchtip:
     # Django SECRET_KEY, pulled by the 1Password operator (see
     # onePasswordSecret below); the item needs a field labeled SECRET_KEY
@@ -17,17 +23,15 @@ glitchtip:
       existingSecret: glitchtip-db-app
       existingSecretKey: uri
 
-  # Web pods (the worker runs embedded): chart defaults are 2 replicas,
-  # PDB minAvailable 1, soft hostname anti-affinity, requests 100m/256Mi.
-  # The migration Job is the only workload without default requests:
+  # Web pods (the worker runs embedded) stay at chart defaults: 2
+  # replicas, PDB minAvailable 1, soft hostname anti-affinity, requests
+  # 100m/256Mi.
+
+  # The chart's migrate Job is a helm pre-upgrade hook, which ArgoCD
+  # runs as PreSync - on a first install that deadlocks (see
+  # templates/migrate-job.yaml, which replaces it)
   migrationJob:
-    resources:
-      requests:
-        cpu: 100m
-        memory: 256Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
+    enabled: false
 
   # ServiceMonitor for the built-in /metrics endpoint; prometheus picks
   # up all ServiceMonitors (serviceMonitorSelectorNilUsesHelmValues off)
