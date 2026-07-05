@@ -1,0 +1,170 @@
+---
+openobserve-standalone:
+  # Deterministic service name for the ingress backend and the
+  # fluent-bit output (default would be <release>-openobserve-standalone)
+  fullnameOverride: openobserve
+
+  auth:
+    # 1Password login item (see onePasswordSecret below); username must be
+    # an email address - OpenObserve uses it as the root login
+    existingRootUserSecret:
+      name: openobserve-root-credentials
+      emailKey: username
+      passwordKey: password
+
+  persistence:
+    enabled: true
+    size: 20Gi
+    # Logs are disposable: single Longhorn replica instead of 3x. Losing the
+    # node that holds the replica loses log history - accepted. Parquet +
+    # compaction keeps actual usage well under nominal; expansion is allowed
+    # if 15 days ever outgrows this.
+    storageClass: longhorn-1replica
+
+  # https://openobserve.ai/docs/environment-variables/
+  config:
+    ZO_TELEMETRY: "false"
+    # No GeoIP enrichment needed; skips the startup download from zinclabs
+    ZO_MMDB_DISABLE_DOWNLOAD: "true"
+    ZO_COMPACT_DATA_RETENTION_DAYS: "15"
+    ZO_WEB_URL: "https://logs.cluster.simonjung.io"
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 2Gi
+
+  # Prefer the agent node: keeps ingest/query IO off the three etcd servers
+  # (fsync latency, plan 6.10) without becoming unschedulable if it is down.
+  # dataLocality best-effort on longhorn-1replica migrates the replica along.
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                  - amleyg00
+
+fluent-bit:
+  # No helm-test pod in renders/diffs
+  testFramework:
+    enabled: false
+
+  env:
+    - name: OPENOBSERVE_USER
+      valueFrom:
+        secretKeyRef:
+          name: openobserve-root-credentials
+          key: username
+    - name: OPENOBSERVE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: openobserve-root-credentials
+          key: password
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 200Mi
+
+  # k3s runs containerd: container logs live under /var/log (pods/ plus
+  # containers/ symlinks) and Fedora's persistent journal is /var/log/journal,
+  # so /var/log covers everything; drop the chart-default /var/lib/docker
+  # mount (does not exist on the nodes, an empty dir would be created).
+  daemonSetVolumes:
+    - name: varlog
+      hostPath:
+        path: /var/log
+    - name: etcmachineid
+      hostPath:
+        path: /etc/machine-id
+        type: File
+  daemonSetVolumeMounts:
+    - name: varlog
+      mountPath: /var/log
+    - name: etcmachineid
+      mountPath: /etc/machine-id
+      readOnly: true
+
+  config:
+    # DB files persist tail/journal cursors on the host so a fluent-bit
+    # restart resumes instead of re-ingesting every log from scratch
+    inputs: |
+      [INPUT]
+          Name tail
+          Path /var/log/containers/*.log
+          multiline.parser cri
+          Tag kube.*
+          DB /var/log/flb_kube.db
+          Mem_Buf_Limit 5MB
+          Skip_Long_Lines On
+
+      [INPUT]
+          Name systemd
+          Tag host.*
+          Systemd_Filter _SYSTEMD_UNIT=k3s.service
+          Systemd_Filter _SYSTEMD_UNIT=k3s-agent.service
+          DB /var/log/flb_systemd.db
+          Read_From_Tail On
+
+    filters: |
+      [FILTER]
+          Name kubernetes
+          Match kube.*
+          Merge_Log On
+          Keep_Log Off
+          K8S-Logging.Parser On
+          K8S-Logging.Exclude On
+
+    # Streams: kube container logs -> "containers", k3s/k3s-agent journal
+    # (incl. embedded etcd) -> "k3s", both in the "default" org
+    outputs: |
+      [OUTPUT]
+          Name http
+          Match kube.*
+          Host openobserve
+          Port 5080
+          URI /api/default/containers/_json
+          Format json
+          Json_date_key _timestamp
+          Json_date_format iso8601
+          HTTP_User ${OPENOBSERVE_USER}
+          HTTP_Passwd ${OPENOBSERVE_PASSWORD}
+          compress gzip
+
+      [OUTPUT]
+          Name http
+          Match host.*
+          Host openobserve
+          Port 5080
+          URI /api/default/k3s/_json
+          Format json
+          Json_date_key _timestamp
+          Json_date_format iso8601
+          HTTP_User ${OPENOBSERVE_USER}
+          HTTP_Passwd ${OPENOBSERVE_PASSWORD}
+          compress gzip
+
+# Ingress and tls certificate is handled with custom values to be
+# consistent with the rest of the repository. LAN-only like Grafana;
+# OpenObserve has its own login.
+certificate:
+  name: openobserve-ingress-certificate
+  secretName: openobserve-ingress-secret
+  issuerRef:
+    name: cloudflare-clusterissuer
+    kind: ClusterIssuer
+  dnsNames:
+    - logs.cluster.simonjung.io
+ingress:
+  host: logs.cluster.simonjung.io
+onePasswordSecret:
+  name: openobserve-root-credentials
+  itemPath: vaults/Kubernetes/items/openobserve-root-credentials
