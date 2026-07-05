@@ -14,5 +14,8 @@ spec:
   # default group: applies to every volume without explicit job assignment
   groups:
     - default
+    {{- range .extraGroups }}
+    - {{ . }}
+    {{- end }}
   labels: {}
 {{- end }}

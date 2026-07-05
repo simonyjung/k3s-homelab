@@ -1,0 +1,21 @@
+---
+# Disposable data (logs, caches): single replica AND no backups. The
+# recurringJobSelector stamps no-backup group membership on the volume at
+# provision time; explicit membership replaces the implicit default group,
+# so these volumes get trim + snapshot pruning but are skipped by the
+# nightly/weekly backup jobs. Data here can be lost on node failure or
+# volume deletion - use only where that is acceptable by design.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-ephemeral
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+parameters:
+  numberOfReplicas: "1"
+  dataLocality: best-effort
+  staleReplicaTimeout: "30"
+  fsType: ext4
+  recurringJobSelector: '[{"name":"no-backup","isGroup":true}]'

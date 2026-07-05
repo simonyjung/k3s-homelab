@@ -15,11 +15,12 @@ openobserve-standalone:
   persistence:
     enabled: true
     size: 20Gi
-    # Logs are disposable: single Longhorn replica instead of 3x. Losing the
-    # node that holds the replica loses log history - accepted. Parquet +
-    # compaction keeps actual usage well under nominal; expansion is allowed
-    # if 15 days ever outgrows this.
-    storageClass: longhorn-1replica
+    # Logs are disposable: single Longhorn replica instead of 3x AND no
+    # nightly backups (the ephemeral class assigns the no-backup recurring
+    # job group at provision). Losing the node that holds the replica loses
+    # log history - accepted. Parquet + compaction keeps actual usage well
+    # under nominal; expansion is allowed if 15 days ever outgrows this.
+    storageClass: longhorn-ephemeral
 
   # https://openobserve.ai/docs/environment-variables/
   config:
