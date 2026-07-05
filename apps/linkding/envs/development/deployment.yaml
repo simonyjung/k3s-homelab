@@ -22,13 +22,6 @@ spec:
           resources:
             limits:
               cpu: 1000m
-      volumes:
-        # The base RWO PVC cannot be shared by 2 replicas; dev only keeps
-        # favicons/assets here (bookmarks live in postgres) - per-pod
-        # scratch is fine
-        - name: linkding-volume
-          persistentVolumeClaim: null
-          emptyDir: {}
           # Dev-only: point linkding at the CNPG cluster instead of
           # sqlite. Credentials come from the linkding-db-app secret the
           # operator generates - they never leave the cluster. The -rw
@@ -61,3 +54,10 @@ spec:
                 secretKeyRef:
                   name: linkding-db-app
                   key: password
+      volumes:
+        # The base RWO PVC cannot be shared by 2 replicas; dev only keeps
+        # favicons/assets here (bookmarks live in postgres) - per-pod
+        # scratch is fine
+        - name: linkding-volume
+          persistentVolumeClaim: null
+          emptyDir: {}

@@ -389,7 +389,13 @@
     0.50 limits (unthrottled). Horizontal scaling on postgres works:
     ~525 renders/core vs ~320/core when throttled at 250m (record 6).
     p95 rising 2.4ms -> 105ms in the top stage hints the next ceiling
-    (likely uwsgi workers) is near. METHODOLOGY NOTE discovered here:
+    (likely uwsgi workers) is near. CORRECTION (found post-run): the
+    step-1 patch misindented the LD_DB_* env block under volumes[] where
+    the API server silently dropped it, so this run actually served from
+    a fresh sqlite on emptyDir per pod, NOT postgres - fixed in the
+    step-2.5 PR. Render-path CPU numbers stand; the "horizontal scaling
+    on postgres" claim is re-proven by record 11.
+    METHODOLOGY NOTE discovered here:
     GET /login 301s to /login/ (django APPEND_SLASH) and k6 follows -
     every prior linkding-knee record counted redirect+render PAIRS, so
     record 6's "160 rps" = ~80 renders/s and record 7's "41-46" =
