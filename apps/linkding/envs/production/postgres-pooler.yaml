@@ -1,0 +1,36 @@
+---
+# pgbouncer in front of linkding-db. Django opens a DB connection per
+# request; unpooled, the connection+SSL handshake per request collapsed
+# throughput 13x in the dev benchmark (results.yaml record 11 vs 12).
+# The app also mounts a settings shim making connections persistent
+# (custom.py) - the pooler remains as the operator-native front door so
+# app connections survive primary switchover without config changes.
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: linkding-db-pooler-rw
+spec:
+  cluster:
+    name: linkding-db
+  instances: 1
+  type: rw
+  pgbouncer:
+    # session mode: safe for Django's connection lifecycle, no
+    # prepared-statement/cursor caveats of transaction mode
+    poolMode: session
+    parameters:
+      max_client_conn: "1000"
+      # 1 pod x 2 uwsgi procs x 2 threads = ~4-5 persistent client
+      # conns; 20 server conns is ample, well under max_connections
+      default_pool_size: "20"
+  template:
+    spec:
+      containers:
+        - name: pgbouncer
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
