@@ -17,15 +17,16 @@
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/prometheus.svg
         widget:
           # No native alertmanager widget exists; query alert state from
-          # Prometheus instead. Watchdog is excluded - it fires forever
-          # by design, so 0 firing is the healthy baseline.
+          # Prometheus instead. Count only severities that page (mirrors
+          # the Alertmanager route allowlist) - ignores the always-firing
+          # Watchdog/InfoInhibitor meta-alerts and info-level noise.
           type: prometheusmetric
           url: http://prometheus-prometheus.monitoring.svc.cluster.local:9090
           metrics:
             - label: Firing
-              query: count(ALERTS{alertstate="firing",alertname!="Watchdog"}) or on() vector(0)
+              query: count(ALERTS{alertstate="firing",severity=~"warning|critical"}) or on() vector(0)
             - label: Pending
-              query: count(ALERTS{alertstate="pending"}) or on() vector(0)
+              query: count(ALERTS{alertstate="pending",severity=~"warning|critical"}) or on() vector(0)
     - Benchmarks:
         href: https://grafana.cluster.simonjung.io/d/ccbb2351-2ae2-462f-ae0e-f2c893ad1028/k6-prometheus
         description: k6 Load-Test Results
