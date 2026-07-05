@@ -28,9 +28,12 @@ ingress:
 # snapshot-delete is the only task that prunes user-created snapshots
 # (manual, preupgrade, system-backup leftovers) - without it they pin
 # deleted blocks forever and actualSize grows past the volume size.
-# retain 3 = latest daily-backup snap + latest weekly-backup snap
-# (auto-cleanup keeps one per backup job) + one slot so a manual
-# snapshot survives ~a day before being pruned.
+# retain 2 = latest daily-backup snap + latest weekly-backup snap
+# (auto-cleanup keeps one per backup job), i.e. the steady state -
+# anything extra (manual snapshots included) is pruned at the next
+# 04:30 run. A retain of 3 would preserve one stale snapshot forever:
+# steady state never has a third recurring snapshot to push it out.
+# For state that must survive a risky operation, take a backup.
 recurringJobs:
   - name: backup-daily
     task: backup
@@ -55,7 +58,7 @@ recurringJobs:
   - name: snapshot-delete
     task: snapshot-delete
     cron: "30 4 * * *"
-    retain: 3
+    retain: 2
     concurrency: 2
 # htpasswd credentials for the basic-auth middleware guarding the UI
 dashboardAuth:
