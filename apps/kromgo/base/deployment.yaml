@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kromgo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kromgo
+  template:
+    metadata:
+      labels:
+        app: kromgo
+    spec:
+      # Reschedule off a dead node after 60s instead of the default 300s
+      tolerations:
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 60
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 60
+      volumes:
+        - name: config
+          configMap:
+            name: kromgo-config
+      containers:
+        - name: kromgo
+          image: ghcr.io/home-operations/kromgo:0.15.0
+          env:
+            - name: KROMGO_PROMETHEUS_URL
+              value: http://prometheus-operated.monitoring.svc.cluster.local:9090
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: 100m

@@ -33,6 +33,12 @@ _... powered by K3s and ArgoCD_
 [![Renovate](https://img.shields.io/badge/renovate-enabled-1A1F6C?logo=renovate&logoColor=white)](https://github.com/simonyjung/k3s-homelab/blob/main/.github/renovate.json)
 [![Last deployed](https://img.shields.io/github/last-commit/simonyjung/k3s-homelab?label=last%20deployed&logo=github)](https://github.com/simonyjung/k3s-homelab/commits/main)
 
+[![Nodes](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.simonjung.io%2Fbadges%2Fnodes%3Fformat%3Dshields)](https://home.simonjung.io)
+[![Pods](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.simonjung.io%2Fbadges%2Fpods%3Fformat%3Dshields)](https://home.simonjung.io)
+[![CPU](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.simonjung.io%2Fbadges%2Fcpu%3Fformat%3Dshields)](https://home.simonjung.io)
+[![Memory](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.simonjung.io%2Fbadges%2Fmemory%3Fformat%3Dshields)](https://home.simonjung.io)
+[![Alerts](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.simonjung.io%2Fbadges%2Falerts%3Fformat%3Dshields)](https://home.simonjung.io)
+
 </div>
 
 ---
@@ -118,8 +124,10 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 ```
 .
 ├── apps/                  # Level 3 (Kustomize apps)
+│   ├── cloudbeaver/
 │   ├── django-starter/
 │   ├── homepage/
+│   ├── kromgo/
 │   ├── linkding/
 │   ├── plex/
 │   └── transmission/
