@@ -15,6 +15,8 @@ spec:
       labels:
         app: shaadimubarak-api
     spec:
+      imagePullSecrets:
+        - name: shaadimubarak-ghcr-pull-secret
       containers:
         - image: ghcr.io/simonyjung/shaadimubarak-api:sha-0b251e4
           name: shaadimubarak-api
