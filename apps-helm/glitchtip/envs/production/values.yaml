@@ -33,8 +33,14 @@ glitchtip:
   migrationJob:
     enabled: false
 
-  # ServiceMonitor for the built-in /metrics endpoint; prometheus picks
-  # up all ServiceMonitors (serviceMonitorSelectorNilUsesHelmValues off)
+  # The /metrics endpoint the ServiceMonitor scrapes is gated behind
+  # this app setting (default False -> 404 -> TargetDown alert)
+  extraEnvVars:
+    - name: ENABLE_OBSERVABILITY_API
+      value: "True"
+
+  # ServiceMonitor for the /metrics endpoint; prometheus picks up all
+  # ServiceMonitors (serviceMonitorSelectorNilUsesHelmValues off)
   monitoring:
     enabled: true
 
