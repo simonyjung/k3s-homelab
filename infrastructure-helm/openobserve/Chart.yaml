@@ -10,5 +10,5 @@ dependencies:
     version: 0.80.3
     repository: https://charts.openobserve.ai
   - name: fluent-bit
-    version: 0.57.8
+    version: 0.57.9
     repository: https://fluent.github.io/helm-charts
