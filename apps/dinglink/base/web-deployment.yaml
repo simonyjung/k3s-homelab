@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dinglink-web
+  name: dinglink-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dinglink-web
+  template:
+    metadata:
+      labels:
+        app: dinglink-web
+    spec:
+      # Reschedule off a dead node after 60s instead of the default 300s
+      tolerations:
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 60
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 60
+      imagePullSecrets:
+        - name: dinglink-ghcr-pull-secret
+      containers:
+        - image: ghcr.io/simonyjung/dinglink-web:sha-272dd3e
+          name: dinglink-web
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: 100m

@@ -1,0 +1,34 @@
+---
+# One host, two backends: Traefik routes by longest matching prefix, so
+# /api/* reaches the NestJS api (which serves under /api natively via
+# setGlobalPrefix — no strip/rewrite needed) and everything else falls
+# through to the SPA.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dinglink-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: dinglink.cluster.simonjung.io
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: dinglink-api
+                port:
+                  number: 3000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dinglink-web
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - dinglink.cluster.simonjung.io
+      secretName: dinglink-ingress-secret

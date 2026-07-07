@@ -1,0 +1,23 @@
+---
+# Replication happens in Postgres (2 instances), so the volumes use the
+# single-replica Longhorn class. CNPG's initdb bootstrap creates the
+# `app` database and publishes its credentials in the `dinglink-db-app`
+# secret (key `uri`), which the api deployment consumes as DATABASE_URL.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: dinglink-db
+spec:
+  instances: 2
+  storage:
+    size: 2Gi
+    storageClass: longhorn-1replica
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  monitoring:
+    enablePodMonitor: true
