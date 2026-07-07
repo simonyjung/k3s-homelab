@@ -25,9 +25,26 @@ spec:
     spec:
       serviceAccountName: homepage
       automountServiceAccountToken: true
+      # Internet-reachable pod (cloudflared tunnel, no auth in front) -
+      # run it as tightly as the image allows. Non-root + read-only
+      # rootfs + no caps verified against this exact image/config
+      # layout in docker before merge; the only writable paths homepage
+      # needs are /app/config/logs and /tmp.
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - image: ghcr.io/gethomepage/homepage:v1.13.2
           name: homepage
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           ports:
             - name: http
               containerPort: 3000
@@ -74,6 +91,8 @@ spec:
               subPath: widgets.yaml
             - mountPath: /app/config/logs
               name: logs
+            - mountPath: /tmp
+              name: tmp
           # Memory right-sized from observed ~112Mi. CPU limit raised
           # 100m -> 500m: the 2026-07-04 benchmark showed 100m throttles
           # SSR to ~30 rps with multi-second latencies (see
@@ -90,4 +109,6 @@ spec:
           configMap:
             name: homepage
         - name: logs
+          emptyDir: {}
+        - name: tmp
           emptyDir: {}
