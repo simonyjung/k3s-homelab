@@ -28,7 +28,7 @@ spec:
       imagePullSecrets:
         - name: dinglink-ghcr-pull-secret
       containers:
-        - image: ghcr.io/simonyjung/dinglink-web:sha-6ce399b
+        - image: ghcr.io/simonyjung/dinglink-web:sha-c9c3dae
           name: dinglink-web
           ports:
             - name: http
