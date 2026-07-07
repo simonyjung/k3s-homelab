@@ -11,7 +11,6 @@ resources:
 
 patches:
   - path: persistentvolumeclaim.yaml
-  - path: service.yaml
   - path: deployment.yaml
 
 # Django settings shim mounted over linkding's custom.py hook - see

@@ -346,8 +346,11 @@ certificate:
     - grafana.cluster.simonjung.io
 ingress:
   host: grafana.cluster.simonjung.io
-# Alertmanager UI, LAN-only like Grafana/Longhorn. No auth of its own -
-# anyone on the LAN can view alerts and create silences.
+# Alertmanager UI, LAN-only like Grafana/Longhorn. Alertmanager has no
+# auth of its own and its API can create silences (mute paging), so the
+# ingress is guarded by a traefik basic-auth middleware - same pattern
+# as the longhorn dashboard. In-cluster clients (prometheus, grafana)
+# talk to the service directly and are unaffected.
 certificateAlertmanager:
   name: alertmanager-ingress-certificate
   secretName: alertmanager-ingress-secret
@@ -358,6 +361,11 @@ certificateAlertmanager:
     - alertmanager.cluster.simonjung.io
 ingressAlertmanager:
   host: alertmanager.cluster.simonjung.io
+# htpasswd credentials (bcrypt, `htpasswd -B`) for the basic-auth
+# middleware guarding the alertmanager UI; 1Password item field `users`
+alertmanagerAuth:
+  secretName: alertmanager-basic-auth
+  itemPath: vaults/Kubernetes/items/alertmanager-basic-auth
 onePasswordSecret:
   name: grafana-admin-credentials
   itemPath: vaults/Kubernetes/items/grafana-admin-credentials
