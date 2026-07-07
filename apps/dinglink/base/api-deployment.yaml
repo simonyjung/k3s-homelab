@@ -28,7 +28,7 @@ spec:
       imagePullSecrets:
         - name: dinglink-ghcr-pull-secret
       containers:
-        - image: ghcr.io/simonyjung/dinglink-api:sha-272dd3e
+        - image: ghcr.io/simonyjung/dinglink-api:sha-6ce399b
           name: dinglink-api
           ports:
             - name: http
@@ -40,6 +40,12 @@ spec:
                 secretKeyRef:
                   name: dinglink-db-app
                   key: uri
+            # Sentry-compatible DSN for the in-cluster GlitchTip
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: dinglink-glitchtip-secret
+                  key: SENTRY_DSN
           livenessProbe:
             httpGet:
               path: /api/healthz
