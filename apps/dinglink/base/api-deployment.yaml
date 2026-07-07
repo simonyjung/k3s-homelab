@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dinglink-api
+  name: dinglink-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dinglink-api
+  template:
+    metadata:
+      labels:
+        app: dinglink-api
+    spec:
+      # Reschedule off a dead node after 60s instead of the default 300s
+      tolerations:
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 60
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 60
+      imagePullSecrets:
+        - name: dinglink-ghcr-pull-secret
+      containers:
+        - image: ghcr.io/simonyjung/dinglink-api:sha-272dd3e
+          name: dinglink-api
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dinglink-db-app
+                  key: uri
+          livenessProbe:
+            httpGet:
+              path: /api/healthz
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /api/healthz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 25m
+            limits:
+              memory: 256Mi
+              cpu: 200m
