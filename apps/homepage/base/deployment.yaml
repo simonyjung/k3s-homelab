@@ -65,6 +65,13 @@ spec:
             periodSeconds: 10
             failureThreshold: 3
           volumeMounts:
+            # Writable dir under the read-only rootfs: homepage's
+            # startup copies skeleton files into /app/config for any
+            # config it expects that isn't mounted (e.g. proxmox.yaml)
+            # and exits on EROFS if it can't - the per-file mounts
+            # below shadow this emptyDir for the real configs.
+            - mountPath: /app/config
+              name: config-dir
             - mountPath: /app/config/custom.js
               name: homepage-config
               subPath: custom.js
@@ -111,4 +118,6 @@ spec:
         - name: logs
           emptyDir: {}
         - name: tmp
+          emptyDir: {}
+        - name: config-dir
           emptyDir: {}
