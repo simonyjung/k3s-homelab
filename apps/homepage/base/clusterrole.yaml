@@ -5,36 +5,15 @@ metadata:
   name: homepage
   labels:
     app: homepage
+# Minimum for the widgets.yaml kubernetes widget (cluster + node
+# CPU/memory). Service tiles are hand-written in services.yaml, so the
+# ingress/pod/namespace discovery permissions homepage's docs suggest
+# are not needed - the pod is internet-reachable, keep this tight.
 rules:
   - apiGroups:
       - ""
     resources:
-      - namespaces
-      - pods
       - nodes
-    verbs:
-      - get
-      - list
-  - apiGroups:
-      - extensions
-      - networking.k8s.io
-    resources:
-      - ingresses
-    verbs:
-      - get
-      - list
-  - apiGroups:
-      - traefik.io
-    resources:
-      - ingressroutes
-    verbs:
-      - get
-      - list
-  - apiGroups:
-      - gateway.networking.k8s.io
-    resources:
-      - httproutes
-      - gateways
     verbs:
       - get
       - list
@@ -42,7 +21,6 @@ rules:
       - metrics.k8s.io
     resources:
       - nodes
-      - pods
     verbs:
       - get
       - list
