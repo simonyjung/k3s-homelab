@@ -79,6 +79,11 @@
         siteMonitor: https://linkding.simonjung.io
         description: Bookmark manager & archive
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/linkding.svg
+    - Dinglink:
+        href: https://dinglink.cluster.simonjung.io
+        siteMonitor: https://dinglink.cluster.simonjung.io/api/healthz
+        description: Bookmark manager built from scratch (LAN)
+        icon: mdi-bookmark-multiple
     - Transmission:
         href: https://transmission.cluster.simonjung.io
         siteMonitor: https://transmission.cluster.simonjung.io
