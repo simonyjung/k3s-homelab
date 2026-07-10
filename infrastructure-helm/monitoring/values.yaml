@@ -323,6 +323,10 @@ kube-prometheus-stack:
       # Accept pushed metrics on /api/v1/write - k6 load-test runners
       # (benchmarks/) stream their results here via remote write
       enableRemoteWriteReceiver: true
+      # Size cap below the 50Gi volume so the TSDB drops oldest blocks
+      # before the disk fills (KubePersistentVolumeFillingUp, 2026-07)
+      retention: 10d
+      retentionSize: 45GiB
       storageSpec:
         volumeClaimTemplate:
           spec:
