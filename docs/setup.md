@@ -38,6 +38,19 @@ sudo cat /var/lib/rancher/k3s/server/node-token
 
 1.  **Provision the Node**: Install Fedora Server on a new machine, creating an admin user named `fedora`. Ensure the node has a unique hostname and is on the `10.0.10.0/24` network.
 
+    > **Root LV size:** the Fedora Server installer's automatic
+    > partitioning allocates only a **15 GiB root LV**, leaving the rest
+    > of the disk unallocated in the LVM volume group. Longhorn stores
+    > replicas under `/var/lib/longhorn` on the root filesystem, so a
+    > 15 GiB root leaves the node's Longhorn disk permanently under
+    > `DiskPressure` and unschedulable. Either grow the root LV during
+    > install (custom partitioning), or afterwards:
+    >
+    > ```bash
+    > sudo lvextend -l +100%FREE /dev/<vg_name>/root   # vg name: `sudo vgs`
+    > sudo xfs_growfs /                                 # XFS grows online
+    > ```
+
 2.  **System Update and Hostname**: Update packages and set the hostname.
 
     ```bash
@@ -158,6 +171,42 @@ Verify the join: `kubectl get nodes` shows the node `Ready` with
 `control-plane,etcd` roles, and Longhorn volumes return to `healthy`
 robustness once replicas rebuild (watch
 `kubectl get volumes.longhorn.io -n longhorn-system`).
+
+### Longhorn after an OS reinstall: disk UUID mismatch
+
+A reinstall recreates `/var/lib/longhorn`, so the disk UUID Longhorn
+wrote there no longer matches the one recorded in the node's
+`nodes.longhorn.io` CR. The disk then shows `Ready=False` with reason
+`DiskFilesystemChanged` ("record diskUUID doesn't match the one on the
+disk") and the node accepts no replicas, even though the Longhorn UI
+shows the node itself as schedulable. Confirm the mismatch:
+
+```bash
+kubectl -n longhorn-system get nodes.longhorn.io <node> \
+  -o jsonpath='{.status.diskStatus.*.diskUUID}'
+# vs. the on-disk record (via the node's longhorn-manager pod):
+kubectl -n longhorn-system exec <longhorn-manager-pod> -c longhorn-manager \
+  -- cat /var/lib/longhorn/longhorn-disk.cfg
+```
+
+The old replica data is gone with the reinstall, so the fix is to drop
+the recorded disk and re-add it, letting Longhorn adopt the new UUID
+(scheduling must be disabled on a disk before it can be removed):
+
+```bash
+kubectl -n longhorn-system patch nodes.longhorn.io <node> --type merge \
+  -p '{"spec":{"disks":{"default-disk-fc0000000000":{"allowScheduling":false}}}}'
+kubectl -n longhorn-system patch nodes.longhorn.io <node> --type merge \
+  -p '{"spec":{"disks":null}}'
+# wait until .status.diskStatus is empty, then re-add:
+kubectl -n longhorn-system patch nodes.longhorn.io <node> --type merge \
+  -p '{"spec":{"disks":{"default-disk-fc0000000000":{"allowScheduling":true,"diskType":"filesystem","evictionRequested":false,"path":"/var/lib/longhorn/","storageReserved":21474836480,"tags":[]}}}}'
+```
+
+The disk name (`default-disk-…`) comes from the existing CR; the disk
+becomes `Ready`/`Schedulable` within a minute of the re-add — if it
+reports `DiskPressure` instead, the root LV is undersized (see the
+provisioning note in step 1).
 
 ## For Framework Desktop Nodes
 
