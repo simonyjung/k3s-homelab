@@ -1,0 +1,81 @@
+---
+nats:
+  config:
+    # 3-node raft cluster - the point of the exercise. Route traffic
+    # (6222) stays pod-to-pod via the headless service.
+    cluster:
+      enabled: true
+      replicas: 3
+    jetstream:
+      enabled: true
+      fileStore:
+        pvc:
+          size: 2Gi
+          # JetStream replicates streams at the application layer (R3),
+          # so storage-level replication would be redundant - same
+          # reasoning as the CNPG postgres clusters.
+          storageClassName: longhorn-1replica
+
+  # this chart takes container/pod overrides as merge patches, not
+  # plain values keys
+  container:
+    merge:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
+  reloader:
+    merge:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          memory: 32Mi
+
+  promExporter:
+    enabled: true
+    merge:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
+    # picked up by kube-prometheus-stack (cross-release discovery is
+    # open: *SelectorNilUsesHelmValues=false in monitoring values)
+    podMonitor:
+      enabled: true
+
+  # LAN VIP so the nats CLI works from a laptop:
+  #   nats -s nats://10.0.10.202:4222 ...
+  # .200 = traefik; .201 was linkding-dev's (released, left fallow)
+  service:
+    merge:
+      metadata:
+        annotations:
+          metallb.io/loadBalancerIPs: 10.0.10.202
+      spec:
+        type: LoadBalancer
+
+  # one server per node or the raft cluster is theater
+  podTemplate:
+    topologySpreadConstraints:
+      kubernetes.io/hostname:
+        maxSkew: 1
+        whenUnsatisfiable: DoNotSchedule
+
+  # nats-box: in-cluster nats CLI pod, pre-wired to the cluster:
+  #   kubectl -n nats-production exec -it deploy/nats-box -- nats str ls
+  natsBox:
+    enabled: true
+    container:
+      merge:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 64Mi

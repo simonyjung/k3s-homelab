@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats-nui
+spec:
+  selector:
+    app: nats-nui
+  ports:
+    - port: 31311
+      targetPort: 31311

@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nats-nui
+  labels:
+    app: nats-nui
+spec:
+  replicas: 1
+  # single writer over a sqlite db on the PVC - never overlap two pods
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nats-nui
+  template:
+    metadata:
+      labels:
+        app: nats-nui
+    spec:
+      automountServiceAccountToken: false
+      # image ships a dedicated uid-1001 user; its entrypoint execs the
+      # server directly when it detects it (the root chown path is a
+      # no-op fallback for old deployments)
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: nats-nui
+          image: ghcr.io/nats-nui/nui:0.9.3
+          ports:
+            - containerPort: 31311
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 31311
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 31311
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            # connection profiles live in a sqlite db here
+            - name: db
+              mountPath: /db
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: nats-nui-pvc
