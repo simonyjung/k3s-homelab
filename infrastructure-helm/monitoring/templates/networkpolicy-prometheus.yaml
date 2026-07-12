@@ -1,0 +1,51 @@
+---
+# Isolate ONLY the prometheus pods (selecting a pod in any policy denies
+# everything not re-allowed) — deliberately no namespace-wide default
+# deny here: the operator's admission webhook is called by the API
+# server from node IPs (blocking it wedges PrometheusRule syncs, the
+# cert-manager-webhook failure class), and grafana/alertmanager keep
+# their traefik ingress paths untouched.
+#
+# Port 9090 serves both the query API and the unauthenticated
+# remote-write receiver (enableRemoteWriteReceiver) — netpol cannot
+# split them, so the allowed clients below can also write metrics; that
+# is the accepted residual for homepage (plan 12.1). Port-forward and
+# kubelet probes are node-local and unaffected.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prometheus-ingress-allowlist
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus
+  policyTypes:
+    - Ingress
+  ingress:
+    # grafana datasource + prometheus self-scrape (:9090 and the
+    # config-reloader :8080), so no port restriction within the namespace
+    - from:
+        - podSelector: {}
+    # cross-namespace clients get the query/remote-write port only
+    - from:
+        # kromgo badges
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kromgo-production
+          podSelector:
+            matchLabels:
+              app: kromgo
+        # homepage alerts widget
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: homepage-production
+          podSelector:
+            matchLabels:
+              app: homepage
+        # k6 runners stream results via remote write
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: benchmarks
+      ports:
+        - protocol: TCP
+          port: 9090
