@@ -11,6 +11,14 @@ argo-cd:
       # Serve plain HTTP behind Traefik's TLS termination (standard
       # pattern for TLS-terminating ingress)
       server.insecure: true
+  # No SSO is configured (local admin login only), so the Dex OIDC broker
+  # serves nothing — re-enable if/when SSO (e.g. GitHub OAuth) is wired up
+  dex:
+    enabled: false
+  # Zero notification triggers/services configured; app-health alerting
+  # runs through Prometheus/Alertmanager instead
+  notifications:
+    enabled: false
   server:
     certificate:
       enabled: true
