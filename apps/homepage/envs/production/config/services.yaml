@@ -46,6 +46,11 @@
         siteMonitor: https://cloudbeaver.cluster.simonjung.io
         description: SQL workbench for cluster databases
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/cloudbeaver.svg
+    - NATS NUI:
+        href: https://nui.cluster.simonjung.io
+        siteMonitor: https://nui.cluster.simonjung.io
+        description: NATS cluster UI - pub/sub, streams, KV
+        icon: si-natsdotio
     - Longhorn:
         href: https://longhorn.cluster.simonjung.io
         siteMonitor: https://longhorn.cluster.simonjung.io
