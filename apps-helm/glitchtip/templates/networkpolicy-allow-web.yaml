@@ -1,0 +1,23 @@
+---
+# The web pods stay reachable cluster-wide on the app port: traefik
+# proxies the UI, prometheus scrapes /metrics (ServiceMonitor), and any
+# app namespace may report errors via its sentry-sdk DSN — enumerating
+# reporter namespaces here would mean a netpol change per new DSN.
+# The trust boundary this rollout protects is postgres/valkey, which get
+# no such allowance.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-web-from-cluster
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: glitchtip
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 8000

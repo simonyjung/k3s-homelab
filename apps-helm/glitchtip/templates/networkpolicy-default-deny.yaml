@@ -1,0 +1,12 @@
+---
+# Deny all ingress to every pod in this namespace; the policies alongside
+# re-allow the legitimate paths. Kubelet probes are node-local and
+# unaffected (verified on the 1password rollout, plan 12.4 step 1).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
