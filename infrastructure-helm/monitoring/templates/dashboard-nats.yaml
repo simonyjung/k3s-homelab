@@ -1,0 +1,18 @@
+---
+# Custom NATS dashboard, provisioned via grafana's dashboard sidecar
+# (watches ConfigMaps in this namespace labeled grafana_dashboard).
+# JSON lives in files/ because grafana legend templates use the same
+# curly-brace syntax as helm and must never meet the renderer (helm
+# parses even comments - do not write one here). Metric names match
+# this cluster's exporter, which runs with -prefix=nats (the
+# grafana.com NATS dashboards expect the legacy gnatsd_ prefix and
+# render empty).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nats-dashboard
+  labels:
+    grafana_dashboard: "1"
+data:
+  nats-dashboard.json: |-
+{{ .Files.Get "files/nats-dashboard.json" | indent 4 }}

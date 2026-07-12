@@ -7,6 +7,8 @@ ignore: |
   infrastructure/system-upgrade/system-upgrade-controller.yaml
   # helm templates with block-level control flow are not parseable YAML
   infrastructure-helm/longhorn-system/templates/recurringjobs.yaml
+  # block-level .Files.Get insert (grafana dashboard JSON payload)
+  infrastructure-helm/monitoring/templates/dashboard-nats.yaml
 
 rules:
   # 120 chars should be enough, but don't fail if a line is longer
