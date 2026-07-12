@@ -4,6 +4,7 @@
     ":semanticPrefixFixDepsChoreOthers",
     ":ignoreModulesAndTests",
     "group:monorepos",
+    "helpers:pinGitHubActionDigests",
     "group:recommended",
     "mergeConfidence:age-confidence-badges",
     "replacements:all",
