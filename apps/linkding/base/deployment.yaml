@@ -15,6 +15,7 @@ spec:
       labels:
         app: linkding
     spec:
+      automountServiceAccountToken: false
       # Reschedule off a dead node after 60s instead of the default 300s
       tolerations:
         - key: node.kubernetes.io/not-ready

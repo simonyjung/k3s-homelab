@@ -15,6 +15,7 @@ spec:
       labels:
         app: shaadimubarak-api
     spec:
+      automountServiceAccountToken: false
       imagePullSecrets:
         - name: shaadimubarak-ghcr-pull-secret
       containers:
