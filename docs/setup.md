@@ -3,11 +3,14 @@
 This guide outlines the process for provisioning a new Fedora-based node and adding it to an existing K3s cluster.
 
 > **Note (servers only):** every K3s **server** (`amley00`, `amley01`,
-> `amley02`) runs with the built-in klipper load balancer and the bundled
-> Traefik chart disabled (`disable: [servicelb, traefik]` in
-> `/etc/rancher/k3s/config.yaml`) — MetalLB owns `LoadBalancer` services
-> and Traefik is deployed by ArgoCD instead. If a server is ever rebuilt,
-> reapply this before starting K3s — see
+> `amley02`) runs with the built-in klipper load balancer, the bundled
+> Traefik chart, and the local-path provisioner disabled
+> (`disable: [servicelb, traefik, local-storage]` in
+> `/etc/rancher/k3s/config.yaml`) — MetalLB owns `LoadBalancer` services,
+> Traefik is deployed by ArgoCD instead, and Longhorn is the sole default
+> StorageClass (local-path shipped with a default annotation too, and two
+> defaults can silently send new PVCs to node-local unreplicated storage).
+> If a server is ever rebuilt, reapply this before starting K3s — see
 > [load-balancing.md](./load-balancing.md). Agent nodes need nothing.
 
 > **Every node** also gets automatic security updates with a staggered
@@ -149,6 +152,7 @@ tls-san:
 disable:
   - servicelb
   - traefik
+  - local-storage
 EOF'
 curl -sfL https://get.k3s.io | sudo sh -s - server
 ```
