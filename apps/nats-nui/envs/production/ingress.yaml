@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nats-nui-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: nui.cluster.simonjung.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nats-nui
+                port:
+                  number: 31311
+  tls:
+    - hosts:
+        - nui.cluster.simonjung.io
+      secretName: nats-nui-ingress-secret

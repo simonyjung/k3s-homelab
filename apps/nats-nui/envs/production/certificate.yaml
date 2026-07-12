@@ -1,0 +1,12 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+    name: nats-nui-ingress-certificate
+spec:
+    secretName: nats-nui-ingress-secret
+    issuerRef:
+        name: cloudflare-clusterissuer
+        kind: ClusterIssuer
+    dnsNames:
+        - nui.cluster.simonjung.io
