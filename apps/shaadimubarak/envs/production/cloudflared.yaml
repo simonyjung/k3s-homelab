@@ -13,6 +13,15 @@ spec:
       labels:
         app: cloudflared
     spec:
+      automountServiceAccountToken: false
+      # The image is distroless and ships USER 65532; stating it here lets
+      # the kubelet enforce it
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
       # Both replicas on one node would defeat the point - force them
       # onto different nodes
       topologySpreadConstraints:
@@ -30,13 +39,27 @@ spec:
             - --config
             - /etc/cloudflared/config/config.yaml
             - run
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           livenessProbe:
             httpGet:
               # /ready returns 200 iff cloudflared has an active edge connection.
               path: /ready
               port: 2000
-            failureThreshold: 1
+            # was 1 - a single transient edge blip restarted the pod
+            failureThreshold: 3
             initialDelaySeconds: 10
+            periodSeconds: 10
+          # Gate rollouts on an established edge connection - no Service
+          # selects these pods, so liveness alone was the only health signal
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 2000
+            initialDelaySeconds: 5
             periodSeconds: 10
           volumeMounts:
             - name: config

@@ -17,6 +17,7 @@ spec:
       labels:
         app: plex
     spec:
+      automountServiceAccountToken: false
       # Use hostNetwork to resolve relay issues with Plex clients
       # Makes Plex listen on the node’s IP like a bare-metal install
       hostNetwork: true

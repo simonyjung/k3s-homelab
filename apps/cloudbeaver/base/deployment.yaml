@@ -18,6 +18,7 @@ spec:
       labels:
         app: cloudbeaver
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: cloudbeaver
           image: dbeaver/cloudbeaver:26.1.2
