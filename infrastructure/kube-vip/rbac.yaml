@@ -1,6 +1,9 @@
 ---
 # RBAC for kube-vip (control-plane VIP only; service LB mode is disabled).
 # Adapted from the upstream manifest: https://kube-vip.io/manifests/rbac.yaml
+# — minus the services/endpoints/endpointslices rules, which only the
+# disabled svc_enable mode uses; `update` on endpoints is a cluster-wide
+# traffic-hijacking primitive this SA has no reason to hold.
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -13,20 +16,11 @@ metadata:
   name: system:kube-vip-role
 rules:
   - apiGroups: [""]
-    resources: ["services/status"]
-    verbs: ["update"]
-  - apiGroups: [""]
-    resources: ["services", "endpoints"]
-    verbs: ["list", "get", "watch", "update"]
-  - apiGroups: [""]
     resources: ["nodes"]
     verbs: ["list", "get", "watch", "update", "patch"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
     verbs: ["list", "get", "watch", "update", "create"]
-  - apiGroups: ["discovery.k8s.io"]
-    resources: ["endpointslices"]
-    verbs: ["list", "get", "watch", "update"]
   - apiGroups: [""]
     resources: ["pods"]
     verbs: ["list", "get", "watch"]
