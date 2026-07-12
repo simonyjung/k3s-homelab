@@ -1,0 +1,36 @@
+---
+# Cross-namespace paths into the CNPG instances: the operator manages
+# them via the instance-manager API (8000), prometheus scrapes the
+# postgres exporter (9187, PodMonitor). Postgres itself (5432) is
+# same-namespace only.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-db-operator-and-metrics
+spec:
+  podSelector:
+    matchLabels:
+      cnpg.io/cluster: glitchtip-db
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cloudnative-pg
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: cloudnative-pg
+      ports:
+        - protocol: TCP
+          port: 8000
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+      ports:
+        - protocol: TCP
+          port: 9187
