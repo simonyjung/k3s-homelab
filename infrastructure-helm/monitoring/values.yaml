@@ -315,10 +315,11 @@ kube-prometheus-stack:
   prometheus:
     enabled: true
     prometheusSpec:
-      # Discover ServiceMonitors/PrometheusRules from all releases and
-      # namespaces (e.g. cert-manager), not only those labeled with this
-      # chart's release
+      # Discover ServiceMonitors/PodMonitors/PrometheusRules from all
+      # releases and namespaces (e.g. cert-manager, nats), not only those
+      # labeled with this chart's release
       serviceMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
       ruleSelectorNilUsesHelmValues: false
       # Accept pushed metrics on /api/v1/write - k6 load-test runners
       # (benchmarks/) stream their results here via remote write
