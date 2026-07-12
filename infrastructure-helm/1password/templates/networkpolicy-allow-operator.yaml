@@ -1,0 +1,22 @@
+---
+# The operator is the only legitimate client of the Connect API (8080).
+# Port 8081 (sync) is excluded: cross-pod nothing consumes it — the
+# api/sync containers talk over localhost, which NetworkPolicy never sees.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-operator-to-connect
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: connect
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: operator
+      ports:
+        - protocol: TCP
+          port: 8080

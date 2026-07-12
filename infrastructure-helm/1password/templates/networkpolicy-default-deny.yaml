@@ -1,0 +1,14 @@
+---
+# Deny all ingress to every pod in this namespace (K3s enforces
+# NetworkPolicy natively via its embedded controller). Connect fronts the
+# entire 1Password vault; consumers read the Secrets the operator
+# materializes and must never reach Connect itself. Kubelet probes are
+# node-local and unaffected.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
