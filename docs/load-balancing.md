@@ -86,10 +86,12 @@ lives outside git:
 
 ```yaml
 # /etc/rancher/k3s/config.yaml on each server
-# (traefik is also disabled: ArgoCD deploys its own)
+# (traefik is also disabled: ArgoCD deploys its own; local-storage is
+# disabled so Longhorn is the sole default StorageClass)
 disable:
   - servicelb
   - traefik
+  - local-storage
 ```
 
 applied with `sudo systemctl restart k3s`.
