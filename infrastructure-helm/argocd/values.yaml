@@ -2,10 +2,12 @@
 argo-cd:
   global:
     domain: argocd.cluster.simonjung.io
-    # Chart 10.x flips networkPolicy creation on by default; keep off until
-    # the policies are reviewed deliberately (k3s enforces NetworkPolicy)
+    # Reviewed 2026-07-12 (plan 12.4 step 4): four ingress policies —
+    # redis and repo-server locked to the argocd components that use
+    # them, controller metrics-only, server allow-all (UI behind
+    # traefik). k3s enforces NetworkPolicy natively.
     networkPolicy:
-      create: false
+      create: true
   configs:
     params:
       # Serve plain HTTP behind Traefik's TLS termination (standard
