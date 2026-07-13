@@ -1,8 +1,10 @@
 ---
 # Cross-namespace paths into the CNPG instances: the operator manages
 # them via the instance-manager API (8000), prometheus scrapes the
-# postgres exporter (9187, PodMonitor). Postgres itself (5432) is
-# same-namespace only.
+# postgres exporter (9187, PodMonitor), and cloudbeaver — the LAN-only
+# DB admin UI — gets postgres (5432) as a deliberate standing allowance
+# (plan 12.4; revisit if cloudbeaver is ever exposed off-LAN). Postgres
+# is otherwise same-namespace only.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -34,3 +36,13 @@ spec:
       ports:
         - protocol: TCP
           port: 9187
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cloudbeaver-production
+          podSelector:
+            matchLabels:
+              app: cloudbeaver
+      ports:
+        - protocol: TCP
+          port: 5432
