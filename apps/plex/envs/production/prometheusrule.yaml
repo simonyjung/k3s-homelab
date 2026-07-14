@@ -1,0 +1,40 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: plex-availability
+spec:
+  groups:
+    - name: plex-availability
+      rules:
+        # 2026-07-14 incident: plex.tv became unreachable and Plex's
+        # client-triggered updater check blocks its whole request pipeline,
+        # so /identity (and every client) hung until the liveness probe
+        # restarted the container. Readiness failures are the wedge signal.
+        - alert: PlexUnresponsive
+          expr: >-
+            sum(rate(prober_probe_total{namespace="plex-production",
+            probe_type="Readiness", result="failed"}[5m])) > 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Plex has been failing its readiness probe for 2+ minutes"
+            description: >-
+              Plex is not answering /identity, so no client (TV included) can
+              connect. If it stays wedged the liveness probe restarts it after
+              ~2 minutes of failures; if this alert persists past that, the
+              restart did not clear it - check the node, Longhorn config
+              volume, and plex.tv reachability.
+        - alert: PlexRestarted
+          expr: >-
+            increase(kube_pod_container_status_restarts_total{
+            namespace="plex-production", container="plex"}[15m]) > 0
+          labels:
+            severity: warning
+          annotations:
+            summary: "Plex container restarted in the last 15 minutes"
+            description: >-
+              Usually the liveness probe killing a wedged Plex (see
+              PlexUnresponsive). One-off restarts self-heal; repeated
+              restarts mean something is persistently wrong.
