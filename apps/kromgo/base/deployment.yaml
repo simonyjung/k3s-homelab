@@ -30,7 +30,7 @@ spec:
             name: kromgo-config
       containers:
         - name: kromgo
-          image: ghcr.io/home-operations/kromgo:0.15.0
+          image: ghcr.io/home-operations/kromgo:0.15.1
           env:
             - name: KROMGO_PROMETHEUS_URL
               value: http://prometheus-operated.monitoring.svc.cluster.local:9090
