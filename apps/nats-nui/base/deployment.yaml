@@ -31,7 +31,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: nats-nui
-          image: ghcr.io/nats-nui/nui:0.9.3
+          image: ghcr.io/nats-nui/nui:0.10.0
           ports:
             - containerPort: 31311
           securityContext:
