@@ -32,7 +32,7 @@ spec:
             claimName: linkding-pvc
       containers:
         - name: linkding
-          image: sissbruecker/linkding:1.45.0
+          image: sissbruecker/linkding:1.47.0
           ports:
             - containerPort: 9090
           # Gate traffic until Django has migrated/started (Recreate
