@@ -41,7 +41,8 @@ spec:
             # driver bundle: their musl-linked transcoder only loads Plex's
             # own radeonsi build, which supports up to gfx1103 — Strix Halo
             # is gfx1151. System mesa cannot be substituted across the
-            # musl/glibc wall. Re-test after PMS upgrades (plan.md).
+            # musl/glibc wall. Re-test after PMS upgrades (plan.md); /dev/dri
+            # is no longer mounted, so a re-test needs a GPU device plugin.
             - name: PLEX_CLAIM
               valueFrom:
                 secretKeyRef:
@@ -82,12 +83,17 @@ spec:
               mountPath: /tv
             - name: movies
               mountPath: /movies
-            - name: dev-dri
-              mountPath: /dev/dri
-          # Privileged for /dev/dri access (VAAPI hardware transcoding),
-          # same approach the ollama deployment used on this node
+          # Internet-reachable via the router's 32400 forward, so no
+          # privileged mode: a Plex RCE must stay in the container. s6 init
+          # needs root to drop to abc, so no runAsNonRoot / drop ALL.
+          # NET_RAW dropped since hostNetwork would expose the host's NICs.
           securityContext:
-            privileged: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - NET_RAW
+            seccompProfile:
+              type: RuntimeDefault
           resources:
             requests:
               memory: "1Gi"
@@ -109,7 +115,3 @@ spec:
         - name: movies
           persistentVolumeClaim:
             claimName: plex-movies-pvc
-        - name: dev-dri
-          hostPath:
-            path: /dev/dri
-            type: Directory
