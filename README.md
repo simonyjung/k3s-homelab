@@ -131,7 +131,6 @@ These are fully self-contained Kustomize or Helm templates. Each can be deployed
 │   ├── kromgo/
 │   ├── linkding/
 │   ├── plex/
-│   ├── shaadimubarak/
 │   └── transmission/
 ├── apps-helm/             # Level 3 (Helm umbrella charts for apps)
 │   └── glitchtip/
