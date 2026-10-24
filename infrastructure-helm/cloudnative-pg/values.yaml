@@ -1,7 +1,7 @@
 ---
-# Operator only - inert until a Cluster CR exists. First consumer:
-# shaadimubarak-production's shaadimubarak-db (postgres replication on
-# longhorn-1replica storage, per CNPG's replicate-in-postgres guidance).
+# Operator only - inert until a Cluster CR exists. Consumers run postgres
+# replication on longhorn-1replica storage, per CNPG's replicate-in-postgres
+# guidance.
 cloudnative-pg:
   # Cluster metrics PodMonitors are enabled per-Cluster CR; this exposes
   # the operator's own metrics to the monitoring stack
