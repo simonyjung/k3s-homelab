@@ -1,0 +1,14 @@
+---
+# ArgoCD repository secret for the private merge-bot OCI chart registry
+# (apps-helm/merge-bot dependency). The operator copies the label onto the
+# Secret. The item needs fields labeled: name=merge-bot, type=helm,
+# enableOCI=true, url=registry.gitlab.com/simonjung-group/merge-bot/charts,
+# username/password = a merge-bot deploy token with read_registry only.
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+metadata:
+  name: merge-bot-helm-repository
+  labels:
+    argocd.argoproj.io/secret-type: repository
+spec:
+  itemPath: "vaults/Kubernetes/items/ArgoCD Repo - Merge Bot"

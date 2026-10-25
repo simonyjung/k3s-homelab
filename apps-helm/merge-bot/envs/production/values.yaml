@@ -1,0 +1,28 @@
+---
+# merge-bot - chart options: deploy/merge-bot/values.yaml in
+# gitlab.com/simonjung-group/merge-bot
+merge-bot:
+  imagePullSecrets:
+    - name: merge-bot-registry-pull
+
+  settings:
+    GITLAB_URL: https://gitlab.com
+    GITLAB_GROUPS: simonjung-group
+    BOT_USERNAME: merge-bot
+
+  # templates/onepasswordsecret.yaml
+  existingSecret: merge-bot
+
+  # v0.1.0 handles no webhooks yet, so nothing needs to reach it. Enable
+  # with host merge-bot.cluster.simonjung.io (traefik class + a
+  # Certificate, same as glitchtip) once it does.
+  ingress:
+    enabled: false
+
+  networkPolicy:
+    ingressControllerNamespace: traefik
+    # gitlab.com (Cloudflare-fronted), resolved 2026-10-25 - re-resolve if
+    # the bot starts failing to reach GitLab
+    egressCIDRs:
+      - 172.65.251.78/32
+      - 2606:4700:90:0:f22e:fbec:5bed:a9b9/128
