@@ -84,6 +84,14 @@ jobs:
             -schema-location default -schema-location "${CRD_SCHEMAS}" \
             root-argocd-app.yaml appsets/*.yaml
 
+      - name: Log in to the private chart registry.
+        env:
+          USERNAME: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+          TOKEN: ${{ secrets.GITLAB_REGISTRY_TOKEN }}
+        run: |
+          # apps-helm/merge-bot depends on a private OCI chart (read_registry deploy token)
+          echo "${TOKEN}" | helm registry login registry.gitlab.com -u "${USERNAME}" --password-stdin
+
       - name: Render Helm charts and validate schemas.
         run: |
           set -o pipefail

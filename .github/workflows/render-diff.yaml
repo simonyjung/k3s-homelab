@@ -29,6 +29,14 @@ jobs:
           ref: ${{ github.event.pull_request.base.ref }}
           path: .base
 
+      - name: Log in to the private chart registry.
+        env:
+          USERNAME: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+          TOKEN: ${{ secrets.GITLAB_REGISTRY_TOKEN }}
+        run: |
+          # apps-helm/merge-bot depends on a private OCI chart (read_registry deploy token)
+          echo "${TOKEN}" | helm registry login registry.gitlab.com -u "${USERNAME}" --password-stdin
+
       - name: Render both trees.
         run: |
           # Both renders use the PR's copy of the script (the base tree may predate it).
