@@ -10,6 +10,15 @@
     "replacements:all",
     "workarounds:all"
   ],
+  "hostRules": [
+    {
+      "description": "Private merge-bot chart (apps-helm/merge-bot); read_registry deploy token, secret set in the Mend portal",
+      "matchHost": "registry.gitlab.com",
+      "hostType": "docker",
+      "username": "gitlab+deploy-token-16596833",
+      "password": "{{ secrets.GITLAB_REGISTRY_TOKEN }}"
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
