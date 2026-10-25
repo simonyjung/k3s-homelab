@@ -15,6 +15,7 @@
       "customType": "regex",
       "managerFilePatterns": [
         "/^apps/.*/.*\\.yaml$/",
+        "/^apps-helm/[^/]+/templates/cloudflared\\.yaml$/",
         "/^infrastructure/system-upgrade/system-upgrade-controller\\.yaml$/"
       ],
       "matchStrings": [
