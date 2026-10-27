@@ -25,12 +25,24 @@
       "managerFilePatterns": [
         "/^apps/.*/.*\\.yaml$/",
         "/^apps-helm/[^/]+/templates/cloudflared\\.yaml$/",
+        "/^infrastructure/system-upgrade/system-upgrade-controller\\.yaml$/",
+        "/^infrastructure/kube-vip/daemonset\\.yaml$/"
+      ],
+      "matchStrings": [
+        "image: (?<depName>[^\\s:@]+):(?<currentValue>[^\\s@]+)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
+      ],
+      "autoReplaceStringTemplate": "image: {{depName}}:{{newValue}}{{#if newDigest}}@{{newDigest}}{{/if}}",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
         "/^infrastructure/system-upgrade/system-upgrade-controller\\.yaml$/"
       ],
       "matchStrings": [
-        "image: (?<depName>.*?):(?<currentValue>.*)",
-        "SYSTEM_UPGRADE_JOB_KUBECTL_IMAGE: (?<depName>.*?):(?<currentValue>.*)"
+        "SYSTEM_UPGRADE_JOB_KUBECTL_IMAGE: (?<depName>[^\\s:@]+):(?<currentValue>[^\\s@]+)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
       ],
+      "autoReplaceStringTemplate": "SYSTEM_UPGRADE_JOB_KUBECTL_IMAGE: {{depName}}:{{newValue}}{{#if newDigest}}@{{newDigest}}{{/if}}",
       "datasourceTemplate": "docker"
     },
     {
@@ -48,6 +60,22 @@
   ],
   "packageRules": [
     {
+      "description": "Pin images as tag@sha256 so a registry-side re-push of a tag can't reach the cluster without a PR (plan 12.7a)",
+      "matchDatasources": ["docker"],
+      "pinDigests": true
+    },
+    {
+      "description": "dinglink tags are CI-built sha-* images, out of scope for digest pinning",
+      "matchPackageNames": ["/^ghcr\\.io/simonyjung/dinglink-/"],
+      "pinDigests": false
+    },
+    {
+      "description": "Batch same-tag digest refreshes into one weekly PR (the initial pins already arrive as one 'Pin dependencies' PR)",
+      "matchUpdateTypes": ["digest"],
+      "groupName": "image digests",
+      "schedule": ["before 6am on monday"]
+    },
+    {
       "matchDatasources": ["docker"],
       "matchPackageNames": ["lscr.io/linuxserver/transmission"],
       "versioning": "semver",
@@ -62,9 +90,7 @@
     {
       "description": "SUC manifests are vendored: the PR is a notification, re-vendor before merging",
       "matchPackageNames": ["rancher/system-upgrade-controller"],
-      "prBodyNotes": [
-        "⚠️ **Vendored manifests** — do not merge the tag bump alone. Re-download `crd.yaml` + `system-upgrade-controller.yaml` from the upstream release into `infrastructure/system-upgrade/` (see docs/upgrades.md, 'Upgrading the controller itself')."
-      ]
+      "prBodyNotes": ["⚠️ **Vendored manifests** — do not merge the tag bump alone. Re-download `crd.yaml` + `system-upgrade-controller.yaml` from the upstream release into `infrastructure/system-upgrade/` (see docs/upgrades.md, 'Upgrading the controller itself')."]
     }
   ]
 }
