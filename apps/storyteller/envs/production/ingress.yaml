@@ -1,0 +1,24 @@
+---
+# LAN-only for now: no cloudflared tunnel
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: storyteller-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: storyteller.cluster.simonjung.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: storyteller
+                port:
+                  number: 8001
+  tls:
+    - hosts:
+        - storyteller.cluster.simonjung.io
+      secretName: storyteller-ingress-secret

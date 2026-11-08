@@ -1,0 +1,91 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storyteller
+  labels:
+    app: storyteller
+spec:
+  replicas: 1
+  # SQLite on an RWO volume: never run two pods at once
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: storyteller
+  template:
+    metadata:
+      labels:
+        app: storyteller
+    spec:
+      automountServiceAccountToken: false
+      # Alignment needs >=8Gi (upstream: OOM kills crash alignment); only the
+      # Framework has the headroom. CPU image on purpose: whisper.cpp lacks
+      # ROCm 7.1+ support for Strix Halo, and upstream says Vulkan is often
+      # slower than CPU.
+      nodeSelector:
+        kubernetes.io/hostname: amleyg00
+      containers:
+        - name: storyteller
+          image: registry.gitlab.com/storyteller-platform/storyteller:web-v2.14.23
+          env:
+            - name: STORYTELLER_SECRET_KEY_FILE
+              value: /run/secrets/storyteller/secret_key
+            - name: TZ
+              value: "America/New_York"
+          ports:
+            - name: http
+              containerPort: 8001
+              protocol: TCP
+          # tcpSocket: upstream documents no health endpoint
+          startupProbe:
+            tcpSocket:
+              port: 8001
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: 8001
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8001
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 4
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: library
+              mountPath: /library
+            - name: secret-key
+              mountPath: /run/secrets/storyteller
+              readOnly: true
+          # Entrypoint starts as root and drops to PUID/PGID 1000; upstream
+          # warns against forcing runAsUser, so no runAsNonRoot / drop ALL.
+          securityContext:
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "2"
+            limits:
+              # Upstream minimum is 8Gi; Storyteller caps itself at 4 cores
+              memory: "10Gi"
+              cpu: "4"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: storyteller-data-pvc
+        - name: library
+          persistentVolumeClaim:
+            claimName: storyteller-library-pvc
+        - name: secret-key
+          secret:
+            secretName: storyteller-secret-key
+            items:
+              - key: secret_key
+                path: secret_key
