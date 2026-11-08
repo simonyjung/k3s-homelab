@@ -68,12 +68,14 @@ spec:
               value: "true"
             - name: vip_leasename
               value: kube-vip-cp-lock
+            # kube-vip defaults. 5/3/1 dropped the VIP on every etcd fsync
+            # stall >3s (~17x/day, 2026-11); cost: failover up to ~15s.
             - name: vip_leaseduration
-              value: "5"
+              value: "15"
             - name: vip_renewdeadline
-              value: "3"
+              value: "10"
             - name: vip_retryperiod
-              value: "1"
+              value: "2"
           securityContext:
             capabilities:
               add: ["NET_ADMIN", "NET_RAW"]
