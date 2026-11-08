@@ -11,6 +11,11 @@ longhorn:
     # because the kubelet can't confirm shutdown - force-delete them so
     # RWO volumes reattach and workloads reschedule
     nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
+    # Live-upgrade volume engines to the manager's version, one volume
+    # per node at a time. Off (0) left volumes on v1.10/v1.12 engines
+    # under a v1.13 manager - and preUpgradeChecker is disabled above,
+    # so nothing would block the next bump from stranding them.
+    concurrentAutomaticEngineUpgradePerNodeLimit: 1
 certificate:
   name: longhorn-ingress-certificate
   secretName: longhorn-ingress-secret
