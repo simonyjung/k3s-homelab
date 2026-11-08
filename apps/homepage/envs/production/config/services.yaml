@@ -79,6 +79,11 @@
         href: https://plex.tv
         description: Movie & TV streaming
         icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/plex.svg
+    - Storyteller:
+        href: https://storyteller.cluster.simonjung.io
+        siteMonitor: https://storyteller.cluster.simonjung.io
+        description: Audiobook + ebook read-along sync (LAN)
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/storyteller.svg
     - Linkding:
         href: https://linkding.simonjung.io
         siteMonitor: https://linkding.simonjung.io
