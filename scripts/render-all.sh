@@ -22,6 +22,10 @@ for chart in apps-helm/* infrastructure-helm/*; do
       helm template "${chart}" -f "${values}" > "${out}/$(echo "${chart}" | tr / _)_${env}.yaml"
     done
   else
-    helm template "${chart}" -f "${chart}/values.yaml" > "${out}/$(echo "${chart}" | tr / _).yaml"
+    # Redact chart-generated random secrets (openobserve report server): new on
+    # every render, so pure diff noise - and this diff is posted publicly
+    helm template "${chart}" -f "${chart}/values.yaml" \
+      | sed -E 's/^( *(ZO_REPORT_SERVER_SECRET|checksum\/report-server-secret): ).*/\1REDACTED/' \
+      > "${out}/$(echo "${chart}" | tr / _).yaml"
   fi
 done
