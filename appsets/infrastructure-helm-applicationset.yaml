@@ -44,6 +44,22 @@ spec:
           kind: StatefulSet
           jqPathExpressions:
             - .spec.persistentVolumeClaimRetentionPolicy
+        # The openobserve chart keeps ZO_REPORT_SERVER_SECRET stable only via
+        # helm `lookup`, which ArgoCD's `helm template` can't do - every render
+        # is a new random value + checksum, restarting openobserve on every
+        # commit to main. With RespectIgnoreDifferences the live value is kept.
+        - kind: Secret
+          name: openobserve-report-server
+          namespace: openobserve
+          jsonPointers:
+            - /data
+            - /stringData
+        - group: apps
+          kind: StatefulSet
+          name: openobserve
+          namespace: openobserve
+          jqPathExpressions:
+            - .spec.template.metadata.annotations."checksum/report-server-secret"
       # Sync policy
       syncPolicy:
         syncOptions:
@@ -51,6 +67,9 @@ spec:
           # Server-side apply: required for charts with CRDs too large for the
           # client-side last-applied-configuration annotation (kube-prometheus-stack)
           - ServerSideApply=true
+          # Sync keeps live values for the ignoreDifferences fields above
+          # instead of overwriting them with the rendered ones
+          - RespectIgnoreDifferences=true
         # automated sync by default retries failed attempts 5 times
         # with following delays between attempts ( 5s, 10s, 20s, 40s, 80s )
         # retry controlled using `retry` field.
