@@ -328,10 +328,17 @@ kube-prometheus-stack:
       # before the disk fills (KubePersistentVolumeFillingUp, 2026-07)
       retention: 10d
       retentionSize: 45GiB
+      # Keep the TSDB (and its compaction write bursts) off the etcd SSDs
+      # on the control-plane nodes - see plan 15.1. 1 local replica:
+      # metrics are disposable, and 3x Longhorn wrote every block 3 times.
+      nodeSelector:
+        gpu: amd
       storageSpec:
         volumeClaimTemplate:
           spec:
-            storageClassName: longhorn
+            # Only applies to a NEW PVC (volumeClaimTemplates are
+            # immutable); the live volume is migrated by hand, see PR
+            storageClassName: longhorn-1replica
             accessModes: ["ReadWriteOnce"]
             resources:
               requests:
