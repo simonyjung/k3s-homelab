@@ -62,7 +62,10 @@ recurringJobs:
     extraGroups: [no-backup]
   - name: filesystem-trim
     task: filesystem-trim
-    cron: "0 0 * * *"
+    # Off midnight: k3s takes its etcd snapshot at 00:00/12:00 on the same
+    # SSDs, and the pair caused a 9.4s etcd stall on amley02 (plan 15.1).
+    # 05:30 clears backups (02/03:00) and snapshot jobs (04:00-04:30).
+    cron: "30 5 * * *"
     retain: 0
     concurrency: 1
     extraGroups: [no-backup]
