@@ -1,5 +1,5 @@
 ---
-# LAN-only for now: no cloudflared tunnel
+# LAN entrypoint; public access is via cloudflared.yaml (storyteller.simonjung.io)
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
