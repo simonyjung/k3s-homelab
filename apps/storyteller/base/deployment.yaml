@@ -33,6 +33,9 @@ spec:
               value: /run/secrets/storyteller/secret_key
             - name: TZ
               value: "America/New_York"
+            # Experimental web reader; off by default (hides the Read button)
+            - name: ENABLE_WEB_READER
+              value: "true"
           ports:
             - name: http
               containerPort: 8001
