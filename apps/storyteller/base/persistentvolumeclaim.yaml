@@ -1,0 +1,41 @@
+---
+# SQLite DB, covers, transcriptions, transcoded audio. Must stay on block
+# storage: SQLite on NFS risks corruption.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: storyteller-data-pvc
+spec:
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 20Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: storyteller-library-pv
+spec:
+  capacity:
+    storage: 10Gi  # This is a placeholder value, it's not enforced for NFS
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /volume1/media/Books
+    server: 192.168.40.118
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: storyteller-library-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""  # Empty storage class to bind to the PV above
+  volumeName: storyteller-library-pv
+  resources:
+    requests:
+      storage: 10Gi
