@@ -329,8 +329,9 @@ kube-prometheus-stack:
       retention: 10d
       retentionSize: 45GiB
       # Keep the TSDB (and its compaction write bursts) off the etcd SSDs
-      # on the control-plane nodes - see plan 15.1. 1 local replica:
-      # metrics are disposable, and 3x Longhorn wrote every block 3 times.
+      # on the control-plane nodes - see plan 15.1. 1 local replica and
+      # no backups: metrics are disposable, and the churning TSDB made a
+      # ~50Gi nightly backup to the NAS.
       nodeSelector:
         gpu: amd
       storageSpec:
@@ -338,7 +339,7 @@ kube-prometheus-stack:
           spec:
             # Only applies to a NEW PVC (volumeClaimTemplates are
             # immutable); the live volume is migrated by hand, see PR
-            storageClassName: longhorn-1replica
+            storageClassName: longhorn-ephemeral
             accessModes: ["ReadWriteOnce"]
             resources:
               requests:

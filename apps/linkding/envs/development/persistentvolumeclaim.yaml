@@ -1,9 +1,9 @@
 ---
+# Dev runs linkding on an emptyDir (deployment.yaml) with bookmarks in
+# postgres, so the base PVC is dropped here - left in place it sat
+# detached since 2026-07, skipped snapshot cleanup and piled up snapshots.
+$patch: delete
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: linkding-pvc
-spec:
-  resources:
-    requests:
-      storage: 1Gi
