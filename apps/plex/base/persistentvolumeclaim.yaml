@@ -1,4 +1,8 @@
 ---
+# The pod is pinned to amleyg00, so replicas on other nodes buy no
+# availability and only add writes to the etcd SSDs (plan 15.1): the live
+# volume is patched to 1 replica by hand. storageClassName is immutable once
+# bound - use longhorn-1replica if this PVC is ever recreated.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

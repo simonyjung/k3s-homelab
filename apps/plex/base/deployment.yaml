@@ -99,11 +99,11 @@ spec:
               memory: "1Gi"
               cpu: "1"
             limits:
-              # 4Gi since the BIOS iGPU carve-out was reduced to minimum
-              # (2026-07-03) and the OS sees ~29Gi. CPU cap is loose - HW
-              # transcode barely uses CPU, but software-fallback bursts
-              # shouldn't be throttled.
-              memory: "4Gi"
+              # 8Gi: at 4Gi the nightly scheduled-maintenance window
+              # (02:00-06:00) OOM-killed the pod ~8x/night (2026-11-11).
+              # CPU cap is loose - HW transcode barely uses CPU, but
+              # software-fallback bursts shouldn't be throttled.
+              memory: "8Gi"
               cpu: "8"
       volumes:
         - name: config
