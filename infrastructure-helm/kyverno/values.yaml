@@ -9,6 +9,10 @@ kyverno:
     # settings. Revisit only if a policy is ever promoted to Enforce.
     forceFailurePolicyIgnore:
       enabled: true
+    # Default 1h scan burned ~5 cores for ~2 min every hour (audible fan
+    # spikes); audit-only reports don't need hourly freshness
+    backgroundScan:
+      backgroundScanInterval: 24h
   # Cleanup policies are unused; two fewer deployments to run and reschedule
   cleanupController:
     enabled: false
@@ -35,6 +39,8 @@ kyverno:
         cpu: 50m
         memory: 128Mi
       limits:
+        # Caps the background-scan burst so it can't grab every core
+        cpu: "1"
         memory: 512Mi
 
 kyverno-policies:
