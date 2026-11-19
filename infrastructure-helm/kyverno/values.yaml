@@ -13,6 +13,13 @@ kyverno:
     # spikes); audit-only reports don't need hourly freshness
     backgroundScan:
       backgroundScanInterval: 24h
+  # The pre-upgrade hook fails on any live kyverno.io/v1 ClusterPolicy, and
+  # ArgoCD runs it before pruning — so the ClusterPolicy → ValidatingPolicy
+  # migration of templates/ could never sync past it. Repo has no legacy
+  # policies left; nothing for the hook to guard.
+  upgrade:
+    legacyPolicyCheck:
+      enabled: false
   # Cleanup policies are unused; two fewer deployments to run and reschedule
   cleanupController:
     enabled: false
